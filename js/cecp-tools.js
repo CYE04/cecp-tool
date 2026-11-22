@@ -22,6 +22,57 @@
     return arr;
   }
 
+  let toastEl = null;
+  let toastTimer = null;
+  function showToast(msg) {
+    if (!msg) return;
+    if (!toastEl) {
+      toastEl = document.createElement('div');
+      toastEl.className = 'cecp-toast';
+      toastEl.setAttribute('role', 'status');
+      toastEl.setAttribute('aria-live', 'polite');
+      document.body.appendChild(toastEl);
+    }
+    toastEl.textContent = msg;
+    toastEl.classList.remove('show');
+    void toastEl.offsetWidth;
+    toastEl.classList.add('show');
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () {
+      if (toastEl) toastEl.classList.remove('show');
+    }, 1600);
+  }
+
+  function bindConfirmButton(btn, armedText, onConfirm) {
+    if (!btn) return;
+    const defaultText = btn.textContent;
+    let armed = false;
+    let disarmTimer = null;
+
+    function reset() {
+      armed = false;
+      if (disarmTimer) {
+        clearTimeout(disarmTimer);
+        disarmTimer = null;
+      }
+      btn.textContent = defaultText;
+      btn.classList.remove('cecp-btn-danger');
+    }
+
+    btn.addEventListener('click', function () {
+      if (btn.disabled) return;
+      if (!armed) {
+        armed = true;
+        btn.textContent = armedText;
+        btn.classList.add('cecp-btn-danger');
+        disarmTimer = setTimeout(reset, 3000);
+      } else {
+        reset();
+        onConfirm();
+      }
+    });
+  }
+
   let sharedAudioCtx = null;
   function playTone(freqs) {
     try {
@@ -305,25 +356,23 @@
     drawPureBtn.addEventListener('click', enterPureMode);
   }
 
-  if (drawClearHistoryBtn) {
-    drawClearHistoryBtn.addEventListener('click', function () {
-      drawnHistory = [];
-      renderDrawHistory();
-      updatePoolStatus();
-    });
-  }
+  bindConfirmButton(drawClearHistoryBtn, '确认清空?', function () {
+    drawnHistory = [];
+    renderDrawHistory();
+    updatePoolStatus();
+    showToast('已清空抽中记录');
+  });
 
-  if (clearNamesBtn) {
-    clearNamesBtn.addEventListener('click', function () {
-      namesInput.value = '';
-      localStorage.setItem(NAMES_KEY, '');
-      drawnHistory = [];
-      renderDrawHistory();
-      updateNamesMeta();
-      if (drawResultBox) drawResultBox.innerHTML = '<span class="cecp-muted">请先在上方输入名单或编号</span>';
-      if (groupsGrid) groupsGrid.innerHTML = '';
-    });
-  }
+  bindConfirmButton(clearNamesBtn, '确认清空?', function () {
+    namesInput.value = '';
+    localStorage.setItem(NAMES_KEY, '');
+    drawnHistory = [];
+    renderDrawHistory();
+    updateNamesMeta();
+    if (drawResultBox) drawResultBox.innerHTML = '<span class="cecp-muted">请先在上方输入名单或编号</span>';
+    if (groupsGrid) groupsGrid.innerHTML = '';
+    showToast('已清空名单');
+  });
 
   subBtns.forEach(function (btn) {
     btn.addEventListener('click', function () {
@@ -345,6 +394,7 @@
       renderDrawHistory();
       updatePoolStatus();
       if (drawResultBox) drawResultBox.innerHTML = '<span class="cecp-muted">已重置抽签池，点击「开始抽签」</span>';
+      showToast('已重置抽签池');
     });
   }
 
@@ -468,6 +518,7 @@
         navigator.clipboard.writeText(text).then(function () {
           const old = groupCopyBtn.textContent;
           groupCopyBtn.textContent = '已复制 ✓';
+          showToast('已复制分组结果');
           setTimeout(function () { groupCopyBtn.textContent = old; }, 1200);
         }).catch(function () {});
       }
@@ -560,11 +611,32 @@
       const btn = e.target.closest('.cecp-score-btn');
       if (btn) {
         const delta = parseInt(btn.dataset.delta, 10) || 0;
-        teams[idx].score = Math.max(0, teams[idx].score + delta);
+        const prevScore = teams[idx].score;
+        const nextScore = Math.max(0, prevScore + delta);
+        const actualDelta = nextScore - prevScore;
+        teams[idx].score = nextScore;
         saveTeams();
         renderScoreboard();
         if (!scoreMuted) {
           playTone(delta > 0 ? [587.33, 880] : [392]);
+        }
+        if (actualDelta !== 0) {
+          const newCard = scoreGrid.querySelector('.cecp-team-card[data-team-idx="' + idx + '"]');
+          if (newCard) {
+            const scoreEl = newCard.querySelector('.cecp-team-score');
+            if (scoreEl) {
+              scoreEl.classList.remove('bump');
+              void scoreEl.offsetWidth;
+              scoreEl.classList.add('bump');
+            }
+            const floatEl = document.createElement('span');
+            floatEl.className = 'cecp-score-float ' + (actualDelta >= 5 ? 'plus5' : actualDelta > 0 ? 'plus1' : 'minus');
+            floatEl.textContent = (actualDelta > 0 ? '+' : '') + actualDelta;
+            newCard.appendChild(floatEl);
+            setTimeout(function () {
+              if (floatEl.parentNode) floatEl.parentNode.removeChild(floatEl);
+            }, 680);
+          }
         }
       }
     });
@@ -596,13 +668,12 @@
     });
   }
 
-  if (scoreResetBtn) {
-    scoreResetBtn.addEventListener('click', function () {
-      teams.forEach(function (team) { team.score = 0; });
-      saveTeams();
-      renderScoreboard();
-    });
-  }
+  bindConfirmButton(scoreResetBtn, '确认清零?', function () {
+    teams.forEach(function (team) { team.score = 0; });
+    saveTeams();
+    renderScoreboard();
+    showToast('已清零全部队伍分数');
+  });
 
   if (scoreMuteBtn) {
     scoreMuteBtn.addEventListener('click', function () {
@@ -880,6 +951,7 @@
       if (stageTitleInput) stageTitleInput.value = preset.title;
       if (stageSubInput) stageSubInput.value = preset.subtitle;
       setStageMinutes(preset.minutes);
+      showToast('已切换：' + preset.badge);
     });
   });
 
@@ -1310,6 +1382,7 @@
         wheelResultEl.classList.remove('has-winner');
         wheelResultEl.textContent = '已同步 ' + Math.min(names.length, 32) + ' 个抽签选项';
       }
+      showToast('已同步 ' + Math.min(names.length, 32) + ' 个抽签选项');
     });
   }
 
@@ -1318,6 +1391,7 @@
       wheelInput.value = WHEEL_PRESET_ICE.join('\n');
       localStorage.setItem(WHEEL_KEY, wheelInput.value);
       drawWheel();
+      showToast('已填入破冰互动预设');
     });
   }
 
@@ -1326,6 +1400,7 @@
       wheelInput.value = WHEEL_PRESET_FOOD.join('\n');
       localStorage.setItem(WHEEL_KEY, wheelInput.value);
       drawWheel();
+      showToast('已填入今天吃什么预设');
     });
   }
 

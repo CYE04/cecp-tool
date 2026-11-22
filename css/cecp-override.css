@@ -168,16 +168,25 @@ html, body {
   white-space: nowrap;
   flex-shrink: 0;
   cursor: pointer;
-  transition: all 0.15s ease;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: color 0.15s ease, background 0.18s ease, box-shadow 0.18s ease, transform 0.2s cubic-bezier(0.22, 1.35, 0.36, 1);
 }
 
 .cecp-switch-btn:hover {
   color: #f4f4f5;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.cecp-switch-btn:active {
+  transform: scale(0.95);
 }
 
 .cecp-switch-btn.active {
   background: #27272a;
   color: #ffffff;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 1px 4px rgba(0, 0, 0, 0.35);
 }
 
 @media (max-width: 860px) {
@@ -244,6 +253,18 @@ html, body {
 
 .cecp-panel.show {
   display: block;
+  animation: cecpPanelIn 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes cecpPanelIn {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, calc(-50% + 10px)) scale(0.985);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
 }
 
 .cecp-panel::-webkit-scrollbar {
@@ -378,12 +399,24 @@ html, body {
   font-size: 12.5px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.15s ease;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: color 0.15s ease, background 0.18s ease, box-shadow 0.18s ease, transform 0.2s cubic-bezier(0.22, 1.35, 0.36, 1);
+}
+
+.cecp-sub-btn:hover:not(.active) {
+  color: #e4e4e7;
+}
+
+.cecp-sub-btn:active {
+  transform: scale(0.95);
 }
 
 .cecp-sub-btn.active {
   background: #2f81f7;
   color: #ffffff;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 2px 8px rgba(47, 129, 247, 0.35);
 }
 
 .cecp-btn {
@@ -396,19 +429,24 @@ html, body {
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  border: 1px solid rgba(255, 255, 255, 0.11);
   background: #27272a;
   color: #f4f4f5;
-  transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.09), 0 1px 2px rgba(0, 0, 0, 0.25);
+  transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, transform 0.22s cubic-bezier(0.22, 1.35, 0.36, 1);
 }
 
-.cecp-btn:hover {
+.cecp-btn:hover:not(:disabled) {
   background: #303036;
-  border-color: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.22);
 }
 
-.cecp-btn:active {
-  transform: scale(0.97);
+.cecp-btn:active:not(:disabled) {
+  transform: translateY(1px) scale(0.96);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.35);
 }
 
 .cecp-btn:disabled {
@@ -418,24 +456,45 @@ html, body {
 
 .cecp-btn-primary {
   background: #2f81f7;
-  border-color: #2f81f7;
+  border-color: #3b89f8;
   color: #ffffff;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.24), 0 3px 12px rgba(47, 129, 247, 0.28);
 }
 
-.cecp-btn-primary:hover {
+.cecp-btn-primary:hover:not(:disabled) {
   background: #3b89f8;
-  border-color: #3b89f8;
+  border-color: #60a5fa;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28), 0 4px 16px rgba(47, 129, 247, 0.38);
+}
+
+.cecp-btn-primary:active:not(:disabled) {
+  transform: translateY(1px) scale(0.96);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.35), 0 1px 6px rgba(47, 129, 247, 0.25);
 }
 
 .cecp-btn-gold {
   background: rgba(226, 176, 94, 0.16);
   border-color: rgba(226, 176, 94, 0.45);
   color: #e2b05e;
+  box-shadow: inset 0 1px 0 rgba(255, 232, 185, 0.14), 0 1px 2px rgba(0, 0, 0, 0.25);
 }
 
-.cecp-btn-gold:hover {
+.cecp-btn-gold:hover:not(:disabled) {
   background: rgba(226, 176, 94, 0.24);
   border-color: #e2b05e;
+}
+
+.cecp-btn-danger {
+  background: rgba(239, 68, 68, 0.22);
+  border-color: rgba(248, 113, 113, 0.65);
+  color: #fca5a5;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 2px 10px rgba(239, 68, 68, 0.22);
+}
+
+.cecp-btn-danger:hover:not(:disabled) {
+  background: rgba(239, 68, 68, 0.32);
+  border-color: #f87171;
+  color: #ffffff;
 }
 
 .cecp-btn-sm {
@@ -577,7 +636,11 @@ html, body {
   border-radius: 50%;
   background: #ffffff;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
-  transition: transform 0.18s ease;
+  transition: transform 0.2s cubic-bezier(0.22, 1.35, 0.36, 1), width 0.15s ease;
+}
+
+.cecp-check-label input[type="checkbox"]:active::before {
+  width: 17px;
 }
 
 .cecp-check-label input[type="checkbox"]:checked {
@@ -587,6 +650,11 @@ html, body {
 
 .cecp-check-label input[type="checkbox"]:checked::before {
   transform: translateX(14px);
+}
+
+.cecp-check-label input[type="checkbox"]:checked:active::before {
+  transform: translateX(11px);
+  width: 17px;
 }
 
 .cecp-result-stage {
@@ -664,7 +732,7 @@ html, body {
 }
 
 .cecp-group-pill {
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.11);
   background: #1c1c1f;
   color: #a1a1aa;
   padding: 4px 10px;
@@ -672,12 +740,27 @@ html, body {
   font-size: 12.5px;
   font-weight: 600;
   cursor: pointer;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 1px 2px rgba(0, 0, 0, 0.22);
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.2s cubic-bezier(0.22, 1.35, 0.36, 1);
+}
+
+.cecp-group-pill:hover {
+  color: #f4f4f5;
+  border-color: rgba(255, 255, 255, 0.22);
+}
+
+.cecp-group-pill:active {
+  transform: translateY(1px) scale(0.95);
 }
 
 .cecp-group-pill.active {
   background: #2f81f7;
-  border-color: #2f81f7;
+  border-color: #3b89f8;
   color: #ffffff;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 2px 8px rgba(47, 129, 247, 0.3);
 }
 
 .cecp-groups-grid {
@@ -825,6 +908,49 @@ html, body {
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.02em;
   margin: 8px 0;
+  display: inline-block;
+}
+
+.cecp-team-score.bump {
+  animation: cecpScoreBump 0.26s cubic-bezier(0.22, 1.35, 0.36, 1);
+}
+
+@keyframes cecpScoreBump {
+  0% { transform: scale(1); }
+  45% { transform: scale(1.16); color: #ffffff; }
+  100% { transform: scale(1); }
+}
+
+.cecp-score-float {
+  position: absolute;
+  top: 46px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 18px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+  z-index: 4;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.65);
+  animation: cecpFloatUp 0.65s ease-out forwards;
+}
+
+.cecp-score-float.plus1 {
+  color: #93c5fd;
+}
+
+.cecp-score-float.plus5 {
+  color: #f5cd79;
+}
+
+.cecp-score-float.minus {
+  color: #fca5a5;
+}
+
+@keyframes cecpFloatUp {
+  0% { opacity: 0; transform: translate(-50%, 6px) scale(0.85); }
+  22% { opacity: 1; transform: translate(-50%, -6px) scale(1.06); }
+  100% { opacity: 0; transform: translate(-50%, -30px) scale(0.98); }
 }
 
 .cecp-team-btns {
@@ -837,21 +963,27 @@ html, body {
   flex: 1;
   height: 42px;
   border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.11);
   background: #27272a;
   color: #f4f4f5;
   font-size: 15px;
   font-weight: 700;
   cursor: pointer;
-  transition: background 0.15s ease, transform 0.1s ease;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 1px 2px rgba(0, 0, 0, 0.25);
+  transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, transform 0.2s cubic-bezier(0.22, 1.35, 0.36, 1);
 }
 
 .cecp-score-btn:hover {
   background: #323238;
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 .cecp-score-btn:active {
-  transform: scale(0.95);
+  transform: translateY(1px) scale(0.95);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.38);
 }
 
 .cecp-score-btn.plus {
@@ -884,7 +1016,7 @@ html, body {
 }
 
 .cecp-stage-preset {
-  border: 1px solid rgba(255, 255, 255, 0.09);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   background: #1c1c1f;
   color: #d4d4d8;
   padding: 5px 11px;
@@ -892,12 +1024,20 @@ html, body {
   font-size: 12.5px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.15s ease;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07), 0 1px 2px rgba(0, 0, 0, 0.22);
+  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease, transform 0.2s cubic-bezier(0.22, 1.35, 0.36, 1);
 }
 
 .cecp-stage-preset:hover {
   border-color: rgba(226, 176, 94, 0.55);
   color: #e2b05e;
+}
+
+.cecp-stage-preset:active {
+  transform: translateY(1px) scale(0.95);
 }
 
 .cecp-stage-preset.active {
@@ -1392,5 +1532,78 @@ body.cecp-pure-mode #cecpScorePanel .cecp-score-btn {
   height: 100vh;
   pointer-events: none;
   z-index: 10000;
+}
+
+/* 触控、焦点环、全局 Toast 轻提示与减动效兼容 */
+.cecp-back-home,
+.cecp-team-del,
+.cecp-pure-exit,
+.cecp-wheel-center-btn {
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.cecp-switch-btn:focus-visible,
+.cecp-sub-btn:focus-visible,
+.cecp-btn:focus-visible,
+.cecp-stage-preset:focus-visible,
+.cecp-group-pill:focus-visible,
+.cecp-score-btn:focus-visible,
+.cecp-wheel-center-btn:focus-visible,
+.cecp-pure-exit:focus-visible,
+.cecp-back-home:focus-visible,
+.cecp-team-del:focus-visible,
+.cecp-check-label input[type="checkbox"]:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px #141416, 0 0 0 4px rgba(47, 129, 247, 0.72);
+}
+
+.cecp-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 28px;
+  transform: translate(-50%, 14px) scale(0.96);
+  z-index: 10002;
+  padding: 9px 18px;
+  border-radius: 999px;
+  background: rgba(24, 24, 27, 0.94);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+  color: #f4f4f5;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, "PingFang SC", sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease, transform 0.24s cubic-bezier(0.22, 1.35, 0.36, 1);
+}
+
+.cecp-toast.show {
+  opacity: 1;
+  transform: translate(-50%, 0) scale(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cecp-panel.show,
+  .cecp-winner-pill.pop,
+  .cecp-wheel-result.has-winner,
+  .cecp-team-score.bump,
+  .cecp-score-float {
+    animation: none !important;
+  }
+
+  .cecp-btn,
+  .cecp-switch-btn,
+  .cecp-sub-btn,
+  .cecp-score-btn,
+  .cecp-stage-preset,
+  .cecp-group-pill,
+  .cecp-toast {
+    transition: opacity 0.12s ease, background 0.12s ease, border-color 0.12s ease !important;
+  }
 }
 
