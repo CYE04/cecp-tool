@@ -1615,7 +1615,7 @@
   onSwitchCallbacks.flip = startFlipClock;
   onLeaveCallbacks.flip = stopFlipClock;
 
-  // ---------- 8. 现场氛围音效板 (Web Audio API) ----------
+  // ---------- 8. 现场氛围音效板 (Web Audio API 立体声混响合成引擎) ----------
   const SOUND_VOL_KEY = 'cecp_tool_soundvol_v1';
   const soundGrid = document.getElementById('cecpSoundGrid');
   const soundVolSlider = document.getElementById('cecpSoundVol');
@@ -1624,6 +1624,12 @@
   const soundPureBtn = document.getElementById('cecpSoundPureBtn');
 
   let soundMasterGain = null;
+  let soundDryGain = null;
+  let soundWetGain = null;
+  let soundReverbNode = null;
+  let soundCompressor = null;
+  let whiteNoiseBuf = null;
+  let pinkNoiseBuf = null;
   let activeSfxNodes = [];
   let activeSfxTimers = [];
   let soundVolume = 0.8;
@@ -1635,32 +1641,128 @@
     }
   } catch (e) {}
 
+  function buildHallImpulse(ctx, seconds) {
+    const len = Math.floor(ctx.sampleRate * seconds);
+    const ir = ctx.createBuffer(2, len, ctx.sampleRate);
+    for (let ch = 0; ch < 2; ch++) {
+      const data = ir.getChannelData(ch);
+      let lp = 0;
+      for (let i = 0; i < len; i++) {
+        const decay = Math.pow(1 - i / len, 2.6);
+        const white = Math.random() * 2 - 1;
+        lp = lp * 0.62 + white * 0.38;
+        data[i] = lp * decay * 0.7;
+      }
+    }
+    return ir;
+  }
+
+  function ensureNoiseBuffers(ctx) {
+    if (!whiteNoiseBuf) {
+      const len = Math.floor(ctx.sampleRate * 2);
+      whiteNoiseBuf = ctx.createBuffer(1, len, ctx.sampleRate);
+      const wData = whiteNoiseBuf.getChannelData(0);
+      for (let i = 0; i < len; i++) {
+        wData[i] = Math.random() * 2 - 1;
+      }
+    }
+    if (!pinkNoiseBuf) {
+      const len = Math.floor(ctx.sampleRate * 2.5);
+      pinkNoiseBuf = ctx.createBuffer(1, len, ctx.sampleRate);
+      const pData = pinkNoiseBuf.getChannelData(0);
+      let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+      for (let i = 0; i < len; i++) {
+        const white = Math.random() * 2 - 1;
+        b0 = 0.99886 * b0 + white * 0.0555179;
+        b1 = 0.99332 * b1 + white * 0.0750759;
+        b2 = 0.96900 * b2 + white * 0.1538520;
+        b3 = 0.86650 * b3 + white * 0.3104856;
+        b4 = 0.55000 * b4 + white * 0.5329522;
+        b5 = -0.7616 * b5 - white * 0.0168980;
+        pData[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * 0.11;
+        b6 = white * 0.115926;
+      }
+    }
+  }
+
   function ensureSoundBus() {
     const Ctx = window.AudioContext || window.webkitAudioContext;
     if (!Ctx) return null;
     if (!sharedAudioCtx) sharedAudioCtx = new Ctx();
     if (sharedAudioCtx.state === 'suspended') sharedAudioCtx.resume();
+    ensureNoiseBuffers(sharedAudioCtx);
+
     if (!soundMasterGain) {
       soundMasterGain = sharedAudioCtx.createGain();
       soundMasterGain.gain.value = soundVolume;
-      soundMasterGain.connect(sharedAudioCtx.destination);
+
+      soundCompressor = sharedAudioCtx.createDynamicsCompressor();
+      soundCompressor.threshold.value = -14;
+      soundCompressor.knee.value = 18;
+      soundCompressor.ratio.value = 6;
+      soundCompressor.attack.value = 0.004;
+      soundCompressor.release.value = 0.16;
+
+      soundDryGain = sharedAudioCtx.createGain();
+      soundDryGain.gain.value = 1.0;
+
+      soundWetGain = sharedAudioCtx.createGain();
+      soundWetGain.gain.value = 0.34;
+
+      soundReverbNode = sharedAudioCtx.createConvolver();
+      soundReverbNode.buffer = buildHallImpulse(sharedAudioCtx, 1.55);
+
+      soundDryGain.connect(soundMasterGain);
+      soundWetGain.connect(soundReverbNode);
+      soundReverbNode.connect(soundMasterGain);
+      soundMasterGain.connect(soundCompressor);
+      soundCompressor.connect(sharedAudioCtx.destination);
     }
     return sharedAudioCtx;
-  }
-
-  function createNoiseBuffer(ctx, durationSec) {
-    const length = Math.floor(ctx.sampleRate * durationSec);
-    const buffer = ctx.createBuffer(1, length, ctx.sampleRate);
-    const data = buffer.getChannelData(0);
-    for (let i = 0; i < length; i++) {
-      data[i] = Math.random() * 2 - 1;
-    }
-    return buffer;
   }
 
   function trackNode(node) {
     activeSfxNodes.push(node);
     return node;
+  }
+
+  function connectVoice(ctx, node, pan, wetSend) {
+    let out = node;
+    if (typeof ctx.createStereoPanner === 'function' && pan) {
+      const panner = trackNode(ctx.createStereoPanner());
+      panner.pan.value = Math.max(-1, Math.min(1, pan));
+      node.connect(panner);
+      out = panner;
+    }
+    out.connect(soundDryGain);
+    if (wetSend > 0) {
+      const send = trackNode(ctx.createGain());
+      send.gain.value = wetSend;
+      out.connect(send);
+      send.connect(soundWetGain);
+    }
+  }
+
+  function playBellVoice(ctx, freq, startTime, dur, vol, pan, wet, partials) {
+    const list = partials || [
+      [1, 1.0, 1.0],
+      [2, 0.35, 0.55],
+      [3.98, 0.14, 0.3]
+    ];
+    list.forEach(function (p) {
+      const osc = trackNode(ctx.createOscillator());
+      const g = trackNode(ctx.createGain());
+      const pDur = Math.max(0.06, dur * p[2]);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq * p[0], startTime);
+      g.gain.setValueAtTime(0.0001, startTime);
+      g.gain.exponentialRampToValueAtTime(Math.max(0.001, vol * p[1]), startTime + 0.008);
+      g.gain.exponentialRampToValueAtTime(0.0001, startTime + pDur);
+      osc.connect(g);
+      connectVoice(ctx, g, pan, wet);
+      osc.start(startTime);
+      osc.stop(startTime + pDur + 0.03);
+    });
   }
 
   function stopAllSfx(quiet) {
@@ -1702,229 +1804,313 @@
     const now = ctx.currentTime;
 
     if (type === 'applause') {
-      const dur = 2.3;
-      const noiseBuf = createNoiseBuffer(ctx, 0.25);
-      for (let i = 0; i < 24; i++) {
-        const t = now + i * 0.085 + (Math.random() * 0.035);
+      const dur = 2.6;
+      // 温暖人群掌声氛围底噪
+      const bedSrc = trackNode(ctx.createBufferSource());
+      bedSrc.buffer = pinkNoiseBuf;
+      bedSrc.loop = true;
+      const bedLp = trackNode(ctx.createBiquadFilter());
+      bedLp.type = 'lowpass';
+      bedLp.frequency.value = 1750;
+      const bedGain = trackNode(ctx.createGain());
+      bedGain.gain.setValueAtTime(0.0001, now);
+      bedGain.gain.linearRampToValueAtTime(0.14, now + 0.25);
+      bedGain.gain.setValueAtTime(0.14, now + 1.4);
+      bedGain.gain.exponentialRampToValueAtTime(0.0001, now + dur);
+      bedSrc.connect(bedLp);
+      bedLp.connect(bedGain);
+      connectVoice(ctx, bedGain, 0, 0.55);
+      bedSrc.start(now);
+      bedSrc.stop(now + dur + 0.05);
+
+      // 135 个立体声错峰单次拍掌瞬态
+      const clapCount = 135;
+      for (let i = 0; i < clapCount; i++) {
+        const progress = i / clapCount;
+        const t = now + Math.pow(progress, 0.92) * 2.15 + Math.random() * 0.08;
+        const envScale = progress < 0.14 ? (progress / 0.14) : progress > 0.68 ? Math.max(0.12, (1 - progress) / 0.32) : 1;
         const src = trackNode(ctx.createBufferSource());
-        src.buffer = noiseBuf;
-        const filter = ctx.createBiquadFilter();
-        filter.type = 'bandpass';
-        filter.frequency.value = 1100 + Math.random() * 1400;
-        filter.Q.value = 0.85;
-        const gain = ctx.createGain();
-        const envScale = i < 4 ? (i + 1) / 4 : i > 16 ? Math.max(0.15, (24 - i) / 8) : 1;
-        gain.gain.setValueAtTime(0.001, t);
-        gain.gain.exponentialRampToValueAtTime(0.24 * envScale, t + 0.015);
-        gain.gain.exponentialRampToValueAtTime(0.001, t + 0.16);
-        src.connect(filter);
-        filter.connect(gain);
-        gain.connect(soundMasterGain);
-        src.start(t);
-        src.stop(t + 0.18);
+        src.buffer = whiteNoiseBuf;
+        const bp = trackNode(ctx.createBiquadFilter());
+        bp.type = 'bandpass';
+        bp.frequency.value = 850 + Math.random() * 1550;
+        bp.Q.value = 1.2 + Math.random() * 0.7;
+        const g = trackNode(ctx.createGain());
+        const peak = (0.08 + Math.random() * 0.09) * envScale;
+        const clapLen = 0.015 + Math.random() * 0.012;
+        g.gain.setValueAtTime(0.0001, t);
+        g.gain.exponentialRampToValueAtTime(peak, t + 0.003);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + clapLen);
+        src.connect(bp);
+        bp.connect(g);
+        connectVoice(ctx, g, (Math.random() - 0.5) * 1.7, 0.52);
+        src.start(t, Math.random() * 1.5, clapLen + 0.01);
+        src.stop(t + clapLen + 0.015);
       }
-      markPadPlaying(pad, dur * 1000);
+      markPadPlaying(pad, 2650);
       return;
     }
 
     if (type === 'drumroll') {
-      const noiseBuf = createNoiseBuffer(ctx, 0.14);
       let offset = 0;
-      const hits = 18;
+      const hits = 34;
       for (let i = 0; i < hits; i++) {
-        const step = 0.14 - (i / hits) * 0.075;
+        const p = i / hits;
+        const step = 0.115 - p * 0.076;
         const t = now + offset;
         offset += step;
-        const src = trackNode(ctx.createBufferSource());
-        src.buffer = noiseBuf;
-        const filter = ctx.createBiquadFilter();
-        filter.type = 'bandpass';
-        filter.frequency.value = 1800;
-        filter.Q.value = 1.2;
-        const g = ctx.createGain();
-        const amp = 0.12 + (i / hits) * 0.22;
-        g.gain.setValueAtTime(0.001, t);
-        g.gain.exponentialRampToValueAtTime(amp, t + 0.006);
-        g.gain.exponentialRampToValueAtTime(0.001, t + 0.09);
-        src.connect(filter);
-        filter.connect(g);
-        g.connect(soundMasterGain);
-        src.start(t);
-        src.stop(t + 0.1);
+        const pan = (i % 2 === 0 ? -0.18 : 0.18);
+        const amp = 0.11 + p * 0.24;
 
+        // 军鼓沙带脆响
+        const snSrc = trackNode(ctx.createBufferSource());
+        snSrc.buffer = whiteNoiseBuf;
+        const bp = trackNode(ctx.createBiquadFilter());
+        bp.type = 'bandpass';
+        bp.frequency.value = 2200 + (Math.random() - 0.5) * 500;
+        bp.Q.value = 0.9;
+        const snGain = trackNode(ctx.createGain());
+        snGain.gain.setValueAtTime(0.0001, t);
+        snGain.gain.exponentialRampToValueAtTime(amp, t + 0.003);
+        snGain.gain.exponentialRampToValueAtTime(0.0001, t + 0.065);
+        snSrc.connect(bp);
+        bp.connect(snGain);
+        connectVoice(ctx, snGain, pan, 0.35);
+        snSrc.start(t, Math.random() * 1.2, 0.075);
+        snSrc.stop(t + 0.08);
+
+        // 紧凑鼓腔共鸣
         const bodyOsc = trackNode(ctx.createOscillator());
-        const bodyGain = ctx.createGain();
-        bodyOsc.type = 'triangle';
-        bodyOsc.frequency.setValueAtTime(175, t);
-        bodyOsc.frequency.exponentialRampToValueAtTime(95, t + 0.06);
-        bodyGain.gain.setValueAtTime(amp * 0.6, t);
-        bodyGain.gain.exponentialRampToValueAtTime(0.001, t + 0.07);
+        const bodyGain = trackNode(ctx.createGain());
+        bodyOsc.type = 'sine';
+        bodyOsc.frequency.setValueAtTime(185, t);
+        bodyOsc.frequency.exponentialRampToValueAtTime(132, t + 0.042);
+        bodyGain.gain.setValueAtTime(amp * 0.55, t);
+        bodyGain.gain.exponentialRampToValueAtTime(0.0001, t + 0.05);
         bodyOsc.connect(bodyGain);
-        bodyGain.connect(soundMasterGain);
+        connectVoice(ctx, bodyGain, pan, 0.25);
         bodyOsc.start(t);
-        bodyOsc.stop(t + 0.08);
+        bodyOsc.stop(t + 0.055);
       }
-      const crashTime = now + offset + 0.04;
-      const crashSrc = trackNode(ctx.createBufferSource());
-      crashSrc.buffer = createNoiseBuffer(ctx, 0.8);
-      const hp = ctx.createBiquadFilter();
-      hp.type = 'highpass';
-      hp.frequency.value = 3200;
-      const crashGain = ctx.createGain();
-      crashGain.gain.setValueAtTime(0.32, crashTime);
-      crashGain.gain.exponentialRampToValueAtTime(0.001, crashTime + 0.72);
-      crashSrc.connect(hp);
-      hp.connect(crashGain);
-      crashGain.connect(soundMasterGain);
-      crashSrc.start(crashTime);
-      crashSrc.stop(crashTime + 0.75);
-      markPadPlaying(pad, (offset + 0.75) * 1000);
+
+      // 收尾重拍 + 多泛音金属吊镲
+      const crashTime = now + offset + 0.03;
+      const kick = trackNode(ctx.createOscillator());
+      const kickG = trackNode(ctx.createGain());
+      kick.type = 'sine';
+      kick.frequency.setValueAtTime(140, crashTime);
+      kick.frequency.exponentialRampToValueAtTime(52, crashTime + 0.18);
+      kickG.gain.setValueAtTime(0.45, crashTime);
+      kickG.gain.exponentialRampToValueAtTime(0.0001, crashTime + 0.28);
+      kick.connect(kickG);
+      connectVoice(ctx, kickG, 0, 0.35);
+      kick.start(crashTime);
+      kick.stop(crashTime + 0.3);
+
+      const crashHp = trackNode(ctx.createBiquadFilter());
+      crashHp.type = 'highpass';
+      crashHp.frequency.value = 3800;
+      const crashNoise = trackNode(ctx.createBufferSource());
+      crashNoise.buffer = whiteNoiseBuf;
+      const crashGain = trackNode(ctx.createGain());
+      crashGain.gain.setValueAtTime(0.28, crashTime);
+      crashGain.gain.exponentialRampToValueAtTime(0.0001, crashTime + 1.35);
+      crashNoise.connect(crashHp);
+      crashHp.connect(crashGain);
+      connectVoice(ctx, crashGain, 0, 0.65);
+      crashNoise.start(crashTime, 0, 1.4);
+      crashNoise.stop(crashTime + 1.4);
+
+      [296, 391, 523, 681, 862, 1140].forEach(function (cf) {
+        const mOsc = trackNode(ctx.createOscillator());
+        const mBp = trackNode(ctx.createBiquadFilter());
+        const mG = trackNode(ctx.createGain());
+        mOsc.type = 'square';
+        mOsc.frequency.value = cf;
+        mBp.type = 'highpass';
+        mBp.frequency.value = 2600;
+        mG.gain.setValueAtTime(0.035, crashTime);
+        mG.gain.exponentialRampToValueAtTime(0.0001, crashTime + 1.15);
+        mOsc.connect(mBp);
+        mBp.connect(mG);
+        connectVoice(ctx, mG, 0, 0.6);
+        mOsc.start(crashTime);
+        mOsc.stop(crashTime + 1.2);
+      });
+
+      markPadPlaying(pad, (offset + 1.35) * 1000);
       return;
     }
 
     if (type === 'fanfare') {
-      const notes = [
-        { freq: 523.25, t: 0, dur: 0.16 },
-        { freq: 659.25, t: 0.14, dur: 0.16 },
-        { freq: 783.99, t: 0.28, dur: 0.18 },
-        { freq: 1046.5, t: 0.44, dur: 0.85 },
-        { freq: 783.99, t: 0.44, dur: 0.85 },
-        { freq: 659.25, t: 0.44, dur: 0.85 }
+      // 温暖双失谐铜管齐奏 + 结尾定音鼓
+      const brassNotes = [
+        { freq: 392.00, t: 0.00, dur: 0.14, pan: -0.15 },
+        { freq: 523.25, t: 0.13, dur: 0.14, pan: 0.15 },
+        { freq: 659.25, t: 0.26, dur: 0.15, pan: -0.15 },
+        { freq: 783.99, t: 0.41, dur: 1.05, pan: 0 },
+        { freq: 523.25, t: 0.41, dur: 1.05, pan: -0.35 },
+        { freq: 659.25, t: 0.41, dur: 1.05, pan: 0.35 },
+        { freq: 1046.5, t: 0.41, dur: 1.05, pan: 0 }
       ];
-      notes.forEach(function (n) {
-        const osc = trackNode(ctx.createOscillator());
-        const filter = ctx.createBiquadFilter();
-        const gain = ctx.createGain();
-        osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(n.freq, now + n.t);
-        filter.type = 'lowpass';
-        filter.frequency.setValueAtTime(2200, now + n.t);
-        gain.gain.setValueAtTime(0.001, now + n.t);
-        gain.gain.exponentialRampToValueAtTime(0.14, now + n.t + 0.025);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + n.t + n.dur);
-        osc.connect(filter);
-        filter.connect(gain);
-        gain.connect(soundMasterGain);
-        osc.start(now + n.t);
-        osc.stop(now + n.t + n.dur + 0.04);
+      brassNotes.forEach(function (n) {
+        [-6, 6].forEach(function (detuneCents) {
+          const osc = trackNode(ctx.createOscillator());
+          const filter = trackNode(ctx.createBiquadFilter());
+          const g = trackNode(ctx.createGain());
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(n.freq, now + n.t);
+          osc.detune.value = detuneCents;
+
+          filter.type = 'lowpass';
+          filter.Q.value = 1.4;
+          filter.frequency.setValueAtTime(480, now + n.t);
+          filter.frequency.exponentialRampToValueAtTime(2900, now + n.t + 0.055);
+          filter.frequency.exponentialRampToValueAtTime(1550, now + n.t + n.dur);
+
+          g.gain.setValueAtTime(0.0001, now + n.t);
+          g.gain.exponentialRampToValueAtTime(0.085, now + n.t + 0.032);
+          g.gain.setValueAtTime(0.075, now + n.t + n.dur * 0.65);
+          g.gain.exponentialRampToValueAtTime(0.0001, now + n.t + n.dur);
+
+          osc.connect(filter);
+          filter.connect(g);
+          connectVoice(ctx, g, n.pan, 0.48);
+          osc.start(now + n.t);
+          osc.stop(now + n.t + n.dur + 0.05);
+        });
       });
-      markPadPlaying(pad, 1350);
+
+      const timp = trackNode(ctx.createOscillator());
+      const timpG = trackNode(ctx.createGain());
+      timp.type = 'sine';
+      timp.frequency.setValueAtTime(130.81, now + 0.41);
+      timp.frequency.exponentialRampToValueAtTime(65.41, now + 0.72);
+      timpG.gain.setValueAtTime(0.32, now + 0.41);
+      timpG.gain.exponentialRampToValueAtTime(0.0001, now + 0.95);
+      timp.connect(timpG);
+      connectVoice(ctx, timpG, 0, 0.4);
+      timp.start(now + 0.41);
+      timp.stop(now + 1.0);
+
+      markPadPlaying(pad, 1500);
       return;
     }
 
     if (type === 'correct') {
-      [{ freq: 659.25, t: 0, dur: 0.22 }, { freq: 987.77, t: 0.11, dur: 0.45 }].forEach(function (n) {
-        const osc = trackNode(ctx.createOscillator());
-        const g = ctx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(n.freq, now + n.t);
-        g.gain.setValueAtTime(0.001, now + n.t);
-        g.gain.exponentialRampToValueAtTime(0.28, now + n.t + 0.02);
-        g.gain.exponentialRampToValueAtTime(0.001, now + n.t + n.dur);
-        osc.connect(g);
-        g.connect(soundMasterGain);
-        osc.start(now + n.t);
-        osc.stop(now + n.t + n.dur + 0.03);
+      [
+        { freq: 659.25, t: 0.00, dur: 0.35, pan: -0.25 },
+        { freq: 830.61, t: 0.07, dur: 0.40, pan: -0.05 },
+        { freq: 987.77, t: 0.14, dur: 0.50, pan: 0.15 },
+        { freq: 1318.5, t: 0.21, dur: 0.75, pan: 0.3 }
+      ].forEach(function (n) {
+        playBellVoice(ctx, n.freq, now + n.t, n.dur, 0.2, n.pan, 0.42);
       });
-      markPadPlaying(pad, 600);
+      markPadPlaying(pad, 950);
       return;
     }
 
     if (type === 'wrong') {
-      [{ freq: 175, t: 0, dur: 0.2 }, { freq: 135, t: 0.2, dur: 0.42 }].forEach(function (n) {
+      // 综艺趣味 muted trombone "wah-wahh"
+      const notes = [
+        { f1: 155.56, f2: 146.83, t: 0.00, dur: 0.22 },
+        { f1: 130.81, f2: 110.00, t: 0.24, dur: 0.52 }
+      ];
+      notes.forEach(function (n) {
         const osc = trackNode(ctx.createOscillator());
-        const filter = ctx.createBiquadFilter();
-        const g = ctx.createGain();
+        const lp = trackNode(ctx.createBiquadFilter());
+        const g = trackNode(ctx.createGain());
         osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(n.freq, now + n.t);
-        filter.type = 'lowpass';
-        filter.frequency.value = 650;
-        g.gain.setValueAtTime(0.001, now + n.t);
-        g.gain.exponentialRampToValueAtTime(0.22, now + n.t + 0.02);
-        g.gain.exponentialRampToValueAtTime(0.001, now + n.t + n.dur);
-        osc.connect(filter);
-        filter.connect(g);
-        g.connect(soundMasterGain);
+        osc.frequency.setValueAtTime(n.f1, now + n.t);
+        osc.frequency.exponentialRampToValueAtTime(n.f2, now + n.t + n.dur);
+
+        lp.type = 'lowpass';
+        lp.Q.value = 3.2;
+        lp.frequency.setValueAtTime(620, now + n.t);
+        lp.frequency.exponentialRampToValueAtTime(280, now + n.t + n.dur);
+
+        g.gain.setValueAtTime(0.0001, now + n.t);
+        g.gain.exponentialRampToValueAtTime(0.22, now + n.t + 0.03);
+        g.gain.exponentialRampToValueAtTime(0.0001, now + n.t + n.dur);
+
+        osc.connect(lp);
+        lp.connect(g);
+        connectVoice(ctx, g, 0, 0.28);
         osc.start(now + n.t);
-        osc.stop(now + n.t + n.dur + 0.03);
+        osc.stop(now + n.t + n.dur + 0.04);
       });
-      markPadPlaying(pad, 650);
+      markPadPlaying(pad, 800);
       return;
     }
 
     if (type === 'dingdong') {
-      [{ freq: 783.99, t: 0, dur: 0.55 }, { freq: 659.25, t: 0.34, dur: 0.9 }].forEach(function (n) {
-        const osc = trackNode(ctx.createOscillator());
-        const g = ctx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(n.freq, now + n.t);
-        g.gain.setValueAtTime(0.001, now + n.t);
-        g.gain.exponentialRampToValueAtTime(0.28, now + n.t + 0.015);
-        g.gain.exponentialRampToValueAtTime(0.001, now + n.t + n.dur);
-        osc.connect(g);
-        g.connect(soundMasterGain);
-        osc.start(now + n.t);
-        osc.stop(now + n.t + n.dur + 0.03);
-      });
-      markPadPlaying(pad, 1250);
+      // 教堂 / 礼堂管钟提示音
+      const bellPartials = [
+        [1.0, 1.0, 1.0],
+        [2.0, 0.38, 0.62],
+        [2.76, 0.2, 0.4],
+        [4.07, 0.09, 0.24]
+      ];
+      playBellVoice(ctx, 783.99, now, 0.95, 0.25, -0.15, 0.55, bellPartials);
+      playBellVoice(ctx, 659.25, now + 0.36, 1.35, 0.26, 0.15, 0.58, bellPartials);
+      markPadPlaying(pad, 1650);
       return;
     }
 
     if (type === 'countdown321') {
-      const beats = [
-        { label: '3...', freq: 660, t: 0, dur: 0.22 },
-        { label: '2...', freq: 660, t: 0.72, dur: 0.22 },
-        { label: '1...', freq: 660, t: 1.44, dur: 0.22 },
-        { label: 'GO!', freq: 1320, t: 2.16, dur: 0.55 }
-      ];
       const nameEl = pad ? pad.querySelector('.cecp-pad-name') : null;
       if (pad && nameEl && !pad.dataset.origName) {
         pad.dataset.origName = nameEl.textContent;
       }
-      beats.forEach(function (b) {
-        const osc = trackNode(ctx.createOscillator());
-        const g = ctx.createGain();
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(b.freq, now + b.t);
-        g.gain.setValueAtTime(0.001, now + b.t);
-        g.gain.exponentialRampToValueAtTime(0.28, now + b.t + 0.015);
-        g.gain.exponentialRampToValueAtTime(0.001, now + b.t + b.dur);
-        osc.connect(g);
-        g.connect(soundMasterGain);
-        osc.start(now + b.t);
-        osc.stop(now + b.t + b.dur + 0.03);
+
+      [0, 0.72, 1.44].forEach(function (tOffset, idx) {
+        const labels = ['3...', '2...', '1...'];
+        const t = now + tOffset;
+        playBellVoice(ctx, 440, t, 0.28, 0.2, 0, 0.3, [[1, 1, 1], [2, 0.25, 0.4]]);
+        const wood = trackNode(ctx.createOscillator());
+        const wg = trackNode(ctx.createGain());
+        wood.type = 'sine';
+        wood.frequency.setValueAtTime(980, t);
+        wood.frequency.exponentialRampToValueAtTime(580, t + 0.035);
+        wg.gain.setValueAtTime(0.24, t);
+        wg.gain.exponentialRampToValueAtTime(0.0001, t + 0.05);
+        wood.connect(wg);
+        connectVoice(ctx, wg, 0, 0.18);
+        wood.start(t);
+        wood.stop(t + 0.06);
         if (nameEl) {
           activeSfxTimers.push(setTimeout(function () {
-            nameEl.textContent = b.label;
-          }, b.t * 1000));
+            nameEl.textContent = labels[idx];
+          }, tOffset * 1000));
         }
       });
-      if (nameEl && pad.dataset.origName) {
+
+      const goT = now + 2.16;
+      [880, 1108.73, 1318.51].forEach(function (f, idx) {
+        playBellVoice(ctx, f, goT, 0.75, 0.18, (idx - 1) * 0.35, 0.5);
+      });
+      if (nameEl) {
         activeSfxTimers.push(setTimeout(function () {
-          nameEl.textContent = pad.dataset.origName;
-        }, 2800));
+          nameEl.textContent = 'GO!';
+        }, 2160));
+        if (pad.dataset.origName) {
+          activeSfxTimers.push(setTimeout(function () {
+            nameEl.textContent = pad.dataset.origName;
+          }, 2900));
+        }
       }
-      markPadPlaying(pad, 2750);
+      markPadPlaying(pad, 2850);
       return;
     }
 
     if (type === 'wow') {
-      [523.25, 587.33, 659.25, 783.99, 880, 1046.5, 1318.5].forEach(function (freq, idx) {
-        const t = now + idx * 0.055;
-        const osc = trackNode(ctx.createOscillator());
-        const g = ctx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(freq, t);
-        g.gain.setValueAtTime(0.001, t);
-        g.gain.exponentialRampToValueAtTime(0.22, t + 0.015);
-        g.gain.exponentialRampToValueAtTime(0.001, t + 0.45);
-        osc.connect(g);
-        g.connect(soundMasterGain);
-        osc.start(t);
-        osc.stop(t + 0.48);
+      const arp = [523.25, 587.33, 659.25, 783.99, 880, 1046.5, 1318.5, 1567.98];
+      arp.forEach(function (freq, idx) {
+        const pan = -0.7 + (idx / (arp.length - 1)) * 1.4;
+        playBellVoice(ctx, freq, now + idx * 0.055, 0.75, 0.16, pan, 0.55);
       });
       launchConfetti();
-      markPadPlaying(pad, 950);
+      markPadPlaying(pad, 1200);
     }
   }
 
