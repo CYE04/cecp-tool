@@ -44,7 +44,7 @@ html, body {
   }
 }
 
-/* 隐藏原 Easy Cat Timer 的 Logo 和外链导航栏，保留 100% 原版计时器居中 */
+/* 隐藏原 Easy Cat Timer 的 Logo、外链导航栏和设置页版权/外链图标 */
 #logo,
 #navigationBar,
 #topMenu,
@@ -55,18 +55,69 @@ html, body {
   display: none !important;
 }
 
+/* 修复 Easy-Cat 在视口内的居中与截断 */
 #main {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  top: 0 !important;
+  left: 0 !important;
+  margin: 0 !important;
+  padding-top: 56px;
+  box-sizing: border-box;
   justify-content: center !important;
   align-items: center !important;
   z-index: 1;
 }
 
+#main.cecp-hidden {
+  display: none !important;
+}
+
 #timerApp {
-  position: relative;
+  position: relative !important;
+  top: 0 !important;
+  left: 0 !important;
   z-index: 2;
 }
 
-/* 顶部极简模式切换（倒计时 / 年度点阵） */
+/* 左上角返回官网胶囊（仅在 iframe 嵌入时显示） */
+.cecp-back-home {
+  position: fixed;
+  top: 18px;
+  left: 18px;
+  z-index: 9999;
+  display: none;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 13px;
+  border-radius: 11px;
+  background: rgba(20, 20, 22, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #a1a1aa;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, "PingFang SC", sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  box-sizing: border-box;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.cecp-back-home.show {
+  display: inline-flex;
+}
+
+.cecp-back-home:hover {
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.24);
+}
+
+/* 顶部极简模式切换 */
 .cecp-switcher {
   position: fixed;
   top: 18px;
@@ -75,23 +126,34 @@ html, body {
   z-index: 9999;
   display: flex;
   gap: 4px;
+  max-width: calc(100vw - 24px);
+  overflow-x: auto;
+  scrollbar-width: none;
   background: rgba(20, 20, 22, 0.85);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.1);
   padding: 4px;
   border-radius: 12px;
+  box-sizing: border-box;
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, "PingFang SC", sans-serif;
+}
+
+.cecp-switcher::-webkit-scrollbar {
+  display: none;
 }
 
 .cecp-switch-btn {
   border: none;
   background: transparent;
   color: #8e8e93;
-  padding: 6px 14px;
+  padding: 6px 13px;
   border-radius: 8px;
+  font-family: inherit;
   font-size: 13px;
   font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
   cursor: pointer;
   transition: all 0.15s ease;
 }
@@ -105,14 +167,40 @@ html, body {
   color: #ffffff;
 }
 
-/* 年度点阵进度面板 */
-#cecpYearPanel {
+@media (max-width: 640px) {
+  .cecp-back-home {
+    top: 14px;
+    left: 12px;
+    padding: 0 10px;
+    height: 34px;
+    font-size: 12px;
+  }
+
+  .cecp-back-home .cecp-back-label {
+    display: none;
+  }
+
+  .cecp-switcher {
+    top: 14px;
+    padding: 3px;
+  }
+
+  .cecp-switch-btn {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+}
+
+/* 统一哑光暗黑面板样式 */
+.cecp-panel {
   position: fixed;
-  top: 50%;
+  top: calc(50% + 26px);
   left: 50%;
-  transform: translate(-50%, -47%);
+  transform: translate(-50%, -50%);
   z-index: 9998;
-  width: min(440px, calc(100vw - 32px));
+  max-height: calc(100vh - 92px);
+  overflow-y: auto;
+  box-sizing: border-box;
   background: rgba(20, 20, 22, 0.92);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
@@ -125,15 +213,45 @@ html, body {
   display: none;
 }
 
-#cecpYearPanel.show {
+.cecp-panel *,
+.cecp-panel *::before,
+.cecp-panel *::after {
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+.cecp-panel.show {
   display: block;
 }
 
+.cecp-panel::-webkit-scrollbar {
+  width: 6px;
+}
+
+.cecp-panel::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+}
+
+#cecpYearPanel {
+  width: min(440px, calc(100vw - 32px));
+}
+
+#cecpDrawPanel {
+  width: min(580px, calc(100vw - 32px));
+}
+
+#cecpScorePanel {
+  width: min(720px, calc(100vw - 32px));
+}
+
+/* 年度点阵进度 */
 .cecp-matrix-head {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   margin-bottom: 16px;
+  gap: 8px;
 }
 
 .cecp-matrix-title {
@@ -194,4 +312,476 @@ html, body {
   font-size: 12px;
   color: #8e8e93;
   margin-top: 2px;
+}
+
+/* 通用面板头部、按钮、输入框 */
+.cecp-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.cecp-panel-title {
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.cecp-sub-seg {
+  display: inline-flex;
+  background: #1c1c1f;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 3px;
+  gap: 2px;
+}
+
+.cecp-sub-btn {
+  border: none;
+  background: transparent;
+  color: #8e8e93;
+  padding: 5px 12px;
+  border-radius: 7px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.cecp-sub-btn.active {
+  background: #2f81f7;
+  color: #ffffff;
+}
+
+.cecp-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  border-radius: 9px;
+  padding: 7px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #27272a;
+  color: #f4f4f5;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+}
+
+.cecp-btn:hover {
+  background: #303036;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.cecp-btn:active {
+  transform: scale(0.97);
+}
+
+.cecp-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.cecp-btn-primary {
+  background: #2f81f7;
+  border-color: #2f81f7;
+  color: #ffffff;
+}
+
+.cecp-btn-primary:hover {
+  background: #3b89f8;
+  border-color: #3b89f8;
+}
+
+.cecp-btn-gold {
+  background: rgba(226, 176, 94, 0.16);
+  border-color: rgba(226, 176, 94, 0.45);
+  color: #e2b05e;
+}
+
+.cecp-btn-gold:hover {
+  background: rgba(226, 176, 94, 0.24);
+  border-color: #e2b05e;
+}
+
+.cecp-btn-sm {
+  padding: 4px 10px;
+  font-size: 12px;
+  border-radius: 7px;
+}
+
+/* 抽签 & 分组面板 */
+.cecp-field-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.cecp-muted {
+  font-size: 12.5px;
+  color: #8e8e93;
+}
+
+.cecp-textarea {
+  width: 100%;
+  min-height: 92px;
+  max-height: 150px;
+  resize: vertical;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  background: #1c1c1f;
+  color: #f4f4f5;
+  font-size: 13.5px;
+  line-height: 1.5;
+  outline: none;
+  margin-bottom: 14px;
+}
+
+.cecp-textarea:focus {
+  border-color: #2f81f7;
+}
+
+.cecp-controls-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.cecp-control-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: 13px;
+  color: #d4d4d8;
+}
+
+.cecp-num-input {
+  width: 58px;
+  padding: 5px 8px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #1c1c1f;
+  color: #f4f4f5;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+  outline: none;
+}
+
+.cecp-num-input:focus {
+  border-color: #2f81f7;
+}
+
+.cecp-check-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #d4d4d8;
+  cursor: pointer;
+  user-select: none;
+}
+
+.cecp-check-label input {
+  accent-color: #2f81f7;
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+}
+
+.cecp-result-stage {
+  background: #18181b;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 18px 14px;
+  min-height: 92px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  text-align: center;
+}
+
+.cecp-winner-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+.cecp-winner-pill {
+  padding: 8px 18px;
+  border-radius: 999px;
+  background: rgba(226, 176, 94, 0.16);
+  border: 1px solid rgba(226, 176, 94, 0.55);
+  color: #f5cd79;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.cecp-winner-pill.rolling {
+  background: rgba(47, 129, 247, 0.16);
+  border-color: rgba(47, 129, 247, 0.5);
+  color: #93c5fd;
+}
+
+.cecp-winner-pill.pop {
+  animation: cecpPop 0.28s cubic-bezier(0.22, 1.2, 0.36, 1);
+}
+
+@keyframes cecpPop {
+  0% { transform: scale(0.84); opacity: 0.5; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.cecp-history-wrap {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.cecp-history-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.cecp-history-pill {
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: #27272a;
+  color: #d4d4d8;
+  font-size: 12px;
+}
+
+.cecp-group-pills {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.cecp-group-pill {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #1c1c1f;
+  color: #a1a1aa;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.cecp-group-pill.active {
+  background: #2f81f7;
+  border-color: #2f81f7;
+  color: #ffffff;
+}
+
+.cecp-groups-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-top: 12px;
+}
+
+@media (max-width: 520px) {
+  .cecp-groups-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.cecp-group-card {
+  background: #18181b;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.cecp-group-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #e2b05e;
+}
+
+.cecp-group-members {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.cecp-member-chip {
+  padding: 3px 9px;
+  border-radius: 7px;
+  background: #27272a;
+  color: #f4f4f5;
+  font-size: 12.5px;
+}
+
+/* 团契游戏计分板 */
+.cecp-score-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.cecp-score-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 12px;
+}
+
+.cecp-team-card {
+  position: relative;
+  background: #18181b;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 14px;
+  padding: 14px 14px 16px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cecp-team-card.leading {
+  border-color: rgba(226, 176, 94, 0.65);
+  box-shadow: 0 0 22px rgba(226, 176, 94, 0.12);
+}
+
+.cecp-team-stripe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+}
+
+.cecp-team-head {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.cecp-team-crown {
+  font-size: 15px;
+  min-width: 20px;
+  text-align: center;
+}
+
+.cecp-team-name {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  padding: 3px 6px;
+  color: #f4f4f5;
+  font-size: 15px;
+  font-weight: 700;
+  text-align: center;
+  outline: none;
+}
+
+.cecp-team-name:hover,
+.cecp-team-name:focus {
+  background: #27272a;
+  border-color: rgba(255, 255, 255, 0.16);
+}
+
+.cecp-team-del {
+  border: none;
+  background: transparent;
+  color: #71717a;
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+
+.cecp-team-del:hover {
+  background: rgba(239, 68, 68, 0.16);
+  color: #f87171;
+}
+
+.cecp-team-score {
+  font-size: 48px;
+  font-weight: 800;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  margin: 4px 0;
+}
+
+.cecp-team-btns {
+  display: flex;
+  gap: 6px;
+  width: 100%;
+}
+
+.cecp-score-btn {
+  flex: 1;
+  height: 36px;
+  border-radius: 9px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #27272a;
+  color: #f4f4f5;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.cecp-score-btn:hover {
+  background: #323238;
+}
+
+.cecp-score-btn:active {
+  transform: scale(0.95);
+}
+
+.cecp-score-btn.plus {
+  background: rgba(47, 129, 247, 0.18);
+  border-color: rgba(47, 129, 247, 0.45);
+  color: #93c5fd;
+}
+
+.cecp-score-btn.plus:hover {
+  background: rgba(47, 129, 247, 0.28);
+}
+
+.cecp-score-btn.plus5 {
+  background: rgba(226, 176, 94, 0.16);
+  border-color: rgba(226, 176, 94, 0.45);
+  color: #e2b05e;
+}
+
+.cecp-score-btn.plus5:hover {
+  background: rgba(226, 176, 94, 0.26);
 }

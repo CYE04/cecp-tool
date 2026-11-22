@@ -543,20 +543,113 @@
 
         </nav>
 
+        <!-- 左上角返回官网（仅在 iframe 嵌入时自动显示） -->
+        <a id="cecpBackHome" class="cecp-back-home" href="https://cecp.it" target="_top">← <span class="cecp-back-label">返回官网</span></a>
+
         <!-- 顶部模式切换 -->
         <div class="cecp-switcher" role="tablist">
             <button type="button" class="cecp-switch-btn active" data-cecp-tab="timer">🐱 倒计时</button>
             <button type="button" class="cecp-switch-btn" data-cecp-tab="year">⏳ 年度进度</button>
+            <button type="button" class="cecp-switch-btn" data-cecp-tab="draw">🎲 抽签分组</button>
+            <button type="button" class="cecp-switch-btn" data-cecp-tab="score">🏆 计分板</button>
         </div>
 
         <!-- 年度点阵进度面板 -->
-        <section id="cecpYearPanel" aria-label="年度进度">
+        <section id="cecpYearPanel" class="cecp-panel" aria-label="年度进度">
             <div class="cecp-matrix-head">
-                <div class="cecp-matrix-title" id="cecpMatrixTitle">Week #47  2026</div>
+                <div class="cecp-matrix-title" id="cecpMatrixTitle">2026 年 · 第 47 周</div>
                 <div class="cecp-matrix-meta" id="cecpMatrixMeta">326/365 天 (89%)</div>
             </div>
             <div class="cecp-dot-grid" id="cecpDotGrid"></div>
             <div class="cecp-mini-stats" id="cecpMiniStats"></div>
+        </section>
+
+        <!-- 随机抽签 & 一键分组面板 -->
+        <section id="cecpDrawPanel" class="cecp-panel" aria-label="抽签与分组">
+            <div class="cecp-panel-head">
+                <div class="cecp-panel-title">🎲 活动抽签 &amp; 随机分组</div>
+                <div class="cecp-sub-seg" role="tablist">
+                    <button type="button" class="cecp-sub-btn active" data-draw-mode="draw">随机抽签</button>
+                    <button type="button" class="cecp-sub-btn" data-draw-mode="group">一键分组</button>
+                </div>
+            </div>
+
+            <div class="cecp-field-bar">
+                <span class="cecp-muted">参与名单（换行、逗号或顿号分隔） · <strong id="cecpNamesCount" style="color:#f4f4f5;">共 0 人</strong></span>
+                <div style="display:flex;gap:6px;">
+                    <button type="button" class="cecp-btn cecp-btn-sm" id="cecpFillNumbersBtn">填入 1~20 号</button>
+                    <button type="button" class="cecp-btn cecp-btn-sm" id="cecpClearNamesBtn">清空</button>
+                </div>
+            </div>
+            <textarea id="cecpNamesInput" class="cecp-textarea" placeholder="每行输入一个名字或编号，例如：&#10;张三&#10;李四&#10;王五"></textarea>
+
+            <!-- 子模式 1：随机抽签 -->
+            <div id="cecpDrawModeBox">
+                <div class="cecp-controls-row">
+                    <div class="cecp-control-group">
+                        <span>每次抽取</span>
+                        <input type="number" id="cecpDrawPickCount" class="cecp-num-input" min="1" max="20" value="1" />
+                        <span>人</span>
+                        <label class="cecp-check-label" style="margin-left:6px;">
+                            <input type="checkbox" id="cecpDrawNoRepeat" checked />
+                            <span>不重复抽取</span>
+                        </label>
+                        <span class="cecp-muted" id="cecpDrawRemainInfo"></span>
+                    </div>
+                    <div style="display:flex;gap:6px;">
+                        <button type="button" class="cecp-btn cecp-btn-sm" id="cecpDrawResetPoolBtn">重置抽签池</button>
+                        <button type="button" class="cecp-btn cecp-btn-primary" id="cecpDrawStartBtn">开始抽签</button>
+                    </div>
+                </div>
+
+                <div class="cecp-result-stage" id="cecpDrawResultBox">
+                    <span class="cecp-muted">点击「开始抽签」抽取幸运儿</span>
+                </div>
+
+                <div class="cecp-history-wrap" id="cecpDrawHistoryWrap" style="display:none;">
+                    <div class="cecp-muted">已抽中记录</div>
+                    <div class="cecp-history-pills" id="cecpDrawHistoryPills"></div>
+                </div>
+            </div>
+
+            <!-- 子模式 2：一键分组 -->
+            <div id="cecpGroupModeBox" style="display:none;">
+                <div class="cecp-controls-row">
+                    <div class="cecp-control-group">
+                        <span>分成</span>
+                        <div class="cecp-group-pills">
+                            <button type="button" class="cecp-group-pill active" data-groups="2">2 组</button>
+                            <button type="button" class="cecp-group-pill" data-groups="3">3 组</button>
+                            <button type="button" class="cecp-group-pill" data-groups="4">4 组</button>
+                            <button type="button" class="cecp-group-pill" data-groups="5">5 组</button>
+                            <button type="button" class="cecp-group-pill" data-groups="6">6 组</button>
+                        </div>
+                        <input type="number" id="cecpGroupCustomCount" class="cecp-num-input" min="2" max="12" value="2" title="自定义组数" />
+                        <span>组</span>
+                    </div>
+                    <div style="display:flex;gap:6px;">
+                        <button type="button" class="cecp-btn cecp-btn-sm" id="cecpGroupCopyBtn">复制分组结果</button>
+                        <button type="button" class="cecp-btn cecp-btn-primary" id="cecpGroupStartBtn">随机分组</button>
+                    </div>
+                </div>
+
+                <div class="cecp-groups-grid" id="cecpGroupsGrid"></div>
+            </div>
+        </section>
+
+        <!-- 团契游戏计分板面板 -->
+        <section id="cecpScorePanel" class="cecp-panel" aria-label="团契游戏计分板">
+            <div class="cecp-panel-head">
+                <div class="cecp-panel-title">🏆 团契游戏计分板</div>
+                <div class="cecp-score-actions">
+                    <button type="button" class="cecp-btn cecp-btn-sm" id="cecpScoreMuteBtn">🔊 音效</button>
+                    <button type="button" class="cecp-btn cecp-btn-sm" id="cecpAddTeamBtn">+ 添加队伍</button>
+                    <button type="button" class="cecp-btn cecp-btn-sm" id="cecpResetScoreBtn">全部清零</button>
+                    <button type="button" class="cecp-btn cecp-btn-sm cecp-btn-gold" id="cecpFullscreenBtn">⛶ 全屏投影</button>
+                </div>
+            </div>
+
+            <div class="cecp-score-grid" id="cecpScoreGrid"></div>
         </section>
 
     </body>
@@ -581,80 +674,6 @@
     <script src="./js/timer/ui/uis.js"></script>
     <script src="./js/timer/timerApp.js"></script>
     <script src="./js/webManager.js"></script>
-    <script>
-      (function () {
-        const btns = document.querySelectorAll('.cecp-switch-btn');
-        const mainEl = document.getElementById('main');
-        const yearPanel = document.getElementById('cecpYearPanel');
-
-        function getISOWeek(date) {
-          const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
-          const dayNum = d.getUTCDay() || 7;
-          d.setUTCDate(d.getUTCDate() + 4 - dayNum);
-          const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
-          return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
-        }
-
-        function renderYearMatrix() {
-          const now = new Date();
-          const year = now.getFullYear();
-          const startOfYear = new Date(year, 0, 1);
-          const endOfYear = new Date(year + 1, 0, 1);
-          const totalDays = Math.round((endOfYear - startOfYear) / 86400000);
-          const todayIdx = Math.floor((new Date(year, now.getMonth(), now.getDate()) - startOfYear) / 86400000) + 1;
-          const yearPct = Math.round((todayIdx / totalDays) * 100);
-          const weekNum = getISOWeek(now);
-
-          document.getElementById('cecpMatrixTitle').textContent = `${year} 年 · 第 ${weekNum} 周`;
-          document.getElementById('cecpMatrixMeta').textContent = `${todayIdx}/${totalDays} 天 (${yearPct}%)`;
-
-          const dots = [];
-          for (let i = 1; i <= totalDays; i++) {
-            const d = new Date(year, 0, i);
-            const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-            let cls = 'cecp-day-dot';
-            if (i < todayIdx) cls += ' past';
-            else if (i === todayIdx) cls += ' today';
-            dots.push(`<div class="${cls}" title="${dateStr}"></div>`);
-          }
-          document.getElementById('cecpDotGrid').innerHTML = dots.join('');
-
-          const startOfMonth = new Date(year, now.getMonth(), 1);
-          const endOfMonth = new Date(year, now.getMonth() + 1, 1);
-          const monthPct = ((now - startOfMonth) / (endOfMonth - startOfMonth)) * 100;
-
-          const dayOfWeek = (now.getDay() + 6) % 7;
-          const startOfWeek = new Date(year, now.getMonth(), now.getDate() - dayOfWeek);
-          const weekPct = ((now - startOfWeek) / (7 * 86400000)) * 100;
-
-          const startOfDay = new Date(year, now.getMonth(), now.getDate());
-          const dayPct = ((now - startOfDay) / 86400000) * 100;
-
-          document.getElementById('cecpMiniStats').innerHTML = [
-            { k: '本月已过', v: monthPct.toFixed(1) + '%' },
-            { k: '本周已过', v: weekPct.toFixed(1) + '%' },
-            { k: '今日已过', v: dayPct.toFixed(1) + '%' }
-          ].map(s => `
-            <div class="cecp-mini-stat">
-              <div class="cecp-mini-val">${s.v}</div>
-              <div class="cecp-mini-key">${s.k}</div>
-            </div>
-          `).join('');
-        }
-
-        btns.forEach(btn => {
-          btn.addEventListener('click', () => {
-            btns.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            const isYear = btn.dataset.cecpTab === 'year';
-            mainEl.style.display = isYear ? 'none' : 'flex';
-            yearPanel.classList.toggle('show', isYear);
-            if (isYear) renderYearMatrix();
-          });
-        });
-
-        renderYearMatrix();
-      })();
-    </script>
+    <script src="./js/cecp-tools.js"></script>
 
 </html>

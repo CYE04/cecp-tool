@@ -1,0 +1,66 @@
+/* Halo 页面全屏接管样式（仿照 musictool.css） */
+#header-menu,
+aside,
+[class*="sidebar"],
+[class*="side-bar"],
+[id*="sidebar"],
+[id*="side-bar"],
+footer,
+.mt-10,
+.nt-article-head,
+.nt-comment-block,
+#btn-scroll-to-top {
+  display: none !important;
+  width: 0 !important;
+  min-width: 0 !important;
+  max-width: 0 !important;
+  overflow: hidden !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+html,
+body {
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  background: #141416 !important;
+}
+
+section.mx-auto,
+.nt-layout-grid {
+  max-width: 100% !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  gap: 0 !important;
+  grid-template-columns: 1fr !important;
+}
+
+.nt-layout-grid > div {
+  z-index: auto !important;
+}
+
+.nt-quiet-card,
+.nt-article-shell {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
+}
+
+#cecp-tool-frame,
+iframe[src*="cecp-tool"] {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  min-height: 100vh !important;
+  border: none !important;
+  border-radius: 0 !important;
+  margin: 0 !important;
+  z-index: 99999 !important;
+  display: block !important;
+  background: #141416 !important;
+}
