@@ -15,9 +15,11 @@
       --accent: #2f81f7;
       --accent-hover: #3b89f8;
       --accent-glow: rgba(47, 129, 247, 0.55);
-      --ring-track: rgba(255, 255, 255, 0.08);
+      --track: rgba(255, 255, 255, 0.08);
       --dot-past: #3f3f46;
       --dot-future: #1f1f23;
+      --cat-body: #27272a;
+      --cat-stroke: #52525b;
     }
 
     [data-theme="light"] {
@@ -30,9 +32,11 @@
       --accent: #2563eb;
       --accent-hover: #1d4ed8;
       --accent-glow: rgba(37, 99, 235, 0.4);
-      --ring-track: rgba(0, 0, 0, 0.07);
+      --track: rgba(0, 0, 0, 0.07);
       --dot-past: #a1a1aa;
       --dot-future: #e4e4e7;
+      --cat-body: #e4e4e7;
+      --cat-stroke: #a1a1aa;
     }
 
     * {
@@ -49,7 +53,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 16px;
+      padding: 14px 16px;
       -webkit-font-smoothing: antialiased;
       transition: background 0.2s, color 0.2s;
     }
@@ -73,7 +77,7 @@
     .brand {
       display: flex;
       align-items: center;
-      gap: 9px;
+      gap: 8px;
     }
 
     .brand-logo {
@@ -163,7 +167,7 @@
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: 20px;
-      padding: 22px;
+      padding: 20px 22px 22px;
     }
 
     .view {
@@ -180,12 +184,12 @@
       to { opacity: 1; }
     }
 
-    /* ---------- 专注视图 ---------- */
+    /* ---------- Easy-Cat 风格极简倒计时 ---------- */
     .focus-top {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 18px;
+      margin-bottom: 10px;
     }
 
     .status-text {
@@ -214,129 +218,182 @@
       font-variant-numeric: tabular-nums;
     }
 
-    .mode-bar {
+    /* 极简趴着的小猫（Easy Cat 风格） */
+    .cat-wrap {
       display: flex;
-      background: var(--card-2);
-      border-radius: 10px;
-      padding: 3px;
-      gap: 3px;
-      margin-bottom: 20px;
-    }
-
-    .mode-btn {
-      flex: 1;
-      border: none;
-      background: transparent;
-      color: var(--text-muted);
-      padding: 6px 8px;
-      border-radius: 7px;
-      font-size: 0.78rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.15s;
-    }
-
-    .mode-btn.active {
-      background: var(--card);
-      color: var(--text);
-      font-weight: 600;
-    }
-
-    .custom-row {
-      display: none;
-      justify-content: center;
+      flex-direction: column;
       align-items: center;
-      gap: 8px;
-      margin-bottom: 16px;
+      margin: 4px 0 6px;
     }
 
-    .custom-row.show {
-      display: flex;
+    .cat-svg {
+      width: 120px;
+      height: 68px;
+      overflow: visible;
     }
 
-    .custom-input {
-      width: 72px;
-      padding: 6px 8px;
-      border-radius: 8px;
-      border: 1px solid var(--border);
-      background: var(--card-2);
-      color: var(--text);
-      font-size: 0.85rem;
-      text-align: center;
-      outline: none;
+    .cat-ear-l, .cat-ear-r {
+      transition: transform 0.25s ease;
+      transform-origin: center;
     }
 
-    .custom-input:focus {
-      border-color: var(--accent);
+    .cat-running .cat-ear-l {
+      animation: earTwitch 3.5s ease-in-out infinite;
     }
 
-    .ring-box {
-      position: relative;
-      width: 210px;
-      height: 210px;
-      margin: 0 auto 20px;
-      display: grid;
-      place-items: center;
+    .cat-eye {
+      transform-origin: center;
+      animation: catBlink 4.2s infinite;
     }
 
-    .ring-box svg {
-      position: absolute;
-      inset: 0;
-      transform: rotate(-90deg);
+    .cat-tail {
+      transform-origin: 90px 52px;
+      animation: catTail 3s ease-in-out infinite;
     }
 
-    .ring-box circle {
-      fill: none;
-      stroke-width: 4;
+    .cat-running .cat-tail {
+      animation: catTail 1.4s ease-in-out infinite;
     }
 
-    .ring-track {
-      stroke: var(--ring-track);
+    .cat-zzz {
+      opacity: 0;
+      font-size: 11px;
+      font-weight: 700;
+      fill: var(--accent);
     }
 
-    .ring-prog {
-      stroke: var(--accent);
-      stroke-linecap: round;
-      transition: stroke-dashoffset 0.3s linear;
+    .cat-paused .cat-zzz {
+      animation: floatZ 2.2s ease-in-out infinite;
     }
 
-    .time-main {
-      font-size: 3.1rem;
+    .cat-heart {
+      opacity: 0;
+      fill: #f43f5e;
+    }
+
+    .cat-done .cat-heart {
+      animation: popHeart 1.3s ease-out infinite;
+    }
+
+    @keyframes earTwitch {
+      0%, 90%, 100% { transform: rotate(0deg); }
+      94% { transform: rotate(-6deg); }
+      97% { transform: rotate(3deg); }
+    }
+
+    @keyframes catBlink {
+      0%, 93%, 100% { transform: scaleY(1); }
+      96% { transform: scaleY(0.1); }
+    }
+
+    @keyframes catTail {
+      0%, 100% { transform: rotate(-5deg); }
+      50% { transform: rotate(9deg); }
+    }
+
+    @keyframes floatZ {
+      0% { opacity: 0; transform: translate(0, 4px); }
+      50% { opacity: 0.9; }
+      100% { opacity: 0; transform: translate(6px, -10px); }
+    }
+
+    @keyframes popHeart {
+      0% { opacity: 0; transform: translateY(4px) scale(0.7); }
+      45% { opacity: 1; transform: translateY(-4px) scale(1.1); }
+      100% { opacity: 0; transform: translateY(-12px) scale(0.9); }
+    }
+
+    /* 超大数字时钟 */
+    .big-clock {
+      font-size: 4.1rem;
       font-weight: 700;
       font-variant-numeric: tabular-nums;
       letter-spacing: -0.02em;
       text-align: center;
-      line-height: 1;
+      line-height: 1.05;
+      margin: 4px 0 12px;
     }
 
-    .time-sub {
-      font-size: 0.78rem;
-      color: var(--text-muted);
-      text-align: center;
-      margin-top: 6px;
-    }
-
-    .task-input {
+    /* 极简进度条 */
+    .slim-track {
       width: 100%;
-      padding: 9px 12px;
-      border-radius: 10px;
+      height: 4px;
+      border-radius: 999px;
+      background: var(--track);
+      overflow: hidden;
+      margin-bottom: 18px;
+    }
+
+    .slim-fill {
+      height: 100%;
+      width: 100%;
+      background: var(--accent);
+      border-radius: 999px;
+      transition: width 0.3s linear;
+    }
+
+    /* 直接输入分钟 + 快捷预设 */
+    .preset-bar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .preset-btn {
       border: 1px solid var(--border);
       background: var(--card-2);
+      color: var(--text-muted);
+      padding: 5px 11px;
+      border-radius: 8px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .preset-btn:hover {
       color: var(--text);
-      font-size: 0.85rem;
-      font-family: inherit;
+      border-color: var(--text-muted);
+    }
+
+    .preset-btn.active {
+      background: rgba(47, 129, 247, 0.14);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .direct-input-wrap {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: var(--card-2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 3px 8px;
+    }
+
+    .direct-input-wrap:focus-within {
+      border-color: var(--accent);
+    }
+
+    .direct-input {
+      width: 40px;
+      border: none;
+      background: transparent;
+      color: var(--text);
+      font-size: 0.82rem;
+      font-weight: 600;
       text-align: center;
       outline: none;
-      margin-bottom: 16px;
-      transition: border-color 0.15s;
+      font-variant-numeric: tabular-nums;
     }
 
-    .task-input::placeholder {
+    .direct-unit {
+      font-size: 0.75rem;
       color: var(--text-muted);
-    }
-
-    .task-input:focus {
-      border-color: var(--accent);
     }
 
     .btn-row {
@@ -346,7 +403,7 @@
     }
 
     .btn {
-      padding: 9px 22px;
+      padding: 10px 24px;
       border-radius: 10px;
       border: none;
       font-size: 0.88rem;
@@ -358,7 +415,7 @@
     .btn-primary {
       background: var(--accent);
       color: #fff;
-      min-width: 110px;
+      min-width: 116px;
     }
 
     .btn-primary:hover {
@@ -375,7 +432,7 @@
       border-color: var(--text-muted);
     }
 
-    /* ---------- 点阵年度进度（1:1 极简风格） ---------- */
+    /* ---------- 点阵年度进度 ---------- */
     .matrix-head {
       display: flex;
       align-items: baseline;
@@ -442,6 +499,29 @@
       color: var(--text-muted);
       margin-top: 2px;
     }
+
+    /* 底部教会 Logo */
+    .church-footer {
+      display: flex;
+      justify-content: center;
+      padding-top: 2px;
+    }
+
+    .church-badge {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 6px 14px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
+    }
+
+    .church-badge img {
+      height: 36px;
+      width: auto;
+      display: block;
+    }
   </style>
 </head>
 <body>
@@ -449,17 +529,16 @@
     <header class="topbar">
       <div class="brand">
         <div class="brand-logo" title="CECP">
-          <!-- 内联 SVG 确保永远不会加载失败 -->
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="154 0 810 810" preserveAspectRatio="xMidYMid meet">
             <path fill="#26310b" fill-rule="evenodd" d="M 808 655 L 765 655 L 731 659 L 694 672 L 664 687 L 644 693 L 677 701 L 710 701 L 726 698 L 746 692 L 768 682 L 800 662 Z M 755 672 L 749 677 L 728 683 L 699 689 L 675 690 L 677 687 L 712 676 L 739 671 Z M 316 655 L 324 664 L 350 681 L 371 691 L 387 696 L 420 701 L 435 701 L 476 692 L 450 682 L 426 670 L 392 659 L 356 655 Z M 370 671 L 378 670 L 444 685 L 447 688 L 423 687 L 398 683 L 372 675 Z M 555 532 L 545 536 L 538 543 L 529 562 L 529 656 L 593 656 L 592 557 L 585 544 L 578 537 L 567 532 Z M 529 491 L 531 498 L 540 508 L 556 516 L 550 526 L 570 526 L 564 516 L 580 508 L 591 493 L 591 491 L 574 491 L 569 502 L 559 509 L 549 500 L 546 491 Z M 324 470 L 327 512 L 340 550 L 354 576 L 393 612 L 385 584 L 379 551 L 374 538 L 353 502 L 331 475 Z M 347 516 L 352 520 L 367 552 L 376 576 L 378 590 L 372 582 L 354 546 L 346 522 Z M 799 465 L 766 497 L 752 522 L 739 562 L 736 588 L 731 608 L 742 601 L 757 587 L 769 570 L 784 542 L 796 499 Z M 781 506 L 782 510 L 770 541 L 755 571 L 744 586 L 743 582 L 754 555 L 774 514 Z M 562 443 L 584 464 L 594 487 L 595 508 L 602 508 L 600 489 L 593 470 L 580 454 Z M 559 442 L 545 450 L 530 465 L 521 485 L 518 508 L 525 508 L 526 488 L 534 467 L 539 460 Z M 567 441 L 581 451 L 596 467 L 607 487 L 612 508 L 622 508 L 617 491 L 605 471 L 590 455 Z M 553 441 L 531 454 L 520 465 L 507 483 L 497 508 L 508 507 L 515 482 L 522 470 L 538 452 Z M 567 437 L 585 446 L 603 459 L 623 483 L 633 507 L 645 508 L 634 487 L 613 463 L 589 446 Z M 553 437 L 529 447 L 509 461 L 488 484 L 475 508 L 487 508 L 489 499 L 501 477 L 519 457 L 535 446 Z M 379 489 L 381 495 L 388 502 L 392 502 L 406 494 L 410 496 L 410 617 L 412 623 L 423 626 L 425 624 L 425 488 L 557 418 L 563 417 L 696 486 L 700 627 L 711 627 L 713 624 L 712 495 L 715 494 L 733 504 L 741 490 L 607 420 L 565 400 L 555 400 Z M 798 324 L 798 357 L 806 402 L 830 458 L 833 462 L 839 464 L 844 424 L 844 402 L 836 373 L 824 350 L 814 338 Z M 817 370 L 822 376 L 832 407 L 836 425 L 836 434 L 833 432 L 824 409 L 815 375 Z M 314 303 L 307 309 L 294 329 L 286 346 L 279 368 L 275 390 L 275 421 L 279 450 L 282 450 L 310 394 L 315 377 L 318 359 L 318 328 Z M 302 352 L 303 362 L 295 390 L 293 404 L 290 413 L 286 418 L 285 405 L 296 362 Z M 902 263 L 899 265 L 892 281 L 879 329 L 874 369 L 876 405 L 871 423 L 878 418 L 890 399 L 905 369 L 913 336 L 913 311 L 908 281 Z M 897 322 L 898 335 L 896 348 L 886 382 L 881 392 L 881 381 L 894 324 Z M 720 206 L 721 213 L 734 236 L 755 263 L 784 290 L 832 321 L 833 316 L 809 274 L 791 249 L 765 226 L 739 212 Z M 758 241 L 760 240 L 776 254 L 810 290 L 808 291 L 778 266 Z M 831 160 L 830 169 L 836 235 L 842 259 L 858 305 L 859 326 L 861 328 L 864 326 L 867 317 L 875 271 L 873 236 L 868 214 L 860 195 L 846 172 L 835 161 Z M 849 212 L 852 215 L 858 234 L 862 254 L 864 280 L 861 290 L 849 227 Z M 551 155 L 551 216 L 549 218 L 488 218 L 488 237 L 551 238 L 551 366 L 570 366 L 571 238 L 632 237 L 631 217 L 571 218 L 571 155 Z M 460 96 L 448 106 L 446 117 L 448 122 L 454 128 L 467 129 L 474 123 L 478 115 L 478 107 L 472 98 L 468 96 Z M 395 94 L 386 94 L 372 99 L 354 112 L 338 128 L 324 155 L 313 197 L 318 194 L 330 179 L 352 163 L 372 143 L 393 109 Z M 370 118 L 371 123 L 365 133 L 332 165 L 332 161 L 348 138 L 363 122 Z M 736 93 L 734 93 L 736 105 L 751 142 L 773 177 L 807 215 L 812 227 L 811 233 L 751 172 L 727 140 L 705 118 L 680 105 L 655 97 L 629 92 L 637 108 L 647 121 L 678 150 L 699 164 L 753 188 L 785 216 L 798 230 L 814 253 L 831 287 L 840 310 L 843 329 L 851 348 L 854 371 L 855 416 L 852 444 L 838 491 L 824 523 L 808 550 L 779 586 L 763 602 L 738 622 L 679 656 L 625 677 L 565 692 L 552 691 L 516 682 L 455 661 L 404 634 L 359 603 L 334 578 L 313 549 L 300 525 L 277 471 L 269 444 L 265 419 L 264 375 L 266 353 L 279 300 L 285 291 L 289 278 L 295 271 L 304 266 L 321 262 L 323 271 L 329 278 L 339 283 L 349 284 L 361 278 L 368 268 L 370 262 L 369 247 L 364 239 L 351 232 L 339 232 L 332 235 L 327 240 L 321 256 L 309 257 L 298 261 L 300 254 L 315 229 L 333 212 L 371 197 L 373 198 L 376 208 L 385 214 L 401 215 L 407 213 L 422 199 L 426 190 L 426 183 L 423 176 L 414 169 L 404 165 L 394 165 L 384 169 L 377 175 L 369 193 L 359 194 L 344 199 L 343 197 L 353 189 L 357 184 L 356 183 L 341 194 L 316 217 L 296 244 L 276 283 L 266 311 L 261 315 L 257 308 L 259 292 L 278 247 L 287 213 L 287 181 L 285 166 L 283 166 L 271 177 L 260 193 L 251 217 L 246 239 L 248 292 L 253 309 L 262 319 L 254 358 L 252 417 L 245 406 L 244 360 L 240 322 L 230 288 L 220 267 L 214 280 L 206 313 L 206 336 L 215 371 L 225 392 L 238 412 L 247 420 L 254 423 L 261 455 L 270 482 L 296 539 L 295 541 L 273 521 L 263 501 L 254 474 L 237 443 L 208 407 L 194 394 L 196 429 L 206 462 L 216 480 L 230 498 L 261 526 L 302 554 L 329 583 L 376 628 L 367 629 L 354 626 L 318 589 L 297 573 L 264 551 L 227 537 L 233 553 L 246 573 L 269 597 L 291 613 L 315 624 L 341 631 L 386 635 L 390 639 L 419 655 L 501 689 L 536 697 L 535 699 L 521 704 L 480 712 L 471 718 L 471 721 L 475 726 L 484 726 L 559 703 L 593 711 L 631 723 L 645 725 L 649 723 L 650 718 L 649 715 L 644 712 L 612 706 L 586 697 L 639 682 L 657 675 L 742 634 L 748 636 L 766 636 L 792 631 L 819 622 L 835 614 L 851 602 L 871 581 L 890 554 L 896 543 L 897 537 L 882 541 L 833 567 L 813 582 L 780 616 L 770 623 L 753 630 L 748 630 L 746 628 L 784 593 L 810 561 L 822 551 L 859 528 L 878 512 L 895 493 L 904 480 L 918 449 L 924 421 L 924 395 L 921 395 L 910 406 L 885 440 L 868 472 L 850 519 L 842 530 L 832 540 L 826 543 L 824 540 L 849 485 L 864 429 L 866 390 L 861 354 L 851 313 L 816 240 L 816 216 L 813 194 L 798 153 L 787 133 L 774 119 L 755 104 Z M 855 575 L 855 577 L 846 585 L 822 602 L 797 616 L 785 621 L 782 620 L 805 602 L 832 587 L 849 575 Z M 265 569 L 271 571 L 339 620 L 326 616 L 302 603 L 273 580 Z M 219 447 L 260 504 L 259 505 L 245 493 L 234 479 L 220 455 Z M 899 446 L 901 448 L 891 473 L 879 492 L 867 504 L 865 500 L 870 490 Z M 221 319 L 224 321 L 233 366 L 239 383 L 238 387 L 233 382 L 225 362 L 219 330 L 219 322 Z M 270 210 L 270 224 L 264 246 L 262 263 L 258 270 L 257 251 L 259 238 L 265 218 Z M 767 134 L 789 166 L 800 188 L 802 202 L 770 148 L 766 138 Z M 662 113 L 665 112 L 674 117 L 714 146 L 738 169 L 735 170 L 712 152 L 697 143 L 667 120 Z M 561 85 L 552 87 L 547 95 L 548 102 L 555 109 L 561 107 L 568 98 L 567 90 Z"/>
             <path fill="#d92f37" fill-rule="evenodd" d="M 558 469 L 558 497 L 561 498 L 561 468 Z M 564 464 L 564 467 L 575 467 L 576 466 L 575 463 L 565 463 Z M 543 464 L 543 467 L 556 467 L 556 463 L 544 463 Z M 558 449 L 558 461 L 561 462 L 561 449 Z"/>
           </svg>
         </div>
-        <span class="brand-name" id="brandName">CECP</span>
+        <span class="brand-name">CECP</span>
       </div>
 
       <nav class="seg-control" role="tablist">
-        <button class="seg-btn active" data-view="focus" id="navFocus">专注</button>
+        <button class="seg-btn active" data-view="focus" id="navFocus">倒计时</button>
         <button class="seg-btn" data-view="progress" id="navProgress">年度</button>
       </nav>
 
@@ -470,7 +549,7 @@
     </header>
 
     <main class="card">
-      <!-- 1. 专注倒计时 -->
+      <!-- 1. Easy-Cat 风格极简倒计时 -->
       <section class="view active" id="view-focus">
         <div class="focus-top">
           <div class="status-text">
@@ -480,31 +559,58 @@
           <div class="count-text"><span id="todayLabel">今日完成</span> <strong id="completedCount">0</strong></div>
         </div>
 
-        <div class="mode-bar">
-          <button class="mode-btn active" data-minutes="25" data-key="pomodoro">25m</button>
-          <button class="mode-btn" data-minutes="5" data-key="short">5m</button>
-          <button class="mode-btn" data-minutes="15" data-key="long">15m</button>
-          <button class="mode-btn" id="customModeBtn">自定义</button>
-        </div>
-
-        <div class="custom-row" id="customRow">
-          <input type="number" class="custom-input" id="customInput" min="1" max="180" value="45" />
-          <span id="minUnit" style="font-size: 0.8rem; color: var(--text-muted);">分钟</span>
-          <button class="btn btn-secondary" id="applyCustomBtn" style="padding: 5px 12px; font-size: 0.8rem;">应用</button>
-        </div>
-
-        <div class="ring-box">
-          <svg viewBox="0 0 210 210" width="210" height="210">
-            <circle class="ring-track" cx="105" cy="105" r="96"></circle>
-            <circle class="ring-prog" id="timerRing" cx="105" cy="105" r="96"></circle>
+        <!-- 两只极简小猫陪伴（Easy Cat 风格） -->
+        <div class="cat-wrap" id="catStage">
+          <svg class="cat-svg" viewBox="0 0 180 70" style="width: 164px; height: 66px;" aria-hidden="true">
+            <!-- 左边深色小猫 -->
+            <g>
+              <path class="cat-tail" style="transform-origin: 28px 52px;" d="M 28 52 Q 12 48 14 34 Q 15 28 20 30" fill="none" stroke="var(--cat-stroke)" stroke-width="4.5" stroke-linecap="round" />
+              <ellipse cx="52" cy="52" rx="24" ry="13" fill="var(--cat-body)" stroke="var(--cat-stroke)" stroke-width="1.7" />
+              <circle cx="52" cy="35" r="14.5" fill="var(--cat-body)" stroke="var(--cat-stroke)" stroke-width="1.7" />
+              <polygon class="cat-ear-l" points="40,25 37,12 47,21" fill="var(--cat-body)" stroke="var(--cat-stroke)" stroke-width="1.7" stroke-linejoin="round" />
+              <polygon class="cat-ear-r" points="64,25 67,12 57,21" fill="var(--cat-body)" stroke="var(--cat-stroke)" stroke-width="1.7" stroke-linejoin="round" />
+              <ellipse class="cat-eye" cx="46.5" cy="34" rx="1.9" ry="2.4" fill="var(--text)" />
+              <ellipse class="cat-eye" cx="57.5" cy="34" rx="1.9" ry="2.4" fill="var(--text)" />
+              <polygon points="50.8,37.2 53.2,37.2 52,38.8" fill="#f43f5e" />
+              <path d="M 48.8 40 Q 50.4 42.2 52 40 Q 53.6 42.2 55.2 40" fill="none" stroke="var(--text-muted)" stroke-width="1.2" stroke-linecap="round" />
+              <ellipse cx="43" cy="62" rx="5" ry="2.8" fill="var(--card-2)" stroke="var(--cat-stroke)" stroke-width="1.4" />
+              <ellipse cx="61" cy="62" rx="5" ry="2.8" fill="var(--card-2)" stroke="var(--cat-stroke)" stroke-width="1.4" />
+            </g>
+            <!-- 右边浅色小猫 -->
+            <g transform="translate(76, 3)">
+              <path class="cat-tail" style="transform-origin: 76px 49px; animation-delay: -1s;" d="M 76 49 Q 92 46 90 32 Q 89 26 84 28" fill="none" stroke="var(--cat-stroke)" stroke-width="4.5" stroke-linecap="round" />
+              <ellipse cx="52" cy="49" rx="22" ry="12" fill="var(--card-2)" stroke="var(--cat-stroke)" stroke-width="1.7" />
+              <circle cx="52" cy="33" r="13.5" fill="var(--card-2)" stroke="var(--cat-stroke)" stroke-width="1.7" />
+              <polygon class="cat-ear-l" points="41,23 38,11 47,20" fill="var(--card-2)" stroke="var(--cat-stroke)" stroke-width="1.7" stroke-linejoin="round" />
+              <polygon class="cat-ear-r" points="63,23 66,11 57,20" fill="var(--card-2)" stroke="var(--cat-stroke)" stroke-width="1.7" stroke-linejoin="round" />
+              <ellipse class="cat-eye" cx="47" cy="32" rx="1.8" ry="2.3" fill="var(--text)" />
+              <ellipse class="cat-eye" cx="57" cy="32" rx="1.8" ry="2.3" fill="var(--text)" />
+              <polygon points="50.8,35.2 53.2,35.2 52,36.8" fill="#f43f5e" />
+              <path d="M 49 38 Q 50.5 40 52 38 Q 53.5 40 55 38" fill="none" stroke="var(--text-muted)" stroke-width="1.2" stroke-linecap="round" />
+              <ellipse cx="44" cy="58" rx="4.6" ry="2.6" fill="var(--cat-body)" stroke="var(--cat-stroke)" stroke-width="1.4" />
+              <ellipse cx="60" cy="58" rx="4.6" ry="2.6" fill="var(--cat-body)" stroke="var(--cat-stroke)" stroke-width="1.4" />
+            </g>
+            <text class="cat-zzz" x="85" y="16">Zzz</text>
+            <path class="cat-heart" d="M 90 14 C 90 11 86 11 86 14 C 86 17 90 20 90 20 C 90 20 94 17 94 14 C 94 11 90 11 90 14 Z" />
           </svg>
-          <div>
-            <div class="time-main" id="timerDisplay">25:00</div>
-            <div class="time-sub" id="timerModeLabel">专注</div>
+        </div>
+
+        <div class="big-clock" id="timerDisplay">25:00</div>
+
+        <div class="slim-track">
+          <div class="slim-fill" id="slimFill"></div>
+        </div>
+
+        <div class="preset-bar">
+          <button class="preset-btn" data-minutes="5">5m</button>
+          <button class="preset-btn" data-minutes="15">15m</button>
+          <button class="preset-btn active" data-minutes="25">25m</button>
+          <button class="preset-btn" data-minutes="45">45m</button>
+          <div class="direct-input-wrap" title="直接输入分钟数">
+            <input type="number" class="direct-input" id="customInput" min="1" max="180" value="25" />
+            <span class="direct-unit" id="minUnit">分</span>
           </div>
         </div>
-
-        <input type="text" class="task-input" id="taskInput" placeholder="输入当前专注事项（可选）..." />
 
         <div class="btn-row">
           <button class="btn btn-primary" id="timerStartBtn">开始</button>
@@ -524,31 +630,30 @@
         <div class="mini-stats" id="miniStats"></div>
       </section>
     </main>
+
+    <footer class="church-footer">
+      <div class="church-badge">
+        <img src="./church-logo.png" alt="基督教帕多瓦华人教会" />
+      </div>
+    </footer>
   </div>
 
   <script>
     // ---------- 多语言 ----------
     const i18n = {
       zh: {
-        navFocus: '专注',
+        navFocus: '倒计时',
         navProgress: '年度',
         ready: '准备就绪',
         running: '专注中',
         paused: '已暂停',
         done: '已完成',
         todayLabel: '今日完成',
-        custom: '自定义',
-        minUnit: '分钟',
-        apply: '应用',
-        taskPlaceholder: '输入当前专注事项（可选）...',
+        minUnit: '分',
         start: '开始',
         pause: '暂停',
         resume: '继续',
         reset: '重置',
-        modePomodoro: '专注',
-        modeShort: '短休',
-        modeLong: '长休',
-        modeCustom: '自定义',
         dayUnit: '天',
         monthKey: '本月已过',
         weekKey: '本周已过',
@@ -557,25 +662,18 @@
         notifyBody: '休息一下吧'
       },
       en: {
-        navFocus: 'Focus',
+        navFocus: 'Timer',
         navProgress: 'Year',
         ready: 'Ready',
         running: 'Focusing',
         paused: 'Paused',
-        done: 'Completed',
+        done: 'Done',
         todayLabel: 'Today',
-        custom: 'Custom',
-        minUnit: 'min',
-        apply: 'Apply',
-        taskPlaceholder: 'Current focus task (optional)...',
+        minUnit: 'm',
         start: 'Start',
         pause: 'Pause',
         resume: 'Resume',
         reset: 'Reset',
-        modePomodoro: 'Focus',
-        modeShort: 'Short Break',
-        modeLong: 'Long Break',
-        modeCustom: 'Custom',
         dayUnit: 'd',
         monthKey: 'Month',
         weekKey: 'Week',
@@ -594,10 +692,7 @@
       document.getElementById('navFocus').textContent = t('navFocus');
       document.getElementById('navProgress').textContent = t('navProgress');
       document.getElementById('todayLabel').textContent = t('todayLabel');
-      document.getElementById('customModeBtn').textContent = t('custom');
       document.getElementById('minUnit').textContent = t('minUnit');
-      document.getElementById('applyCustomBtn').textContent = t('apply');
-      document.getElementById('taskInput').placeholder = t('taskPlaceholder');
       document.getElementById('timerResetBtn').textContent = t('reset');
       syncStateLabels();
       renderDotProgress();
@@ -609,7 +704,7 @@
       applyLang();
     });
 
-    // ---------- 深浅色切换 ----------
+    // ---------- 深浅色 ----------
     const html = document.documentElement;
     const themeBtn = document.getElementById('themeBtn');
 
@@ -637,34 +732,24 @@
       });
     });
 
-    // ---------- 任务记忆 ----------
-    const taskInput = document.getElementById('taskInput');
-    taskInput.value = localStorage.getItem('cecp_focus_task') || '';
-    taskInput.addEventListener('input', () => localStorage.setItem('cecp_focus_task', taskInput.value));
-
-    // ---------- 精准时间戳倒计时 ----------
+    // ---------- 倒计时逻辑 ----------
     const COUNT_KEY = 'cecp_focus_completed_v1';
     const completedCountEl = document.getElementById('completedCount');
     const timerDisplay = document.getElementById('timerDisplay');
-    const timerModeLabel = document.getElementById('timerModeLabel');
+    const slimFill = document.getElementById('slimFill');
     const timerStatus = document.getElementById('timerStatus');
     const statusDot = document.getElementById('statusDot');
-    const timerRing = document.getElementById('timerRing');
+    const catStage = document.getElementById('catStage');
     const timerStartBtn = document.getElementById('timerStartBtn');
     const timerResetBtn = document.getElementById('timerResetBtn');
-    const modeBtns = document.querySelectorAll('.mode-btn[data-minutes]');
-    const customModeBtn = document.getElementById('customModeBtn');
-    const customRow = document.getElementById('customRow');
-
-    const CIRCUMFERENCE = 2 * Math.PI * 96;
-    timerRing.style.strokeDasharray = CIRCUMFERENCE;
+    const presetBtns = document.querySelectorAll('.preset-btn');
+    const customInput = document.getElementById('customInput');
 
     let totalSeconds = 25 * 60;
     let remainingSeconds = totalSeconds;
     let endTimeMs = null;
     let timerInterval = null;
     let timerState = 'ready';
-    let currentModeKey = 'pomodoro';
 
     function getTodayKey() {
       const d = new Date();
@@ -687,30 +772,31 @@
     completedCountEl.textContent = loadCount();
 
     function formatTime(sec) {
-      const m = Math.floor(sec / 60);
+      const h = Math.floor(sec / 3600);
+      const m = Math.floor((sec % 3600) / 60);
       const s = sec % 60;
+      if (h > 0) {
+        return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+      }
       return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
     }
 
     function syncStateLabels() {
-      const modeMap = {
-        pomodoro: t('modePomodoro'),
-        short: t('modeShort'),
-        long: t('modeLong'),
-        custom: t('modeCustom')
-      };
-      timerModeLabel.textContent = modeMap[currentModeKey] || t('modePomodoro');
-
       statusDot.classList.toggle('running', timerState === 'running');
+      catStage.classList.remove('cat-running', 'cat-paused', 'cat-done');
+
       if (timerState === 'running') {
         timerStatus.textContent = t('running');
         timerStartBtn.textContent = t('pause');
+        catStage.classList.add('cat-running');
       } else if (timerState === 'paused') {
         timerStatus.textContent = t('paused');
         timerStartBtn.textContent = t('resume');
+        catStage.classList.add('cat-paused');
       } else if (timerState === 'done') {
         timerStatus.textContent = t('done');
         timerStartBtn.textContent = t('start');
+        catStage.classList.add('cat-done');
       } else {
         timerStatus.textContent = t('ready');
         timerStartBtn.textContent = t('start');
@@ -721,8 +807,8 @@
       const str = formatTime(remainingSeconds);
       timerDisplay.textContent = str;
       document.title = timerState === 'running' ? `${str} · CECP` : 'CECP 专注空间';
-      const ratio = totalSeconds > 0 ? remainingSeconds / totalSeconds : 0;
-      timerRing.style.strokeDashoffset = CIRCUMFERENCE * (1 - ratio);
+      const pct = totalSeconds > 0 ? (remainingSeconds / totalSeconds) * 100 : 0;
+      slimFill.style.width = `${pct.toFixed(2)}%`;
     }
 
     function playChime() {
@@ -775,35 +861,36 @@
       }
     }
 
-    function setMinutes(mins, modeKey) {
+    function setMinutes(mins) {
       stopInterval();
-      currentModeKey = modeKey;
-      totalSeconds = mins * 60;
+      const safe = Math.max(1, Math.min(180, mins || 25));
+      totalSeconds = safe * 60;
       remainingSeconds = totalSeconds;
       endTimeMs = null;
       timerState = 'ready';
+      customInput.value = safe;
+      presetBtns.forEach(b => b.classList.toggle('active', Number(b.dataset.minutes) === safe));
       syncStateLabels();
       updateTimerUI();
     }
 
-    modeBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        customRow.classList.remove('show');
-        setMinutes(Number(btn.dataset.minutes), btn.dataset.key);
-      });
+    presetBtns.forEach(btn => {
+      btn.addEventListener('click', () => setMinutes(Number(btn.dataset.minutes)));
     });
 
-    customModeBtn.addEventListener('click', () => {
-      document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
-      customModeBtn.classList.add('active');
-      customRow.classList.add('show');
-    });
-
-    document.getElementById('applyCustomBtn').addEventListener('click', () => {
-      const m = Math.max(1, Math.min(180, Number(document.getElementById('customInput').value) || 25));
-      setMinutes(m, 'custom');
+    customInput.addEventListener('input', () => {
+      const val = parseInt(customInput.value, 10);
+      if (!isNaN(val) && val > 0) {
+        stopInterval();
+        const safe = Math.min(180, val);
+        totalSeconds = safe * 60;
+        remainingSeconds = totalSeconds;
+        endTimeMs = null;
+        timerState = 'ready';
+        presetBtns.forEach(b => b.classList.toggle('active', Number(b.dataset.minutes) === safe));
+        syncStateLabels();
+        updateTimerUI();
+      }
     });
 
     timerStartBtn.addEventListener('click', () => {
