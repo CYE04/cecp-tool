@@ -1,993 +1,569 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="dark">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CECP 专注空间</title>
-  <style>
-    :root {
-      --bg: #0a0a0c;
-      --card: #141416;
-      --card-2: #1c1c1f;
-      --border: rgba(255, 255, 255, 0.08);
-      --text: #f4f4f5;
-      --text-muted: #71717a;
-      --accent: #2f81f7;
-      --accent-hover: #3b89f8;
-      --accent-glow: rgba(47, 129, 247, 0.55);
-      --track: rgba(255, 255, 255, 0.08);
-      --dot-past: #3f3f46;
-      --dot-future: #1f1f23;
-      --cat-body: #27272a;
-      --cat-stroke: #52525b;
-    }
+<html>
+
+    <!-- 网站的头部 -->
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+        <title>CECP 专注倒计时</title>
+
+        <!-- icon文件 -->
+        <link type="image/x-icon" href="./favicon.ico" rel="icon">
+
+        <!-- 样式文件：timer -->
+        <link rel="stylesheet" href="./css/timer/other/font.css">
+        <link rel="stylesheet" href="./css/timer/other/initial.css">
+        <link rel="stylesheet" href="./css/other/style/background.css">
+        <link rel="stylesheet" href="./css/other/style/main.css">
+        <link rel="stylesheet" href="./css/other/style/logo.css">
+        <link rel="stylesheet" href="./css/other/style/navigationBar.css">
+        <link rel="stylesheet" href="./css/other/style/topMenu.css">
+        <link rel="stylesheet" href="./css/other/animation/navigationBar.css">
+        <link rel="stylesheet" href="./css/other/animation/topMenu.css">
+        <link rel="stylesheet" href="./css/timer/style/timerApp.css">
+        <link rel="stylesheet" href="./css/timer/style/titleBarUi.css">
+        <link rel="stylesheet" href="./css/timer/style/countdownUi.css">
+        <link rel="stylesheet" href="./css/timer/style/timingUi.css">
+        <link rel="stylesheet" href="./css/timer/style/settingUi.css">
+        <link rel="stylesheet" href="./css/timer/animation/titleBarUi.css">
+        <link rel="stylesheet" href="./css/timer/animation/countdownUi.css">
+        <link rel="stylesheet" href="./css/timer/animation/timingUi.css">
+        <link rel="stylesheet" href="./css/timer/animation/settingUi.css">
+        <link rel="stylesheet" href="./css/media/media.css">
+        <link rel="stylesheet" href="./css/cecp-override.css">
+    </head>
+
+    <!-- 网站的身体 -->
+    <body>
+        
+        <!-- 音效 -->
+        <div id="audios">
+
+            <!-- 音效：按钮按下 -->
+            <audio class="buttonDown" src="asset/audio/ButtonDown.wav" preload="auto"></audio>
+            <!-- 音效：按钮抬起 -->
+            <audio class="buttonUp" src="asset/audio/ButtonUp.wav" preload="auto"></audio>
+
+            <!-- 音效：增加或减少数字 -->
+            <audio class="addOrLessNumber" src="asset/audio/AddOrLessNumber.wav" preload="auto"></audio>
+            
+            <!-- 音效：猫咪站起来 1 -->
+            <audio class="catUp1" src="asset/audio/CatUp-01.wav" preload="auto"></audio>
+            <!-- 音效：猫咪站起来 2 -->
+            <audio class="catUp2" src="asset/audio/CatUp-02.wav" preload="auto"></audio>
+            <!-- 音效：猫咪站起来 3 -->
+            <audio class="catUp3" src="asset/audio/CatUp-03.wav" preload="auto"></audio>
+            
+            <!-- 音效：猫咪坐下 1 -->
+            <audio class="catDown1" src="asset/audio/CatDown-01.wav" preload="auto"></audio>
+            <!-- 音效：猫咪坐下 2 -->
+            <audio class="catDown2" src="asset/audio/CatDown-02.wav" preload="auto"></audio>
+            <!-- 音效：猫咪坐下 3 -->
+            <audio class="catDown3" src="asset/audio/CatDown-03.wav" preload="auto"></audio>
+
+            <!-- 音效：完成 -->
+            <audio class="complete" src="asset/audio/Complete.mp3" preload="auto"></audio>
 
-    [data-theme="light"] {
-      --bg: #f4f4f5;
-      --card: #ffffff;
-      --card-2: #f4f4f5;
-      --border: rgba(0, 0, 0, 0.08);
-      --text: #18181b;
-      --text-muted: #71717a;
-      --accent: #2563eb;
-      --accent-hover: #1d4ed8;
-      --accent-glow: rgba(37, 99, 235, 0.4);
-      --track: rgba(0, 0, 0, 0.07);
-      --dot-past: #a1a1aa;
-      --dot-future: #e4e4e7;
-      --cat-body: #e4e4e7;
-      --cat-stroke: #a1a1aa;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 14px 16px;
-      -webkit-font-smoothing: antialiased;
-      transition: background 0.2s, color 0.2s;
-    }
-
-    .app {
-      width: 100%;
-      max-width: 460px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    /* 顶部栏 */
-    .topbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .brand-logo {
-      width: 30px;
-      height: 30px;
-      border-radius: 8px;
-      background: #ffffff;
-      padding: 3px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-
-    .brand-logo svg {
-      width: 100%;
-      height: 100%;
-      display: block;
-    }
-
-    .brand-name {
-      font-size: 0.92rem;
-      font-weight: 600;
-      letter-spacing: -0.01em;
-    }
-
-    .seg-control {
-      display: flex;
-      background: var(--card);
-      border: 1px solid var(--border);
-      padding: 3px;
-      border-radius: 10px;
-      gap: 2px;
-    }
-
-    .seg-btn {
-      border: none;
-      background: transparent;
-      color: var(--text-muted);
-      padding: 5px 12px;
-      border-radius: 7px;
-      font-size: 0.8rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.15s;
-    }
-
-    .seg-btn:hover {
-      color: var(--text);
-    }
-
-    .seg-btn.active {
-      background: var(--card-2);
-      color: var(--text);
-      font-weight: 600;
-    }
-
-    .top-actions {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .icon-pill {
-      height: 30px;
-      min-width: 30px;
-      padding: 0 8px;
-      border-radius: 8px;
-      border: 1px solid var(--border);
-      background: var(--card);
-      color: var(--text-muted);
-      font-size: 0.76rem;
-      font-weight: 600;
-      cursor: pointer;
-      display: grid;
-      place-items: center;
-      transition: color 0.15s, border-color 0.15s;
-    }
-
-    .icon-pill:hover {
-      color: var(--text);
-      border-color: var(--text-muted);
-    }
-
-    /* 主卡片 */
-    .card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 20px 22px 22px;
-    }
-
-    .view {
-      display: none;
-    }
-
-    .view.active {
-      display: block;
-      animation: fadeIn 0.16s ease-out;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-
-    /* ---------- Easy-Cat 风格极简倒计时 ---------- */
-    .focus-top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 10px;
-    }
-
-    .status-text {
-      font-size: 0.78rem;
-      color: var(--text-muted);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .status-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: var(--text-muted);
-    }
-
-    .status-dot.running {
-      background: var(--accent);
-      box-shadow: 0 0 8px var(--accent-glow);
-    }
-
-    .count-text {
-      font-size: 0.78rem;
-      color: var(--text-muted);
-      font-variant-numeric: tabular-nums;
-    }
-
-    /* 极简趴着的小猫（Easy Cat 风格） */
-    .cat-wrap {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin: 4px 0 6px;
-    }
-
-    .cat-svg {
-      width: 120px;
-      height: 68px;
-      overflow: visible;
-    }
-
-    .cat-ear-l, .cat-ear-r {
-      transition: transform 0.25s ease;
-      transform-origin: center;
-    }
-
-    .cat-running .cat-ear-l {
-      animation: earTwitch 3.5s ease-in-out infinite;
-    }
-
-    .cat-eye {
-      transform-origin: center;
-      animation: catBlink 4.2s infinite;
-    }
-
-    .cat-tail {
-      transform-origin: 90px 52px;
-      animation: catTail 3s ease-in-out infinite;
-    }
-
-    .cat-running .cat-tail {
-      animation: catTail 1.4s ease-in-out infinite;
-    }
-
-    .cat-zzz {
-      opacity: 0;
-      font-size: 11px;
-      font-weight: 700;
-      fill: var(--accent);
-    }
-
-    .cat-paused .cat-zzz {
-      animation: floatZ 2.2s ease-in-out infinite;
-    }
-
-    .cat-heart {
-      opacity: 0;
-      fill: #f43f5e;
-    }
-
-    .cat-done .cat-heart {
-      animation: popHeart 1.3s ease-out infinite;
-    }
-
-    @keyframes earTwitch {
-      0%, 90%, 100% { transform: rotate(0deg); }
-      94% { transform: rotate(-6deg); }
-      97% { transform: rotate(3deg); }
-    }
-
-    @keyframes catBlink {
-      0%, 93%, 100% { transform: scaleY(1); }
-      96% { transform: scaleY(0.1); }
-    }
-
-    @keyframes catTail {
-      0%, 100% { transform: rotate(-5deg); }
-      50% { transform: rotate(9deg); }
-    }
-
-    @keyframes floatZ {
-      0% { opacity: 0; transform: translate(0, 4px); }
-      50% { opacity: 0.9; }
-      100% { opacity: 0; transform: translate(6px, -10px); }
-    }
-
-    @keyframes popHeart {
-      0% { opacity: 0; transform: translateY(4px) scale(0.7); }
-      45% { opacity: 1; transform: translateY(-4px) scale(1.1); }
-      100% { opacity: 0; transform: translateY(-12px) scale(0.9); }
-    }
-
-    /* 超大数字时钟 */
-    .big-clock {
-      font-size: 4.1rem;
-      font-weight: 700;
-      font-variant-numeric: tabular-nums;
-      letter-spacing: -0.02em;
-      text-align: center;
-      line-height: 1.05;
-      margin: 4px 0 12px;
-    }
-
-    /* 极简进度条 */
-    .slim-track {
-      width: 100%;
-      height: 4px;
-      border-radius: 999px;
-      background: var(--track);
-      overflow: hidden;
-      margin-bottom: 18px;
-    }
-
-    .slim-fill {
-      height: 100%;
-      width: 100%;
-      background: var(--accent);
-      border-radius: 999px;
-      transition: width 0.3s linear;
-    }
-
-    /* 直接输入分钟 + 快捷预设 */
-    .preset-bar {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      flex-wrap: wrap;
-      margin-bottom: 16px;
-    }
-
-    .preset-btn {
-      border: 1px solid var(--border);
-      background: var(--card-2);
-      color: var(--text-muted);
-      padding: 5px 11px;
-      border-radius: 8px;
-      font-size: 0.78rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.15s;
-    }
-
-    .preset-btn:hover {
-      color: var(--text);
-      border-color: var(--text-muted);
-    }
-
-    .preset-btn.active {
-      background: rgba(47, 129, 247, 0.14);
-      border-color: var(--accent);
-      color: var(--accent);
-    }
-
-    .direct-input-wrap {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      background: var(--card-2);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 3px 8px;
-    }
-
-    .direct-input-wrap:focus-within {
-      border-color: var(--accent);
-    }
-
-    .direct-input {
-      width: 40px;
-      border: none;
-      background: transparent;
-      color: var(--text);
-      font-size: 0.82rem;
-      font-weight: 600;
-      text-align: center;
-      outline: none;
-      font-variant-numeric: tabular-nums;
-    }
-
-    .direct-unit {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-    }
-
-    .btn-row {
-      display: flex;
-      gap: 8px;
-      justify-content: center;
-    }
-
-    .btn {
-      padding: 10px 24px;
-      border-radius: 10px;
-      border: none;
-      font-size: 0.88rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: opacity 0.15s, background 0.15s;
-    }
-
-    .btn-primary {
-      background: var(--accent);
-      color: #fff;
-      min-width: 116px;
-    }
-
-    .btn-primary:hover {
-      background: var(--accent-hover);
-    }
-
-    .btn-secondary {
-      background: var(--card-2);
-      color: var(--text);
-      border: 1px solid var(--border);
-    }
-
-    .btn-secondary:hover {
-      border-color: var(--text-muted);
-    }
-
-    /* ---------- 点阵年度进度 ---------- */
-    .matrix-head {
-      display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-      margin-bottom: 16px;
-    }
-
-    .matrix-title {
-      font-size: 1.05rem;
-      font-weight: 600;
-      letter-spacing: -0.01em;
-    }
-
-    .matrix-meta {
-      font-size: 0.88rem;
-      color: var(--text-muted);
-      font-variant-numeric: tabular-nums;
-    }
-
-    .dot-grid {
-      display: grid;
-      grid-template-columns: repeat(19, 1fr);
-      gap: 7px;
-      margin-bottom: 18px;
-    }
-
-    .day-dot {
-      aspect-ratio: 1;
-      width: 100%;
-      border-radius: 50%;
-      background: var(--dot-future);
-    }
-
-    .day-dot.past {
-      background: var(--dot-past);
-    }
-
-    .day-dot.today {
-      background: var(--accent);
-      box-shadow: 0 0 10px var(--accent-glow), 0 0 3px var(--accent);
-      transform: scale(1.15);
-    }
-
-    .mini-stats {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-      padding-top: 14px;
-      border-top: 1px solid var(--border);
-    }
-
-    .mini-stat {
-      text-align: center;
-    }
-
-    .mini-stat-val {
-      font-size: 0.92rem;
-      font-weight: 600;
-      font-variant-numeric: tabular-nums;
-    }
-
-    .mini-stat-key {
-      font-size: 0.72rem;
-      color: var(--text-muted);
-      margin-top: 2px;
-    }
-
-    /* 底部教会 Logo */
-    .church-footer {
-      display: flex;
-      justify-content: center;
-      padding-top: 2px;
-    }
-
-    .church-badge {
-      background: #ffffff;
-      border-radius: 12px;
-      padding: 6px 14px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
-    }
-
-    .church-badge img {
-      height: 36px;
-      width: auto;
-      display: block;
-    }
-  </style>
-</head>
-<body>
-  <div class="app">
-    <header class="topbar">
-      <div class="brand">
-        <div class="brand-logo" title="CECP">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="154 0 810 810" preserveAspectRatio="xMidYMid meet">
-            <path fill="#26310b" fill-rule="evenodd" d="M 808 655 L 765 655 L 731 659 L 694 672 L 664 687 L 644 693 L 677 701 L 710 701 L 726 698 L 746 692 L 768 682 L 800 662 Z M 755 672 L 749 677 L 728 683 L 699 689 L 675 690 L 677 687 L 712 676 L 739 671 Z M 316 655 L 324 664 L 350 681 L 371 691 L 387 696 L 420 701 L 435 701 L 476 692 L 450 682 L 426 670 L 392 659 L 356 655 Z M 370 671 L 378 670 L 444 685 L 447 688 L 423 687 L 398 683 L 372 675 Z M 555 532 L 545 536 L 538 543 L 529 562 L 529 656 L 593 656 L 592 557 L 585 544 L 578 537 L 567 532 Z M 529 491 L 531 498 L 540 508 L 556 516 L 550 526 L 570 526 L 564 516 L 580 508 L 591 493 L 591 491 L 574 491 L 569 502 L 559 509 L 549 500 L 546 491 Z M 324 470 L 327 512 L 340 550 L 354 576 L 393 612 L 385 584 L 379 551 L 374 538 L 353 502 L 331 475 Z M 347 516 L 352 520 L 367 552 L 376 576 L 378 590 L 372 582 L 354 546 L 346 522 Z M 799 465 L 766 497 L 752 522 L 739 562 L 736 588 L 731 608 L 742 601 L 757 587 L 769 570 L 784 542 L 796 499 Z M 781 506 L 782 510 L 770 541 L 755 571 L 744 586 L 743 582 L 754 555 L 774 514 Z M 562 443 L 584 464 L 594 487 L 595 508 L 602 508 L 600 489 L 593 470 L 580 454 Z M 559 442 L 545 450 L 530 465 L 521 485 L 518 508 L 525 508 L 526 488 L 534 467 L 539 460 Z M 567 441 L 581 451 L 596 467 L 607 487 L 612 508 L 622 508 L 617 491 L 605 471 L 590 455 Z M 553 441 L 531 454 L 520 465 L 507 483 L 497 508 L 508 507 L 515 482 L 522 470 L 538 452 Z M 567 437 L 585 446 L 603 459 L 623 483 L 633 507 L 645 508 L 634 487 L 613 463 L 589 446 Z M 553 437 L 529 447 L 509 461 L 488 484 L 475 508 L 487 508 L 489 499 L 501 477 L 519 457 L 535 446 Z M 379 489 L 381 495 L 388 502 L 392 502 L 406 494 L 410 496 L 410 617 L 412 623 L 423 626 L 425 624 L 425 488 L 557 418 L 563 417 L 696 486 L 700 627 L 711 627 L 713 624 L 712 495 L 715 494 L 733 504 L 741 490 L 607 420 L 565 400 L 555 400 Z M 798 324 L 798 357 L 806 402 L 830 458 L 833 462 L 839 464 L 844 424 L 844 402 L 836 373 L 824 350 L 814 338 Z M 817 370 L 822 376 L 832 407 L 836 425 L 836 434 L 833 432 L 824 409 L 815 375 Z M 314 303 L 307 309 L 294 329 L 286 346 L 279 368 L 275 390 L 275 421 L 279 450 L 282 450 L 310 394 L 315 377 L 318 359 L 318 328 Z M 302 352 L 303 362 L 295 390 L 293 404 L 290 413 L 286 418 L 285 405 L 296 362 Z M 902 263 L 899 265 L 892 281 L 879 329 L 874 369 L 876 405 L 871 423 L 878 418 L 890 399 L 905 369 L 913 336 L 913 311 L 908 281 Z M 897 322 L 898 335 L 896 348 L 886 382 L 881 392 L 881 381 L 894 324 Z M 720 206 L 721 213 L 734 236 L 755 263 L 784 290 L 832 321 L 833 316 L 809 274 L 791 249 L 765 226 L 739 212 Z M 758 241 L 760 240 L 776 254 L 810 290 L 808 291 L 778 266 Z M 831 160 L 830 169 L 836 235 L 842 259 L 858 305 L 859 326 L 861 328 L 864 326 L 867 317 L 875 271 L 873 236 L 868 214 L 860 195 L 846 172 L 835 161 Z M 849 212 L 852 215 L 858 234 L 862 254 L 864 280 L 861 290 L 849 227 Z M 551 155 L 551 216 L 549 218 L 488 218 L 488 237 L 551 238 L 551 366 L 570 366 L 571 238 L 632 237 L 631 217 L 571 218 L 571 155 Z M 460 96 L 448 106 L 446 117 L 448 122 L 454 128 L 467 129 L 474 123 L 478 115 L 478 107 L 472 98 L 468 96 Z M 395 94 L 386 94 L 372 99 L 354 112 L 338 128 L 324 155 L 313 197 L 318 194 L 330 179 L 352 163 L 372 143 L 393 109 Z M 370 118 L 371 123 L 365 133 L 332 165 L 332 161 L 348 138 L 363 122 Z M 736 93 L 734 93 L 736 105 L 751 142 L 773 177 L 807 215 L 812 227 L 811 233 L 751 172 L 727 140 L 705 118 L 680 105 L 655 97 L 629 92 L 637 108 L 647 121 L 678 150 L 699 164 L 753 188 L 785 216 L 798 230 L 814 253 L 831 287 L 840 310 L 843 329 L 851 348 L 854 371 L 855 416 L 852 444 L 838 491 L 824 523 L 808 550 L 779 586 L 763 602 L 738 622 L 679 656 L 625 677 L 565 692 L 552 691 L 516 682 L 455 661 L 404 634 L 359 603 L 334 578 L 313 549 L 300 525 L 277 471 L 269 444 L 265 419 L 264 375 L 266 353 L 279 300 L 285 291 L 289 278 L 295 271 L 304 266 L 321 262 L 323 271 L 329 278 L 339 283 L 349 284 L 361 278 L 368 268 L 370 262 L 369 247 L 364 239 L 351 232 L 339 232 L 332 235 L 327 240 L 321 256 L 309 257 L 298 261 L 300 254 L 315 229 L 333 212 L 371 197 L 373 198 L 376 208 L 385 214 L 401 215 L 407 213 L 422 199 L 426 190 L 426 183 L 423 176 L 414 169 L 404 165 L 394 165 L 384 169 L 377 175 L 369 193 L 359 194 L 344 199 L 343 197 L 353 189 L 357 184 L 356 183 L 341 194 L 316 217 L 296 244 L 276 283 L 266 311 L 261 315 L 257 308 L 259 292 L 278 247 L 287 213 L 287 181 L 285 166 L 283 166 L 271 177 L 260 193 L 251 217 L 246 239 L 248 292 L 253 309 L 262 319 L 254 358 L 252 417 L 245 406 L 244 360 L 240 322 L 230 288 L 220 267 L 214 280 L 206 313 L 206 336 L 215 371 L 225 392 L 238 412 L 247 420 L 254 423 L 261 455 L 270 482 L 296 539 L 295 541 L 273 521 L 263 501 L 254 474 L 237 443 L 208 407 L 194 394 L 196 429 L 206 462 L 216 480 L 230 498 L 261 526 L 302 554 L 329 583 L 376 628 L 367 629 L 354 626 L 318 589 L 297 573 L 264 551 L 227 537 L 233 553 L 246 573 L 269 597 L 291 613 L 315 624 L 341 631 L 386 635 L 390 639 L 419 655 L 501 689 L 536 697 L 535 699 L 521 704 L 480 712 L 471 718 L 471 721 L 475 726 L 484 726 L 559 703 L 593 711 L 631 723 L 645 725 L 649 723 L 650 718 L 649 715 L 644 712 L 612 706 L 586 697 L 639 682 L 657 675 L 742 634 L 748 636 L 766 636 L 792 631 L 819 622 L 835 614 L 851 602 L 871 581 L 890 554 L 896 543 L 897 537 L 882 541 L 833 567 L 813 582 L 780 616 L 770 623 L 753 630 L 748 630 L 746 628 L 784 593 L 810 561 L 822 551 L 859 528 L 878 512 L 895 493 L 904 480 L 918 449 L 924 421 L 924 395 L 921 395 L 910 406 L 885 440 L 868 472 L 850 519 L 842 530 L 832 540 L 826 543 L 824 540 L 849 485 L 864 429 L 866 390 L 861 354 L 851 313 L 816 240 L 816 216 L 813 194 L 798 153 L 787 133 L 774 119 L 755 104 Z M 855 575 L 855 577 L 846 585 L 822 602 L 797 616 L 785 621 L 782 620 L 805 602 L 832 587 L 849 575 Z M 265 569 L 271 571 L 339 620 L 326 616 L 302 603 L 273 580 Z M 219 447 L 260 504 L 259 505 L 245 493 L 234 479 L 220 455 Z M 899 446 L 901 448 L 891 473 L 879 492 L 867 504 L 865 500 L 870 490 Z M 221 319 L 224 321 L 233 366 L 239 383 L 238 387 L 233 382 L 225 362 L 219 330 L 219 322 Z M 270 210 L 270 224 L 264 246 L 262 263 L 258 270 L 257 251 L 259 238 L 265 218 Z M 767 134 L 789 166 L 800 188 L 802 202 L 770 148 L 766 138 Z M 662 113 L 665 112 L 674 117 L 714 146 L 738 169 L 735 170 L 712 152 L 697 143 L 667 120 Z M 561 85 L 552 87 L 547 95 L 548 102 L 555 109 L 561 107 L 568 98 L 567 90 Z"/>
-            <path fill="#d92f37" fill-rule="evenodd" d="M 558 469 L 558 497 L 561 498 L 561 468 Z M 564 464 L 564 467 L 575 467 L 576 466 L 575 463 L 565 463 Z M 543 464 L 543 467 L 556 467 L 556 463 L 544 463 Z M 558 449 L 558 461 L 561 462 L 561 449 Z"/>
-          </svg>
         </div>
-        <span class="brand-name">CECP</span>
-      </div>
-
-      <nav class="seg-control" role="tablist">
-        <button class="seg-btn active" data-view="focus" id="navFocus">倒计时</button>
-        <button class="seg-btn" data-view="progress" id="navProgress">年度</button>
-      </nav>
-
-      <div class="top-actions">
-        <button class="icon-pill" id="langBtn" title="Switch Language">EN</button>
-        <button class="icon-pill" id="themeBtn" title="切换深浅色">☀️</button>
-      </div>
-    </header>
-
-    <main class="card">
-      <!-- 1. Easy-Cat 风格极简倒计时 -->
-      <section class="view active" id="view-focus">
-        <div class="focus-top">
-          <div class="status-text">
-            <span class="status-dot" id="statusDot"></span>
-            <span id="timerStatus">准备就绪</span>
-          </div>
-          <div class="count-text"><span id="todayLabel">今日完成</span> <strong id="completedCount">0</strong></div>
+    
+        <!--背景（为了触发点击事件）-->
+        <div id="background">
+            <div class="nt-hero-watermark" aria-hidden="true"></div>
+            <div class="nt-hero-scrim" aria-hidden="true"></div>
         </div>
 
-        <!-- 两只极简小猫陪伴（Easy Cat 风格） -->
-        <div class="cat-wrap" id="catStage">
-          <svg class="cat-svg" viewBox="0 0 180 70" style="width: 164px; height: 66px;" aria-hidden="true">
-            <!-- 左边深色小猫 -->
-            <g>
-              <path class="cat-tail" style="transform-origin: 28px 52px;" d="M 28 52 Q 12 48 14 34 Q 15 28 20 30" fill="none" stroke="var(--cat-stroke)" stroke-width="4.5" stroke-linecap="round" />
-              <ellipse cx="52" cy="52" rx="24" ry="13" fill="var(--cat-body)" stroke="var(--cat-stroke)" stroke-width="1.7" />
-              <circle cx="52" cy="35" r="14.5" fill="var(--cat-body)" stroke="var(--cat-stroke)" stroke-width="1.7" />
-              <polygon class="cat-ear-l" points="40,25 37,12 47,21" fill="var(--cat-body)" stroke="var(--cat-stroke)" stroke-width="1.7" stroke-linejoin="round" />
-              <polygon class="cat-ear-r" points="64,25 67,12 57,21" fill="var(--cat-body)" stroke="var(--cat-stroke)" stroke-width="1.7" stroke-linejoin="round" />
-              <ellipse class="cat-eye" cx="46.5" cy="34" rx="1.9" ry="2.4" fill="var(--text)" />
-              <ellipse class="cat-eye" cx="57.5" cy="34" rx="1.9" ry="2.4" fill="var(--text)" />
-              <polygon points="50.8,37.2 53.2,37.2 52,38.8" fill="#f43f5e" />
-              <path d="M 48.8 40 Q 50.4 42.2 52 40 Q 53.6 42.2 55.2 40" fill="none" stroke="var(--text-muted)" stroke-width="1.2" stroke-linecap="round" />
-              <ellipse cx="43" cy="62" rx="5" ry="2.8" fill="var(--card-2)" stroke="var(--cat-stroke)" stroke-width="1.4" />
-              <ellipse cx="61" cy="62" rx="5" ry="2.8" fill="var(--card-2)" stroke="var(--cat-stroke)" stroke-width="1.4" />
-            </g>
-            <!-- 右边浅色小猫 -->
-            <g transform="translate(76, 3)">
-              <path class="cat-tail" style="transform-origin: 76px 49px; animation-delay: -1s;" d="M 76 49 Q 92 46 90 32 Q 89 26 84 28" fill="none" stroke="var(--cat-stroke)" stroke-width="4.5" stroke-linecap="round" />
-              <ellipse cx="52" cy="49" rx="22" ry="12" fill="var(--card-2)" stroke="var(--cat-stroke)" stroke-width="1.7" />
-              <circle cx="52" cy="33" r="13.5" fill="var(--card-2)" stroke="var(--cat-stroke)" stroke-width="1.7" />
-              <polygon class="cat-ear-l" points="41,23 38,11 47,20" fill="var(--card-2)" stroke="var(--cat-stroke)" stroke-width="1.7" stroke-linejoin="round" />
-              <polygon class="cat-ear-r" points="63,23 66,11 57,20" fill="var(--card-2)" stroke="var(--cat-stroke)" stroke-width="1.7" stroke-linejoin="round" />
-              <ellipse class="cat-eye" cx="47" cy="32" rx="1.8" ry="2.3" fill="var(--text)" />
-              <ellipse class="cat-eye" cx="57" cy="32" rx="1.8" ry="2.3" fill="var(--text)" />
-              <polygon points="50.8,35.2 53.2,35.2 52,36.8" fill="#f43f5e" />
-              <path d="M 49 38 Q 50.5 40 52 38 Q 53.5 40 55 38" fill="none" stroke="var(--text-muted)" stroke-width="1.2" stroke-linecap="round" />
-              <ellipse cx="44" cy="58" rx="4.6" ry="2.6" fill="var(--cat-body)" stroke="var(--cat-stroke)" stroke-width="1.4" />
-              <ellipse cx="60" cy="58" rx="4.6" ry="2.6" fill="var(--cat-body)" stroke="var(--cat-stroke)" stroke-width="1.4" />
-            </g>
-            <text class="cat-zzz" x="85" y="16">Zzz</text>
-            <path class="cat-heart" d="M 90 14 C 90 11 86 11 86 14 C 86 17 90 20 90 20 C 90 20 94 17 94 14 C 94 11 90 11 90 14 Z" />
-          </svg>
-        </div>
+        <!--内容-->
+        <main id="main">
 
-        <div class="big-clock" id="timerDisplay">25:00</div>
+             <!-- Logo -->
+            <div id="logo">
 
-        <div class="slim-track">
-          <div class="slim-fill" id="slimFill"></div>
-        </div>
+                <!-- Logo的图片 -->
+                <div class="image"></div>
 
-        <div class="preset-bar">
-          <button class="preset-btn" data-minutes="5">5m</button>
-          <button class="preset-btn" data-minutes="15">15m</button>
-          <button class="preset-btn active" data-minutes="25">25m</button>
-          <button class="preset-btn" data-minutes="45">45m</button>
-          <div class="direct-input-wrap" title="直接输入分钟数">
-            <input type="number" class="direct-input" id="customInput" min="1" max="180" value="25" />
-            <span class="direct-unit" id="minUnit">分</span>
-          </div>
-        </div>
+            </div>
 
-        <div class="btn-row">
-          <button class="btn btn-primary" id="timerStartBtn">开始</button>
-          <button class="btn btn-secondary" id="timerResetBtn">重置</button>
-        </div>
-      </section>
+            <!-- 计时器 -->
+            <div id="timerApp">
 
-      <!-- 2. 点阵年度进度 -->
-      <section class="view" id="view-progress">
-        <div class="matrix-head">
-          <div class="matrix-title" id="matrixTitle">Week #47  2026</div>
-          <div class="matrix-meta" id="matrixMeta">326/365 天 (89%)</div>
-        </div>
+                <!-- 界面：定时 -->
+                <div id="timingUi" class="ui">
 
-        <div class="dot-grid" id="dotGrid"></div>
+                    <!-- 背景 -->
+                    <div class="background">
+                        
+                        <!-- 灰色的背景 -->
+                        <div class="gray"></div>
+                        <!-- 黄色的背景 -->
+                        <div class="yellow"></div>
 
-        <div class="mini-stats" id="miniStats"></div>
-      </section>
-    </main>
+                    </div>
 
-    <footer class="church-footer">
-      <div class="church-badge">
-        <img src="./church-logo.png" alt="基督教帕多瓦华人教会" />
-      </div>
-    </footer>
-  </div>
+                    
+                    <!-- 时间 -->
+                    <div>
 
-  <script>
-    // ---------- 多语言 ----------
-    const i18n = {
-      zh: {
-        navFocus: '倒计时',
-        navProgress: '年度',
-        ready: '准备就绪',
-        running: '专注中',
-        paused: '已暂停',
-        done: '已完成',
-        todayLabel: '今日完成',
-        minUnit: '分',
-        start: '开始',
-        pause: '暂停',
-        resume: '继续',
-        reset: '重置',
-        dayUnit: '天',
-        monthKey: '本月已过',
-        weekKey: '本周已过',
-        dayKey: '今日已过',
-        notifyTitle: '倒计时结束',
-        notifyBody: '休息一下吧'
-      },
-      en: {
-        navFocus: 'Timer',
-        navProgress: 'Year',
-        ready: 'Ready',
-        running: 'Focusing',
-        paused: 'Paused',
-        done: 'Done',
-        todayLabel: 'Today',
-        minUnit: 'm',
-        start: 'Start',
-        pause: 'Pause',
-        resume: 'Resume',
-        reset: 'Reset',
-        dayUnit: 'd',
-        monthKey: 'Month',
-        weekKey: 'Week',
-        dayKey: 'Today',
-        notifyTitle: 'Time is up',
-        notifyBody: 'Take a short break'
-      }
-    };
+                        <!-- 文字 -->
+                        <div class="clock">
 
-    let lang = localStorage.getItem('cecp_timer_lang') || 'zh';
-    const langBtn = document.getElementById('langBtn');
-    const t = k => i18n[lang][k] || k;
+                            <!-- 文字：冒号 -->
+                            <p class="colonText">:</p> 
+                            <!-- 文字：分钟 -->
+                            <p class="minuteText">24</p>
+                            <!-- 文字：秒钟 -->
+                            <p class="secondsText">00</p>
 
-    function applyLang() {
-      langBtn.textContent = lang === 'zh' ? 'EN' : '中';
-      document.getElementById('navFocus').textContent = t('navFocus');
-      document.getElementById('navProgress').textContent = t('navProgress');
-      document.getElementById('todayLabel').textContent = t('todayLabel');
-      document.getElementById('minUnit').textContent = t('minUnit');
-      document.getElementById('timerResetBtn').textContent = t('reset');
-      syncStateLabels();
-      renderDotProgress();
-    }
+                        </div>
 
-    langBtn.addEventListener('click', () => {
-      lang = lang === 'zh' ? 'en' : 'zh';
-      localStorage.setItem('cecp_timer_lang', lang);
-      applyLang();
-    });
+                        <!--按钮-->
+                        <div>
 
-    // ---------- 深浅色 ----------
-    const html = document.documentElement;
-    const themeBtn = document.getElementById('themeBtn');
+                            <!--分钟的按钮-->
+                            <div class="minuteButtons">
+                                
+                                <!--按钮：数字-->
+                                <button class="numberButton"></button>
+                                <!--按钮：增加-->
+                                <button class="addButton"></button>
+                                <!--按钮：减少-->
+                                <button class="lessButton"></button>
 
-    function setTheme(theme) {
-      html.setAttribute('data-theme', theme);
-      localStorage.setItem('cecp_minimal_theme', theme);
-      themeBtn.textContent = theme === 'dark' ? '☀️' : '🌙';
-    }
+                            </div>
 
-    setTheme(localStorage.getItem('cecp_minimal_theme') || 'dark');
-    themeBtn.addEventListener('click', () => {
-      setTheme(html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
-    });
+                            <!--秒钟的按钮-->
+                            <div class="secondsButtons">
 
-    // ---------- 视图切换 ----------
-    const segBtns = document.querySelectorAll('.seg-btn');
-    const views = document.querySelectorAll('.view');
-    segBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        segBtns.forEach(b => b.classList.remove('active'));
-        views.forEach(v => v.classList.remove('active'));
-        btn.classList.add('active');
-        document.getElementById('view-' + btn.dataset.view).classList.add('active');
-        if (btn.dataset.view === 'progress') renderDotProgress();
-      });
-    });
+                                <!--按钮：数字-->
+                                <button class="numberButton"></button>
+                                <!--按钮：增加-->
+                                <button class="addButton"></button>
+                                <!--按钮：减少-->
+                                <button class="lessButton"></button>
+                        
+                            </div>
 
-    // ---------- 倒计时逻辑 ----------
-    const COUNT_KEY = 'cecp_focus_completed_v1';
-    const completedCountEl = document.getElementById('completedCount');
-    const timerDisplay = document.getElementById('timerDisplay');
-    const slimFill = document.getElementById('slimFill');
-    const timerStatus = document.getElementById('timerStatus');
-    const statusDot = document.getElementById('statusDot');
-    const catStage = document.getElementById('catStage');
-    const timerStartBtn = document.getElementById('timerStartBtn');
-    const timerResetBtn = document.getElementById('timerResetBtn');
-    const presetBtns = document.querySelectorAll('.preset-btn');
-    const customInput = document.getElementById('customInput');
+                        </div>
 
-    let totalSeconds = 25 * 60;
-    let remainingSeconds = totalSeconds;
-    let endTimeMs = null;
-    let timerInterval = null;
-    let timerState = 'ready';
+                    </div>
+                    
 
-    function getTodayKey() {
-      const d = new Date();
-      return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
-    }
+                    <!-- 开始 -->
+                    <div>
 
-    function loadCount() {
-      try {
-        const d = JSON.parse(localStorage.getItem(COUNT_KEY) || '{}');
-        return d.date === getTodayKey() ? (d.count || 0) : 0;
-      } catch { return 0; }
-    }
+                        <!-- 开始按钮 -->
+                        <div class="start">
 
-    function addCount() {
-      const next = loadCount() + 1;
-      localStorage.setItem(COUNT_KEY, JSON.stringify({ date: getTodayKey(), count: next }));
-      completedCountEl.textContent = next;
-    }
+                            <!-- 按钮：开始 -->
+                            <button class="button"></button>
+                            <!-- 图片：下划线 -->
+                            <div class="line"></div>
 
-    completedCountEl.textContent = loadCount();
+                        </div>
 
-    function formatTime(sec) {
-      const h = Math.floor(sec / 3600);
-      const m = Math.floor((sec % 3600) / 60);
-      const s = sec % 60;
-      if (h > 0) {
-        return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-      }
-      return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-    }
+                    </div>
 
-    function syncStateLabels() {
-      statusDot.classList.toggle('running', timerState === 'running');
-      catStage.classList.remove('cat-running', 'cat-paused', 'cat-done');
 
-      if (timerState === 'running') {
-        timerStatus.textContent = t('running');
-        timerStartBtn.textContent = t('pause');
-        catStage.classList.add('cat-running');
-      } else if (timerState === 'paused') {
-        timerStatus.textContent = t('paused');
-        timerStartBtn.textContent = t('resume');
-        catStage.classList.add('cat-paused');
-      } else if (timerState === 'done') {
-        timerStatus.textContent = t('done');
-        timerStartBtn.textContent = t('start');
-        catStage.classList.add('cat-done');
-      } else {
-        timerStatus.textContent = t('ready');
-        timerStartBtn.textContent = t('start');
-      }
-    }
+                    <!-- 修改时间 -->
+                    <div class="changeClockInput">
 
-    function updateTimerUI() {
-      const str = formatTime(remainingSeconds);
-      timerDisplay.textContent = str;
-      document.title = timerState === 'running' ? `${str} · CECP` : 'CECP 专注空间';
-      const pct = totalSeconds > 0 ? (remainingSeconds / totalSeconds) * 100 : 0;
-      slimFill.style.width = `${pct.toFixed(2)}%`;
-    }
+                        <!-- 关闭按钮（用来关闭输入框哒） -->
+                        <button class="closeButton"></button>
 
-    function playChime() {
-      try {
-        const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        [523.25, 659.25, 783.99].forEach((freq, i) => {
-          const osc = ctx.createOscillator();
-          const gain = ctx.createGain();
-          osc.type = 'sine';
-          osc.frequency.value = freq;
-          gain.gain.setValueAtTime(0.001, ctx.currentTime + i * 0.14);
-          gain.gain.exponentialRampToValueAtTime(0.15, ctx.currentTime + i * 0.14 + 0.04);
-          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.14 + 0.55);
-          osc.connect(gain);
-          gain.connect(ctx.destination);
-          osc.start(ctx.currentTime + i * 0.14);
-          osc.stop(ctx.currentTime + i * 0.14 + 0.6);
-        });
-      } catch {}
-    }
+                        <!-- 分钟 -->
+                        <div class="minute">
+                            <!-- 输入框 -->
+                            <input class="input" type="text" maxlength="2" value="20"/>
+                        </div>
 
-    function sendNotification() {
-      if ('Notification' in window && Notification.permission === 'granted') {
-        try {
-          new Notification(t('notifyTitle'), { body: t('notifyBody') });
-        } catch {}
-      }
-    }
+                        <!-- 秒钟 -->
+                        <div class="seconds">
+                            <!-- 输入框 -->
+                            <input class="input" type="text" maxlength="2" value="00"/>
+                        </div>
+                        
+                    </div>
 
-    function stopInterval() {
-      clearInterval(timerInterval);
-      timerInterval = null;
-    }
+                </div>
 
-    function tick() {
-      if (timerState !== 'running' || !endTimeMs) return;
-      const diff = Math.max(0, Math.ceil((endTimeMs - Date.now()) / 1000));
-      remainingSeconds = diff;
-      updateTimerUI();
 
-      if (diff <= 0) {
-        stopInterval();
-        timerState = 'done';
-        endTimeMs = null;
-        addCount();
-        playChime();
-        sendNotification();
-        syncStateLabels();
-        updateTimerUI();
-      }
-    }
+                <!-- 界面：倒计时 -->
+                <div id="countdownUi" class="ui">
 
-    function setMinutes(mins) {
-      stopInterval();
-      const safe = Math.max(1, Math.min(180, mins || 25));
-      totalSeconds = safe * 60;
-      remainingSeconds = totalSeconds;
-      endTimeMs = null;
-      timerState = 'ready';
-      customInput.value = safe;
-      presetBtns.forEach(b => b.classList.toggle('active', Number(b.dataset.minutes) === safe));
-      syncStateLabels();
-      updateTimerUI();
-    }
+                    <!-- 时间 -->
+                    <div class="time">
 
-    presetBtns.forEach(btn => {
-      btn.addEventListener('click', () => setMinutes(Number(btn.dataset.minutes)));
-    });
+                        <!-- 文字：时间 -->
+                        <p class="timeText">00:00</p>
 
-    customInput.addEventListener('input', () => {
-      const val = parseInt(customInput.value, 10);
-      if (!isNaN(val) && val > 0) {
-        stopInterval();
-        const safe = Math.min(180, val);
-        totalSeconds = safe * 60;
-        remainingSeconds = totalSeconds;
-        endTimeMs = null;
-        timerState = 'ready';
-        presetBtns.forEach(b => b.classList.toggle('active', Number(b.dataset.minutes) === safe));
-        syncStateLabels();
-        updateTimerUI();
-      }
-    });
+                    </div>
 
-    timerStartBtn.addEventListener('click', () => {
-      if ('Notification' in window && Notification.permission === 'default') {
-        Notification.requestPermission().catch(() => {});
-      }
+                    <!-- 时间到了 -->
+                    <div class="timeIsUp">
 
-      if (timerState === 'running') {
-        tick();
-        stopInterval();
-        timerState = 'paused';
-        endTimeMs = null;
-        syncStateLabels();
-        updateTimerUI();
-        return;
-      }
+                        <!-- 图片：时间到了 -->
+                        <div class="image"></div>
 
-      if (remainingSeconds <= 0) remainingSeconds = totalSeconds;
-      endTimeMs = Date.now() + remainingSeconds * 1000;
-      timerState = 'running';
-      syncStateLabels();
-      updateTimerUI();
-      timerInterval = setInterval(tick, 250);
-    });
+                    </div>
 
-    timerResetBtn.addEventListener('click', () => {
-      stopInterval();
-      remainingSeconds = totalSeconds;
-      endTimeMs = null;
-      timerState = 'ready';
-      syncStateLabels();
-      updateTimerUI();
-    });
+                    <!-- 暂停 -->
+                    <div class="paused">
 
-    document.addEventListener('visibilitychange', () => {
-      if (!document.hidden && timerState === 'running') tick();
-    });
+                        <!-- 背景：灰色 -->
+                        <div class="background"></div>
+                        <!-- 图片：已暂停 -->
+                        <div class="pausedImage"></div>
+                        <!-- 文字：时间 -->
+                        <p class="timeText">00:00</p>
 
-    // ---------- 点阵年度进度 ----------
-    function getISOWeek(date) {
-      const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
-      const dayNum = d.getUTCDay() || 7;
-      d.setUTCDate(d.getUTCDate() + 4 - dayNum);
-      const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
-      return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
-    }
+                    </div>
 
-    function renderDotProgress() {
-      const now = new Date();
-      const year = now.getFullYear();
-      const startOfYear = new Date(year, 0, 1);
-      const endOfYear = new Date(year + 1, 0, 1);
-      const totalDays = Math.round((endOfYear - startOfYear) / 86400000);
-      const todayIdx = Math.floor((new Date(year, now.getMonth(), now.getDate()) - startOfYear) / 86400000) + 1;
-      const yearPct = Math.round((todayIdx / totalDays) * 100);
-      const weekNum = getISOWeek(now);
+                    <!-- 黑色的猫 -->
+                    <div class="blackCat">
 
-      document.getElementById('matrixTitle').textContent = `Week #${weekNum}  ${year}`;
-      document.getElementById('matrixMeta').textContent = `${todayIdx}/${totalDays} ${t('dayUnit')} (${yearPct}%)`;
+                        <!-- 猫 -->
+                        <div class="cat">
 
-      const dotGrid = document.getElementById('dotGrid');
-      const dots = [];
-      for (let i = 1; i <= totalDays; i++) {
-        const d = new Date(year, 0, i);
-        const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-        let cls = 'day-dot';
-        if (i < todayIdx) cls += ' past';
-        else if (i === todayIdx) cls += ' today';
-        dots.push(`<div class="${cls}" title="${dateStr}"></div>`);
-      }
-      dotGrid.innerHTML = dots.join('');
+                            <!-- 身体 -->
+                            <div class="body"></div>
+                            <!-- 嘴巴 -->
+                            <div class="mouth"></div>
+                            <!-- 闭嘴 -->
+                            <div class="close"></div>
 
-      const startOfMonth = new Date(year, now.getMonth(), 1);
-      const endOfMonth = new Date(year, now.getMonth() + 1, 1);
-      const monthPct = ((now - startOfMonth) / (endOfMonth - startOfMonth)) * 100;
+                        </div>
+                        
+                        <!-- 绳子 -->
+                        <div class="rope">
 
-      const dayOfWeek = (now.getDay() + 6) % 7;
-      const startOfWeek = new Date(year, now.getMonth(), now.getDate() - dayOfWeek);
-      const weekPct = ((now - startOfWeek) / (7 * 86400000)) * 100;
+                            <!-- 线 -->
+                            <div class="line"></div>
+                            <!-- 文字 -->
+                            <div class="text">
+                                <!-- 文字：重置 -->
+                                <div class="reset"></div>
+                            </div>
 
-      const startOfDay = new Date(year, now.getMonth(), now.getDate());
-      const dayPct = ((now - startOfDay) / 86400000) * 100;
+                        </div>
 
-      document.getElementById('miniStats').innerHTML = [
-        { k: t('monthKey'), v: monthPct.toFixed(1) + '%' },
-        { k: t('weekKey'), v: weekPct.toFixed(1) + '%' },
-        { k: t('dayKey'), v: dayPct.toFixed(1) + '%' }
-      ].map(s => `
-        <div class="mini-stat">
-          <div class="mini-stat-val">${s.v}</div>
-          <div class="mini-stat-key">${s.k}</div>
-        </div>
-      `).join('');
-    }
+                    </div>
 
-    applyLang();
-    updateTimerUI();
-  </script>
-</body>
+                    <!-- 黄色的猫 -->
+                    <div class="yellowCat">
+
+                        <!-- 猫 -->
+                        <div class="cat">
+
+                            <!-- 身体 -->
+                            <div class="body"></div>
+                            <!-- 嘴巴 -->
+                            <div class="mouth"></div>
+                            <!-- 闭嘴 -->
+                            <div class="close"></div>
+                            <!-- 手 -->
+                            <div class="hand"></div>
+
+                        </div>
+                        
+                        <!-- 绳子 -->
+                        <div class="rope">
+
+                            <!-- 线 -->
+                            <div class="line"></div>
+                            <!-- 文字 -->
+                            <div class="text">
+                                <!-- 文字：暂停 -->
+                                <div class="pause"></div>
+                                <!-- 文字：恢复 -->
+                                <div class="resume"></div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- 界面：设置 -->
+                <div id="settingUi" class="ui">
+
+                    <!-- 背景 -->
+                    <div>
+
+                        <!-- 左边的背景图 -->
+                        <div class="leftBackground"></div>
+                        <!-- 这是一个很大的Button：点击这个Button，可以关闭界面 -->
+                        <button class="closeButton"></button>
+                        <!-- 对话框 -->
+                        <div class="bubbleBox"></div>
+                        <div class="roundedCorner"></div>
+                        <!-- 右边的背景图 -->
+                        <div class="rightBackground"></div>
+
+                    </div>
+
+
+                    <!-- Logo -->
+                    <div>
+
+                        <!-- 分割线 -->
+                        <div class="divideLine"></div>
+                        <!-- Logo -->
+                        <div class="logo"></div>
+                        <!-- 版本号 -->
+                        <div class="version"></div>
+                        
+                        <!-- 按钮：Github -->
+                        <a class="githubButton" href="https://github.com/xujiangjiang/Easy-Cat-Timer" target="_blank"></a>
+                        <!-- 按钮：Staff -->
+                        <button class="staffButton"></button>
+
+                    </div>
+
+
+                    <!-- Staff面板 -->
+                    <div>
+
+                        <!-- Staff面板 -->
+                        <div class="staffPanel"></div>
+                        
+                    </div>
+
+
+                    <!-- 选项 -->
+                    <div>
+
+                        <!-- 选项名 -->
+                        <div class="settingTitle"></div>
+
+                        <!-- 音量 -->
+                        <div class="volume">
+
+                            <!-- 滑动条：音量 -->
+                            <div class="volumeSlider">
+                                <!-- 滑动条的背景 -->
+                                <div class="background"></div>
+                                <!-- 滑动条的圆形（用来拖动这个滑动条） -->
+                                <div class="round"></div>
+                            </div>
+        
+                            <!-- 滑动条：音量（移动端） -->
+                            <div class="inputVolumeSlider">
+                                <!--input-->
+                                <input class="input" type="range" value="100" min="0" max="100" step="10"/>
+                            </div>
+
+                            <!-- 音量的大小 -->
+                            <div class="volumeNumber">
+                                <!-- 音量数字 的背景 -->
+                                <div class="background"></div>
+                                <!-- 音量的数字 -->
+                                <p class="number">100</p>
+                            </div>
+
+                        </div>
+
+                        <!-- 语言 -->
+                        <div class="language">
+
+                            <!-- 语言：当前的语言 -->
+                            <button class="currentLanguage">
+
+                                <!-- 中文 -->
+                                <div class="chinese"></div>
+                                <!-- 英语 -->
+                                <div class="english"></div>
+
+                            </button>
+
+                            <!-- 语言：选择的语言 -->
+                            <div class="chooseLanguage">
+
+                                <!-- 中文 -->
+                                <a class="chinese" href="../chinese/index.html" target="_blank"></a>
+                                <!-- 英语 -->
+                                <a class="english" href="../english/index.html" target="_blank"></a>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- 界面：标题栏 -->
+                <div id="titleBarUi" class="ui">
+
+                    <!-- 按钮：设置 -->
+                    <button class="settingToggle"></button>
+                    <!-- 按钮：最小化 -->
+                    <button class="minimumButton"></button>
+                    <!-- 按钮：关闭 -->
+                    <button class="closeButton"></button>
+
+                </div>
+
+            </div>
+
+            <!-- 导航栏 -->
+            <div id="navigationBar">
+
+                <!-- 按钮：这是什么？ -->
+                <a class="whatIsIt" href="./what-is-it/index.html" target="_blank">
+
+                    <!-- 气泡 -->
+                    <div class="bubble"></div>
+                    <!-- 盒子 -->
+                    <div class="rect"></div>
+                    <!-- 文字 -->
+                    <div class="text"></div>
+
+                </a>
+
+                <!-- 按钮：下载 -->
+                <a class="download" href="./download/index.html" target="_blank">
+
+                    <!-- 气泡 -->
+                    <div class="bubble"></div>
+                    <!-- 盒子 -->
+                    <div class="rect"></div>
+                    <!-- 文字 -->
+                    <div class="text"></div>
+
+                </a>
+                
+                <!-- 按钮：其他 -->
+                <div class="other">
+
+                    <!-- 气泡 -->
+                    <div class="bubble"></div>
+                    <!-- 盒子 -->
+                    <div class="rect"></div>
+                    <!-- 文字 -->
+                    <div class="text"></div>
+
+                    <!-- 语言 -->
+                    <div class="language">
+
+                        <!-- 盒子 -->
+                        <div class="box"></div>
+                        <!-- 箭头 -->
+                        <div class="corner"></div>
+                        <!-- 英文 -->
+                        <a class="english" href="../english/index.html" target="_blank">English</a>
+                        <!-- 中文 -->
+                        <a class="chinese" href="../chinese/index.html" target="_blank">简体中文</a>
+
+                    </div>
+
+                </div>
+
+            </div>
+        
+        </main>
+
+        <!-- 上方菜单 -->
+        <nav id="topMenu">
+
+            <!-- 按钮 -->
+            <div class="openButton">
+
+                <!-- 图片 -->
+                <div class="image"></div>
+
+            </div>
+
+            <!-- 菜单 -->
+            <div class="menu">
+
+                <!-- 按钮 -->
+                <div class="buttons">
+
+                    <!-- Logo -->
+                    <a class="logo" href="./index.html" target="_blank">
+                        <!-- 图片 -->
+                        <div class="image"></div>
+                    </a>
+
+                    <!-- 版本号 -->
+                    <div class="version">
+                        <!-- 矩形 -->
+                        <div class="rect"></div>
+                        <!-- 尖角 -->
+                        <div class="corner"></div>
+                        <!-- 文字 -->
+                        <div class="text">v1.0</div>
+                    </div>
+                    
+                    <!-- 这是什么？ -->
+                    <a class="whatIsIt" href="./what-is-it/index.html" target="_blank">
+                        <!-- 文字:这是什么? -->
+                        <div class="text">这是什么?</div><!--What's it?-->
+                        <!-- 下划线 -->
+                        <div class="line"></div>
+                    </a>
+
+                    <!-- 语言 -->
+                    <div class="language">
+                        <!-- 文字:语言 -->
+                        <div class="text">语言</div><!--Language-->
+                        <!-- 下划线 -->
+                        <div class="line"></div>
+
+                        <!-- 可选的语言 -->
+                        <div class="choose">
+                            <!-- 盒子 -->
+                            <div class="box"></div>
+                            <!-- 箭头 -->
+                            <div class="corner"></div>
+                            <!-- 英文 -->
+                            <a class="english" href="../english/index.html" target="_blank">English</a>
+                            <!-- 中文 -->
+                            <a class="chinese" href="../chinese/index.html" target="_blank">简体中文</a>
+                        </div>
+                    </div>
+
+                    <!-- 空白 -->
+                    <div class="null"></div>
+
+                    <!-- 下载 -->
+                    <a class="download" href="./download/index.html" target="_blank">下载桌面版</a><!--Download-->
+
+                    <!-- 关闭 -->
+                    <div class="close">
+                        <!-- 图片 -->
+                        <div class="image"></div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </nav>
+
+    </body>
+
+    <!-- 代码文件：timer -->
+    <script src="./js/other/ui/otherUi.js"></script>
+    <script src="./js/other/other/SupportIosTool.js"></script>
+    <script src="./js/other/other/SupportMobileTool.js"></script>
+    <script src="./js/other/otherApp.js"></script>
+    <script src="./js/timer/other/enums.js"></script>
+    <script src="./js/timer/other/tools.js"></script>
+    <script src="./js/timer/struct/time.js"></script>
+    <script src="./js/timer/data/datas.js"></script>
+    <script src="./js/timer/system/audioSystem.js"></script>
+    <script src="./js/timer/system/timeSystem.js"></script>
+    <script src="./js/timer/system/saveSystem.js"></script>
+    <script src="./js/timer/system/systems.js"></script>
+    <script src="./js/timer/ui/titleBarUi.js"></script>
+    <script src="./js/timer/ui/countdownUi.js"></script>
+    <script src="./js/timer/ui/timingUi.js"></script>
+    <script src="./js/timer/ui/settingUi.js"></script>
+    <script src="./js/timer/ui/uis.js"></script>
+    <script src="./js/timer/timerApp.js"></script>
+    <script src="./js/webManager.js"></script>
+
 </html>

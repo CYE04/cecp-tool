@@ -1,0 +1,63 @@
+/* CECP 主题双 Logo 背景水印 + 居中对齐 */
+html, body {
+  background-color: #141416 !important;
+  overflow: hidden;
+}
+
+#background {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  background-color: #141416 !important;
+  z-index: 0;
+}
+
+.nt-hero-watermark {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: url("../asset/image/cecp-hero-logos-v1019.png") center center / 86% auto no-repeat;
+  opacity: 0.48;
+  filter: saturate(1.18) brightness(1.35) contrast(1.08) drop-shadow(0 20px 40px rgba(0, 0, 0, 0.34));
+}
+
+.nt-hero-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    circle at 50% 54%,
+    rgba(20, 20, 22, 0.88) 0%,
+    rgba(20, 20, 22, 0.70) 34%,
+    rgba(20, 20, 22, 0.22) 70%,
+    transparent 100%
+  );
+}
+
+@media (max-width: 767px) {
+  .nt-hero-watermark {
+    background-size: 96% auto;
+    opacity: 0.5;
+  }
+}
+
+/* 隐藏原 Easy Cat Timer 的 Logo 和外链导航栏，保留 100% 原版计时器居中 */
+#logo,
+#navigationBar,
+#topMenu {
+  display: none !important;
+}
+
+#main {
+  justify-content: center !important;
+  align-items: center !important;
+  z-index: 1;
+}
+
+#timerApp {
+  position: relative;
+  z-index: 2;
+}
