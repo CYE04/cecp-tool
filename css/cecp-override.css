@@ -167,7 +167,7 @@ html, body {
   color: #ffffff;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 860px) {
   .cecp-back-home {
     top: 14px;
     left: 12px;
@@ -188,6 +188,15 @@ html, body {
   .cecp-switch-btn {
     padding: 6px 10px;
     font-size: 12px;
+  }
+}
+
+@media (max-width: 680px) {
+  .cecp-back-home.show ~ .cecp-switcher {
+    left: 56px;
+    right: 12px;
+    transform: none;
+    max-width: none;
   }
 }
 
@@ -243,6 +252,11 @@ html, body {
 
 #cecpScorePanel {
   width: min(720px, calc(100vw - 32px));
+}
+
+#cecpStagePanel,
+#cecpWheelPanel {
+  width: min(780px, calc(100vw - 32px));
 }
 
 /* 年度点阵进度 */
@@ -785,3 +799,390 @@ html, body {
 .cecp-score-btn.plus5:hover {
   background: rgba(226, 176, 94, 0.26);
 }
+
+/* ---------- 聚会大屏倒计时 / 提示牌 ---------- */
+.cecp-stage-presets {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.cecp-stage-preset {
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  background: #1c1c1f;
+  color: #d4d4d8;
+  padding: 5px 11px;
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.cecp-stage-preset:hover {
+  border-color: rgba(226, 176, 94, 0.55);
+  color: #e2b05e;
+}
+
+.cecp-stage-preset.active {
+  background: rgba(226, 176, 94, 0.16);
+  border-color: rgba(226, 176, 94, 0.6);
+  color: #f5cd79;
+}
+
+.cecp-stage-edit-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+@media (max-width: 560px) {
+  .cecp-stage-edit-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.cecp-text-input {
+  width: 100%;
+  padding: 8px 11px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  background: #1c1c1f;
+  color: #f4f4f5;
+  font-size: 13.5px;
+  outline: none;
+}
+
+.cecp-text-input:focus {
+  border-color: #2f81f7;
+}
+
+.cecp-stage-screen {
+  background: rgba(14, 14, 17, 0.68);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 28px 20px;
+  text-align: center;
+  margin-bottom: 14px;
+}
+
+.cecp-stage-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: rgba(226, 176, 94, 0.14);
+  border: 1px solid rgba(226, 176, 94, 0.35);
+  color: #e2b05e;
+  font-size: 12.5px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.cecp-stage-title {
+  font-size: clamp(24px, 4vw, 42px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  color: #ffffff;
+  margin-bottom: 10px;
+  word-break: break-word;
+}
+
+.cecp-stage-time {
+  font-size: clamp(54px, 11vw, 112px);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  color: #ffffff;
+  margin: 6px 0 14px;
+}
+
+.cecp-stage-time.warn {
+  color: #f5cd79;
+}
+
+.cecp-stage-time.done {
+  color: #4ade80;
+}
+
+.cecp-stage-progress-track {
+  width: min(520px, 100%);
+  height: 5px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  margin: 0 auto 14px;
+}
+
+.cecp-stage-progress-fill {
+  height: 100%;
+  width: 100%;
+  border-radius: 999px;
+  background: #2f81f7;
+  transition: width 0.35s linear, background-color 0.25s ease;
+}
+
+.cecp-stage-progress-fill.warn {
+  background: #e2b05e;
+}
+
+.cecp-stage-progress-fill.done {
+  background: #22c55e;
+}
+
+.cecp-stage-subtitle {
+  font-size: clamp(14px, 2vw, 18px);
+  color: #a1a1aa;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+.cecp-stage-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.cecp-stage-time-input {
+  padding: 5px 9px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #1c1c1f;
+  color: #f4f4f5;
+  font-size: 13px;
+  font-weight: 600;
+  outline: none;
+  color-scheme: dark;
+}
+
+.cecp-stage-time-input:focus {
+  border-color: #2f81f7;
+}
+
+.cecp-stage-exit {
+  display: none;
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 10001;
+  padding: 7px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(20, 20, 22, 0.72);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: #e4e4e7;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  opacity: 0.45;
+  transition: opacity 0.2s ease, border-color 0.15s ease;
+}
+
+.cecp-stage-exit:hover {
+  opacity: 1;
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* 纯净投屏模式 */
+body.cecp-stage-pure .cecp-switcher,
+body.cecp-stage-pure .cecp-back-home,
+body.cecp-stage-pure #cecpStagePanel .cecp-panel-head,
+body.cecp-stage-pure #cecpStagePanel .cecp-stage-presets,
+body.cecp-stage-pure #cecpStagePanel .cecp-stage-edit-row,
+body.cecp-stage-pure #cecpStagePanel .cecp-stage-controls {
+  display: none !important;
+}
+
+body.cecp-stage-pure #cecpStagePanel {
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(1040px, calc(100vw - 48px));
+  max-height: calc(100vh - 32px);
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  padding: 12px;
+}
+
+body.cecp-stage-pure #cecpStagePanel .cecp-stage-screen {
+  background: transparent;
+  border: none;
+  padding: 16px;
+  margin: 0;
+}
+
+body.cecp-stage-pure #cecpStagePanel .cecp-stage-title {
+  font-size: clamp(32px, 5.2vw, 66px);
+  margin-bottom: 14px;
+}
+
+body.cecp-stage-pure #cecpStagePanel .cecp-stage-time {
+  font-size: clamp(82px, 17vw, 196px);
+  margin: 10px 0 20px;
+}
+
+body.cecp-stage-pure #cecpStagePanel .cecp-stage-subtitle {
+  font-size: clamp(18px, 2.6vw, 30px);
+}
+
+body.cecp-stage-pure .cecp-stage-exit {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* ---------- 互动大转盘 ---------- */
+.cecp-wheel-layout {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+@media (max-width: 700px) {
+  .cecp-wheel-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.cecp-wheel-left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.cecp-wheel-stage {
+  position: relative;
+  width: 310px;
+  height: 310px;
+  display: grid;
+  place-items: center;
+}
+
+@media (max-width: 400px) {
+  .cecp-wheel-stage {
+    width: 270px;
+    height: 270px;
+  }
+}
+
+.cecp-wheel-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  border-radius: 50%;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45), inset 0 0 0 2px rgba(255, 255, 255, 0.12);
+}
+
+.cecp-wheel-pointer {
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 12px solid transparent;
+  border-right: 12px solid transparent;
+  border-top: 22px solid #f5cd79;
+  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.55));
+  z-index: 4;
+  pointer-events: none;
+}
+
+.cecp-wheel-center-btn {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.85);
+  background: #141416;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  z-index: 3;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
+  transition: transform 0.14s ease, background 0.15s ease, border-color 0.15s ease;
+}
+
+.cecp-wheel-center-btn:hover:not(:disabled) {
+  transform: translate(-50%, -50%) scale(1.06);
+  background: #2f81f7;
+  border-color: #ffffff;
+}
+
+.cecp-wheel-center-btn:active:not(:disabled) {
+  transform: translate(-50%, -50%) scale(0.95);
+}
+
+.cecp-wheel-center-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.cecp-wheel-result {
+  width: 100%;
+  min-height: 46px;
+  padding: 8px 14px;
+  border-radius: 12px;
+  background: #18181b;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 14px;
+  color: #a1a1aa;
+}
+
+.cecp-wheel-result.has-winner {
+  border-color: rgba(226, 176, 94, 0.55);
+  background: rgba(226, 176, 94, 0.12);
+  color: #f5cd79;
+  font-size: 17px;
+  font-weight: 700;
+  animation: cecpPop 0.28s cubic-bezier(0.22, 1.2, 0.36, 1);
+}
+
+.cecp-wheel-right {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cecp-wheel-textarea {
+  min-height: 175px;
+  max-height: 240px;
+  margin-bottom: 0;
+}
+
+.cecp-wheel-presets {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.cecp-confetti-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 10000;
+}
+

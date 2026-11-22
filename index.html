@@ -549,9 +549,11 @@
         <!-- 顶部模式切换 -->
         <div class="cecp-switcher" role="tablist">
             <button type="button" class="cecp-switch-btn active" data-cecp-tab="timer">🐱 倒计时</button>
-            <button type="button" class="cecp-switch-btn" data-cecp-tab="year">⏳ 年度进度</button>
+            <button type="button" class="cecp-switch-btn" data-cecp-tab="stage">📺 聚会大屏</button>
+            <button type="button" class="cecp-switch-btn" data-cecp-tab="wheel">🎡 大转盘</button>
             <button type="button" class="cecp-switch-btn" data-cecp-tab="draw">🎲 抽签分组</button>
             <button type="button" class="cecp-switch-btn" data-cecp-tab="score">🏆 计分板</button>
+            <button type="button" class="cecp-switch-btn" data-cecp-tab="year">⏳ 年度</button>
         </div>
 
         <!-- 年度点阵进度面板 -->
@@ -651,6 +653,118 @@
 
             <div class="cecp-score-grid" id="cecpScoreGrid"></div>
         </section>
+
+        <!-- 聚会大屏倒计时 / 提示牌面板 -->
+        <section id="cecpStagePanel" class="cecp-panel" aria-label="聚会大屏">
+            <div class="cecp-panel-head">
+                <div class="cecp-panel-title">📺 聚会大屏 / 提示牌</div>
+                <div class="cecp-sub-seg" role="tablist">
+                    <button type="button" class="cecp-sub-btn active" data-stage-mode="countdown">倒数时长</button>
+                    <button type="button" class="cecp-sub-btn" data-stage-mode="target">目标时刻</button>
+                    <button type="button" class="cecp-sub-btn" data-stage-mode="clock">实时时钟</button>
+                </div>
+            </div>
+
+            <div class="cecp-stage-presets">
+                <span class="cecp-muted">快速场景：</span>
+                <button type="button" class="cecp-stage-preset" data-stage-preset="worship">主日崇拜</button>
+                <button type="button" class="cecp-stage-preset" data-stage-preset="youth">青年团契</button>
+                <button type="button" class="cecp-stage-preset" data-stage-preset="group">小组讨论</button>
+                <button type="button" class="cecp-stage-preset" data-stage-preset="break">中场休息</button>
+            </div>
+
+            <div class="cecp-stage-edit-row">
+                <input type="text" id="cecpStageTitleInput" class="cecp-text-input" placeholder="大屏主标题（如：主日崇拜即将开始）" maxlength="60" />
+                <input type="text" id="cecpStageSubInput" class="cecp-text-input" placeholder="副标题提示（如：请预备心安静祷告）" maxlength="80" />
+            </div>
+
+            <div class="cecp-stage-screen">
+                <div class="cecp-stage-badge" id="cecpStageBadge">即将开始</div>
+                <div class="cecp-stage-title" id="cecpStageTitleDisplay">主日崇拜即将开始</div>
+                <div class="cecp-stage-time" id="cecpStageTimeDisplay">10:00</div>
+                <div class="cecp-stage-progress-track" id="cecpStageProgressTrack">
+                    <div class="cecp-stage-progress-fill" id="cecpStageProgressFill"></div>
+                </div>
+                <div class="cecp-stage-subtitle" id="cecpStageSubDisplay">请预备心安静等候，愿神赐福今日聚会</div>
+            </div>
+
+            <div class="cecp-stage-controls">
+                <div class="cecp-control-group" id="cecpStageDurationGroup">
+                    <span>时长</span>
+                    <button type="button" class="cecp-btn cecp-btn-sm cecp-stage-min-btn" data-stage-mins="5">5m</button>
+                    <button type="button" class="cecp-btn cecp-btn-sm cecp-stage-min-btn" data-stage-mins="10">10m</button>
+                    <button type="button" class="cecp-btn cecp-btn-sm cecp-stage-min-btn" data-stage-mins="15">15m</button>
+                    <button type="button" class="cecp-btn cecp-btn-sm cecp-stage-min-btn" data-stage-mins="20">20m</button>
+                    <button type="button" class="cecp-btn cecp-btn-sm cecp-stage-min-btn" data-stage-mins="30">30m</button>
+                    <input type="number" id="cecpStageMinInput" class="cecp-num-input" min="1" max="180" value="10" />
+                    <span>分</span>
+                </div>
+
+                <div class="cecp-control-group" id="cecpStageTargetGroup" style="display:none;">
+                    <span>目标时刻</span>
+                    <input type="time" id="cecpStageTargetInput" class="cecp-stage-time-input" value="14:40" />
+                    <span class="cecp-muted">自动倒数至该时间</span>
+                </div>
+
+                <div class="cecp-control-group" id="cecpStageClockGroup" style="display:none;">
+                    <span class="cecp-muted">实时显示意大利帕多瓦当地时间</span>
+                </div>
+
+                <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                    <button type="button" class="cecp-btn cecp-btn-sm" id="cecpStageMuteBtn">🔊 音效</button>
+                    <button type="button" class="cecp-btn cecp-btn-sm" id="cecpStageResetBtn">重置</button>
+                    <button type="button" class="cecp-btn cecp-btn-primary" id="cecpStageStartBtn">开始</button>
+                    <button type="button" class="cecp-btn cecp-btn-gold" id="cecpStagePureBtn">⛶ 纯净投屏</button>
+                </div>
+            </div>
+        </section>
+
+        <button type="button" id="cecpStageExitBtn" class="cecp-stage-exit">✕ 退出投屏</button>
+
+        <!-- 互动大转盘面板 -->
+        <section id="cecpWheelPanel" class="cecp-panel" aria-label="互动大转盘">
+            <div class="cecp-panel-head">
+                <div class="cecp-panel-title">🎡 互动大转盘</div>
+                <div class="cecp-score-actions">
+                    <button type="button" class="cecp-btn cecp-btn-sm" id="cecpWheelMuteBtn">🔊 音效</button>
+                    <button type="button" class="cecp-btn cecp-btn-sm cecp-btn-gold" id="cecpWheelFullscreenBtn">⛶ 全屏</button>
+                </div>
+            </div>
+
+            <div class="cecp-wheel-layout">
+                <div class="cecp-wheel-left">
+                    <div class="cecp-wheel-stage">
+                        <div class="cecp-wheel-pointer" aria-hidden="true"></div>
+                        <canvas id="cecpWheelCanvas" class="cecp-wheel-canvas"></canvas>
+                        <button type="button" id="cecpWheelSpinBtn" class="cecp-wheel-center-btn">开始</button>
+                    </div>
+                    <div class="cecp-wheel-result" id="cecpWheelResult">点击转盘中心「开始」转动</div>
+                </div>
+
+                <div class="cecp-wheel-right">
+                    <div class="cecp-field-bar" style="margin-bottom:0;">
+                        <span class="cecp-muted">转盘选项（每行一个） · <strong id="cecpWheelCount" style="color:#f4f4f5;">0 项</strong></span>
+                    </div>
+                    <textarea id="cecpWheelInput" class="cecp-textarea cecp-wheel-textarea" placeholder="每行输入一个选项、名字或惩罚/奖励..."></textarea>
+
+                    <div class="cecp-wheel-presets">
+                        <button type="button" class="cecp-btn cecp-btn-sm" id="cecpWheelSyncDrawBtn">同步抽签名单</button>
+                        <button type="button" class="cecp-btn cecp-btn-sm" id="cecpWheelPresetIceBtn">破冰互动</button>
+                        <button type="button" class="cecp-btn cecp-btn-sm" id="cecpWheelPresetFoodBtn">今天吃什么</button>
+                    </div>
+
+                    <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;padding-top:4px;">
+                        <label class="cecp-check-label">
+                            <input type="checkbox" id="cecpWheelRemoveWinner" />
+                            <span>抽中后自动移除</span>
+                        </label>
+                        <button type="button" class="cecp-btn cecp-btn-primary" id="cecpWheelSpinBtn2">开始转动</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <canvas id="cecpConfettiCanvas" class="cecp-confetti-canvas" aria-hidden="true"></canvas>
 
     </body>
 
