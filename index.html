@@ -3,25 +3,26 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>静谧专注空间</title>
+  <title>CECP 专注倒计时</title>
+  <link rel="icon" type="image/svg+xml" href="./cecp-logo.svg" />
   <style>
     :root {
       --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #e4e9f2 100%);
-      --card-bg: rgba(255, 255, 255, 0.78);
-      --card-border: rgba(255, 255, 255, 0.9);
+      --card-bg: rgba(255, 255, 255, 0.84);
+      --card-border: rgba(255, 255, 255, 0.95);
       --surface-2: rgba(15, 23, 42, 0.05);
       --text: #1e293b;
       --text-muted: #64748b;
       --accent: #2563eb;
       --accent-soft: rgba(37, 99, 235, 0.12);
-      --accent-glow: rgba(37, 99, 235, 0.28);
+      --accent-glow: rgba(37, 99, 235, 0.25);
       --ring-bg: rgba(15, 23, 42, 0.08);
       --shadow: 0 12px 40px rgba(15, 23, 42, 0.08);
     }
 
     [data-theme="ocean"] {
       --bg-gradient: radial-gradient(circle at 20% 20%, #1e3a5f 0%, #0f172a 55%, #090d16 100%);
-      --card-bg: rgba(15, 23, 42, 0.58);
+      --card-bg: rgba(15, 23, 42, 0.62);
       --card-border: rgba(148, 163, 184, 0.18);
       --surface-2: rgba(255, 255, 255, 0.08);
       --text: #f1f5f9;
@@ -35,7 +36,7 @@
 
     [data-theme="sunset"] {
       --bg-gradient: radial-gradient(circle at 80% 15%, #7c2d12 0%, #4c1d95 55%, #1e1b4b 100%);
-      --card-bg: rgba(24, 16, 42, 0.55);
+      --card-bg: rgba(24, 16, 42, 0.58);
       --card-border: rgba(251, 146, 60, 0.22);
       --surface-2: rgba(255, 255, 255, 0.09);
       --text: #fff7ed;
@@ -49,7 +50,7 @@
 
     [data-theme="forest"] {
       --bg-gradient: radial-gradient(circle at 25% 80%, #14532d 0%, #064e3b 45%, #052e16 100%);
-      --card-bg: rgba(6, 36, 26, 0.58);
+      --card-bg: rgba(6, 36, 26, 0.6);
       --card-border: rgba(74, 222, 128, 0.18);
       --surface-2: rgba(255, 255, 255, 0.08);
       --text: #ecfdf5;
@@ -63,7 +64,7 @@
 
     [data-theme="midnight"] {
       --bg-gradient: radial-gradient(circle at 50% 0%, #18181b 0%, #09090b 100%);
-      --card-bg: rgba(24, 24, 27, 0.72);
+      --card-bg: rgba(24, 24, 27, 0.74);
       --card-border: rgba(255, 255, 255, 0.1);
       --surface-2: rgba(255, 255, 255, 0.07);
       --text: #fafafa;
@@ -95,10 +96,10 @@
 
     .app {
       width: 100%;
-      max-width: 560px;
+      max-width: 520px;
       display: flex;
       flex-direction: column;
-      gap: 14px;
+      gap: 12px;
     }
 
     /* 顶部栏 */
@@ -110,46 +111,40 @@
       flex-wrap: wrap;
     }
 
-    .nav-pills {
+    .brand {
       display: flex;
-      gap: 4px;
-      background: var(--card-bg);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid var(--card-border);
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-logo {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.94);
       padding: 4px;
-      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+      flex-shrink: 0;
     }
 
-    .nav-pill {
-      border: none;
-      background: transparent;
-      color: var(--text-muted);
-      padding: 6px 14px;
-      border-radius: 999px;
-      font-size: 0.84rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.18s;
+    .brand-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
     }
 
-    .nav-pill:hover {
-      color: var(--text);
-    }
-
-    .nav-pill.active {
-      background: var(--accent);
-      color: #0b1120;
-    }
-
-    [data-theme="light"] .nav-pill.active {
-      color: #fff;
+    .brand-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
     }
 
     .topbar-right {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 7px;
     }
 
     .theme-dots {
@@ -164,8 +159,8 @@
     }
 
     .theme-dot {
-      width: 16px;
-      height: 16px;
+      width: 15px;
+      height: 15px;
       border-radius: 50%;
       border: 2px solid transparent;
       cursor: pointer;
@@ -181,57 +176,44 @@
       transform: scale(1.15);
     }
 
-    .icon-btn {
-      width: 34px;
-      height: 34px;
-      border-radius: 50%;
+    .pill-btn {
+      height: 32px;
+      padding: 0 10px;
+      border-radius: 999px;
       border: 1px solid var(--card-border);
       background: var(--card-bg);
       backdrop-filter: blur(16px);
       color: var(--text);
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
       display: grid;
       place-items: center;
-      cursor: pointer;
-      font-size: 0.9rem;
       transition: border-color 0.15s, transform 0.15s;
     }
 
-    .icon-btn:hover {
+    .pill-btn:hover {
       border-color: var(--accent);
-      transform: scale(1.05);
+      transform: scale(1.04);
     }
 
-    /* 主毛玻璃卡片 */
+    /* 主卡片 */
     .glass-card {
+      position: relative;
       background: var(--card-bg);
       backdrop-filter: blur(22px);
       -webkit-backdrop-filter: blur(22px);
       border: 1px solid var(--card-border);
       border-radius: 24px;
-      padding: 26px 22px;
+      padding: 22px 22px 24px;
       box-shadow: var(--shadow);
     }
 
-    .view {
-      display: none;
-    }
-
-    .view.active {
-      display: block;
-      animation: fadeUp 0.22s ease-out;
-    }
-
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(6px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* 专注倒计时 */
     .focus-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
     }
 
     .status-badge {
@@ -248,6 +230,84 @@
       color: var(--text-muted);
     }
 
+    /* 陪伴小猫咪 */
+    .cat-stage {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .cat-svg {
+      width: 112px;
+      height: 76px;
+      overflow: visible;
+    }
+
+    .cat-tail {
+      transform-origin: 86px 58px;
+      animation: tailSway 2.8s ease-in-out infinite;
+    }
+
+    .cat-running .cat-tail {
+      animation: tailSway 1.2s ease-in-out infinite;
+    }
+
+    .cat-eye {
+      transform-origin: center;
+      animation: blink 4.5s infinite;
+    }
+
+    .cat-sleep-z {
+      opacity: 0;
+      font-size: 11px;
+      font-weight: 700;
+      fill: var(--accent);
+    }
+
+    .cat-paused .cat-sleep-z {
+      animation: floatZ 2.2s ease-in-out infinite;
+    }
+
+    .cat-heart {
+      opacity: 0;
+      fill: #fb7185;
+    }
+
+    .cat-done .cat-heart {
+      animation: popHeart 1.4s ease-out infinite;
+    }
+
+    .cat-bubble {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+      min-height: 18px;
+    }
+
+    @keyframes tailSway {
+      0%, 100% { transform: rotate(-6deg); }
+      50% { transform: rotate(10deg); }
+    }
+
+    @keyframes blink {
+      0%, 92%, 100% { transform: scaleY(1); }
+      96% { transform: scaleY(0.1); }
+    }
+
+    @keyframes floatZ {
+      0% { opacity: 0; transform: translate(0, 4px); }
+      50% { opacity: 0.9; }
+      100% { opacity: 0; transform: translate(6px, -10px); }
+    }
+
+    @keyframes popHeart {
+      0% { opacity: 0; transform: translateY(4px) scale(0.7); }
+      40% { opacity: 1; transform: translateY(-4px) scale(1.1); }
+      100% { opacity: 0; transform: translateY(-12px) scale(0.9); }
+    }
+
+    /* 任务栏 */
     .task-bar {
       display: flex;
       align-items: center;
@@ -256,12 +316,12 @@
       border: 1px solid var(--card-border);
       border-radius: 12px;
       padding: 8px 12px;
-      margin-bottom: 20px;
+      margin-bottom: 16px;
     }
 
     .task-check {
-      width: 18px;
-      height: 18px;
+      width: 17px;
+      height: 17px;
       accent-color: var(--accent);
       cursor: pointer;
       flex-shrink: 0;
@@ -272,7 +332,7 @@
       border: none;
       background: transparent;
       color: var(--text);
-      font-size: 0.92rem;
+      font-size: 0.9rem;
       font-family: inherit;
       outline: none;
     }
@@ -286,12 +346,13 @@
       opacity: 0.6;
     }
 
+    /* 预设模式 */
     .timer-modes {
       display: flex;
       gap: 6px;
       justify-content: center;
       flex-wrap: wrap;
-      margin-bottom: 20px;
+      margin-bottom: 16px;
     }
 
     .mode-chip {
@@ -321,7 +382,7 @@
       justify-content: center;
       align-items: center;
       gap: 8px;
-      margin-bottom: 18px;
+      margin-bottom: 14px;
     }
 
     .custom-row.show {
@@ -329,7 +390,7 @@
     }
 
     .custom-input {
-      width: 86px;
+      width: 84px;
       padding: 6px 10px;
       border-radius: 10px;
       border: 1px solid var(--card-border);
@@ -340,11 +401,12 @@
       outline: none;
     }
 
+    /* 计时圆环 */
     .ring-wrap {
       position: relative;
-      width: 230px;
-      height: 230px;
-      margin: 0 auto 22px;
+      width: 214px;
+      height: 214px;
+      margin: 0 auto 20px;
       display: grid;
       place-items: center;
     }
@@ -372,7 +434,7 @@
     }
 
     .time-text {
-      font-size: 3.1rem;
+      font-size: 3rem;
       font-weight: 800;
       font-variant-numeric: tabular-nums;
       letter-spacing: 0.03em;
@@ -410,7 +472,7 @@
     .btn-primary {
       background: var(--accent);
       color: #0b1120;
-      min-width: 108px;
+      min-width: 112px;
       box-shadow: 0 4px 16px var(--accent-glow);
     }
 
@@ -424,116 +486,18 @@
       border: 1px solid var(--card-border);
     }
 
-    /* 呼吸引导模式 */
-    .breath-box {
-      text-align: center;
-      padding: 14px 0 8px;
-    }
-
-    .breath-desc {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      margin-bottom: 26px;
-    }
-
-    .breath-stage {
-      height: 220px;
-      display: grid;
-      place-items: center;
-      margin-bottom: 22px;
-      position: relative;
-    }
-
-    .breath-orb {
-      width: 110px;
-      height: 110px;
-      border-radius: 50%;
-      background: radial-gradient(circle, var(--accent) 0%, var(--accent-soft) 70%);
-      box-shadow: 0 0 40px var(--accent-glow);
-      display: grid;
-      place-items: center;
-      transition: transform 1s ease-in-out;
-    }
-
-    .breath-label {
-      font-size: 1.05rem;
-      font-weight: 700;
-      margin-bottom: 4px;
-    }
-
-    .breath-sec {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      font-variant-numeric: tabular-nums;
-      margin-bottom: 18px;
-    }
-
-    /* 时间进度条模式 */
-    .progress-list {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .prog-item {
-      background: var(--surface-2);
-      border: 1px solid var(--card-border);
-      border-radius: 14px;
-      padding: 14px 16px;
-    }
-
-    .prog-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      margin-bottom: 8px;
-    }
-
-    .prog-title {
-      font-size: 0.92rem;
-      font-weight: 700;
-    }
-
-    .prog-pct {
-      font-size: 0.92rem;
-      font-weight: 800;
-      color: var(--accent);
-      font-variant-numeric: tabular-nums;
-    }
-
-    .prog-track {
-      height: 8px;
-      border-radius: 999px;
-      background: var(--ring-bg);
-      overflow: hidden;
-    }
-
-    .prog-fill {
-      height: 100%;
-      border-radius: 999px;
-      background: var(--accent);
-      box-shadow: 0 0 10px var(--accent-glow);
-      transition: width 0.5s ease;
-    }
-
-    .prog-sub {
-      font-size: 0.76rem;
-      color: var(--text-muted);
-      margin-top: 6px;
-    }
-
-    /* 底部白噪音控制栏 */
+    /* 底部白噪音 */
     .sound-bar {
       background: var(--card-bg);
       backdrop-filter: blur(18px);
       -webkit-backdrop-filter: blur(18px);
       border: 1px solid var(--card-border);
       border-radius: 18px;
-      padding: 12px 16px;
+      padding: 11px 16px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 12px;
+      gap: 10px;
       flex-wrap: wrap;
     }
 
@@ -547,16 +511,16 @@
     .sound-label {
       font-size: 0.78rem;
       color: var(--text-muted);
-      margin-right: 4px;
+      margin-right: 2px;
     }
 
     .sound-chip {
-      padding: 5px 11px;
+      padding: 5px 10px;
       border-radius: 999px;
       border: 1px solid var(--card-border);
       background: var(--surface-2);
       color: var(--text-muted);
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       cursor: pointer;
       transition: all 0.15s;
     }
@@ -577,7 +541,7 @@
     }
 
     input[type="range"] {
-      width: 82px;
+      width: 78px;
       accent-color: var(--accent);
       cursor: pointer;
     }
@@ -585,106 +549,223 @@
 </head>
 <body>
   <div class="app">
-    <!-- 顶部导航 & 主题切换 -->
-    <div class="topbar">
-      <div class="nav-pills" role="tablist">
-        <button class="nav-pill active" data-view="focus">🍅 专注</button>
-        <button class="nav-pill" data-view="breath">🌬️ 呼吸</button>
-        <button class="nav-pill" data-view="progress">⏳ 进度</button>
+    <!-- 顶部：CECP Logo + 主题 + 语言 + 全屏 -->
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-logo">
+          <img src="./cecp-logo.svg" alt="CECP Logo" />
+        </div>
+        <span class="brand-title" id="brandTitle">CECP 专注倒计时</span>
       </div>
 
       <div class="topbar-right">
-        <div class="theme-dots" title="切换氛围主题">
+        <div class="theme-dots" title="切换主题">
           <button class="theme-dot" data-theme-pick="light" style="background: #e2e8f0;" title="极简纸白"></button>
           <button class="theme-dot active" data-theme-pick="ocean" style="background: #0ea5e9;" title="深海静谧"></button>
           <button class="theme-dot" data-theme-pick="sunset" style="background: #fb923c;" title="日落余晖"></button>
           <button class="theme-dot" data-theme-pick="forest" style="background: #10b981;" title="森林呼吸"></button>
           <button class="theme-dot" data-theme-pick="midnight" style="background: #8b5cf6;" title="暗夜极客"></button>
         </div>
-        <button class="icon-btn" id="fullscreenBtn" title="全屏沉浸模式">⛶</button>
+        <button class="pill-btn" id="langBtn" title="Switch Language">EN</button>
+        <button class="pill-btn" id="fullscreenBtn" title="全屏">⛶</button>
       </div>
-    </div>
+    </header>
 
     <!-- 主卡片 -->
     <main class="glass-card">
-      <!-- 1. 专注倒计时 -->
-      <section class="view active" id="view-focus">
-        <div class="focus-header">
-          <span class="status-badge" id="timerStatus">准备就绪</span>
-          <span class="today-stat">今日完成 <strong id="completedCount">0</strong> 次</span>
-        </div>
+      <div class="focus-header">
+        <span class="status-badge" id="timerStatus">准备就绪</span>
+        <span class="today-stat"><span id="todayLabel">今日完成</span> <strong id="completedCount">0</strong></span>
+      </div>
 
-        <div class="task-bar">
-          <input type="checkbox" class="task-check" id="taskCheck" title="标记完成" />
-          <input type="text" class="task-input" id="taskInput" placeholder="写下这次要专注的事..." />
-        </div>
+      <!-- 陪伴小猫咪 -->
+      <div class="cat-stage" id="catStage">
+        <svg class="cat-svg" viewBox="0 0 120 80" aria-hidden="true">
+          <!-- 尾巴 -->
+          <path class="cat-tail" d="M 86 58 Q 108 54 106 36 Q 105 28 99 30" fill="none" stroke="var(--accent)" stroke-width="6" stroke-linecap="round" />
+          <!-- 身体 -->
+          <ellipse cx="60" cy="56" rx="28" ry="18" fill="var(--surface-2)" stroke="var(--accent)" stroke-width="2.5" />
+          <!-- 头 -->
+          <circle cx="56" cy="36" r="18" fill="var(--surface-2)" stroke="var(--accent)" stroke-width="2.5" />
+          <!-- 左耳 & 右耳 -->
+          <polygon points="41,25 38,10 50,20" fill="var(--accent)" />
+          <polygon points="71,25 74,10 62,20" fill="var(--accent)" />
+          <!-- 眼睛 -->
+          <ellipse class="cat-eye" cx="49" cy="35" rx="2.4" ry="3" fill="var(--text)" />
+          <ellipse class="cat-eye" cx="63" cy="35" rx="2.4" ry="3" fill="var(--text)" />
+          <!-- 腮红 -->
+          <ellipse cx="43" cy="40" rx="3.2" ry="1.8" fill="#fb7185" opacity="0.55" />
+          <ellipse cx="69" cy="40" rx="3.2" ry="1.8" fill="#fb7185" opacity="0.55" />
+          <!-- 鼻子与嘴巴 -->
+          <polygon points="54.5,39 57.5,39 56,41" fill="#fb7185" />
+          <path d="M 52 42 Q 54 45 56 42 Q 58 45 60 42" fill="none" stroke="var(--text)" stroke-width="1.4" stroke-linecap="round" />
+          <!-- 小爪子 -->
+          <ellipse cx="46" cy="68" rx="6" ry="4" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="2" />
+          <ellipse cx="70" cy="68" rx="6" ry="4" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="2" />
+          <!-- 暂停 Zzz & 完成爱心 -->
+          <text class="cat-sleep-z" x="78" y="22">Zzz</text>
+          <path class="cat-heart" d="M 85 20 C 85 17 81 17 81 20 C 81 23 85 26 85 26 C 85 26 89 23 89 20 C 89 17 85 17 85 20 Z" />
+        </svg>
+        <div class="cat-bubble" id="catBubble">小猫准备好陪你专注啦</div>
+      </div>
 
-        <div class="timer-modes">
-          <button class="mode-chip active" data-minutes="25" data-label="番茄专注">专注 25m</button>
-          <button class="mode-chip" data-minutes="5" data-label="短休息">短休 5m</button>
-          <button class="mode-chip" data-minutes="15" data-label="长休息">长休 15m</button>
-          <button class="mode-chip" id="customModeBtn">自定义</button>
-        </div>
+      <!-- 单行任务 -->
+      <div class="task-bar">
+        <input type="checkbox" class="task-check" id="taskCheck" />
+        <input type="text" class="task-input" id="taskInput" placeholder="写下这次要专注的事..." />
+      </div>
 
-        <div class="custom-row" id="customRow">
-          <input type="number" class="custom-input" id="customInput" min="1" max="180" value="45" />
-          <span style="font-size: 0.84rem; color: var(--text-muted);">分钟</span>
-          <button class="btn btn-ghost" id="applyCustomBtn" style="padding: 6px 12px; font-size: 0.82rem;">应用</button>
-        </div>
+      <!-- 模式选择 -->
+      <div class="timer-modes">
+        <button class="mode-chip active" data-minutes="25" data-key="pomodoro">专注 25m</button>
+        <button class="mode-chip" data-minutes="5" data-key="short">短休 5m</button>
+        <button class="mode-chip" data-minutes="15" data-key="long">长休 15m</button>
+        <button class="mode-chip" id="customModeBtn">自定义</button>
+      </div>
 
-        <div class="ring-wrap">
-          <svg viewBox="0 0 230 230" width="230" height="230">
-            <circle class="ring-bg" cx="115" cy="115" r="104"></circle>
-            <circle class="ring-fg" id="timerRing" cx="115" cy="115" r="104"></circle>
-          </svg>
-          <div>
-            <div class="time-text" id="timerDisplay">25:00</div>
-            <div class="time-sub" id="timerModeLabel">番茄专注</div>
-          </div>
-        </div>
+      <div class="custom-row" id="customRow">
+        <input type="number" class="custom-input" id="customInput" min="1" max="180" value="45" />
+        <span id="minUnit" style="font-size: 0.84rem; color: var(--text-muted);">分钟</span>
+        <button class="btn btn-ghost" id="applyCustomBtn" style="padding: 6px 12px; font-size: 0.82rem;">应用</button>
+      </div>
 
-        <div class="controls">
-          <button class="btn btn-primary" id="timerStartBtn">开始</button>
-          <button class="btn btn-ghost" id="timerResetBtn">重置</button>
+      <!-- 倒计时圆环 -->
+      <div class="ring-wrap">
+        <svg viewBox="0 0 214 214" width="214" height="214">
+          <circle class="ring-bg" cx="107" cy="107" r="96"></circle>
+          <circle class="ring-fg" id="timerRing" cx="107" cy="107" r="96"></circle>
+        </svg>
+        <div>
+          <div class="time-text" id="timerDisplay">25:00</div>
+          <div class="time-sub" id="timerModeLabel">番茄专注</div>
         </div>
-      </section>
+      </div>
 
-      <!-- 2. 4-7-8 呼吸引导 -->
-      <section class="view" id="view-breath">
-        <div class="breath-box">
-          <div class="breath-desc">4-7-8 呼吸放松法：跟着光球节奏缓慢呼吸，缓解疲劳与焦虑</div>
-          <div class="breath-stage">
-            <div class="breath-orb" id="breathOrb"></div>
-          </div>
-          <div class="breath-label" id="breathPhase">准备开始</div>
-          <div class="breath-sec" id="breathSec">点击下方按钮开始 1 分钟放松</div>
-          <button class="btn btn-primary" id="breathToggleBtn">开始呼吸</button>
-        </div>
-      </section>
-
-      <!-- 3. 时间可视化进度 -->
-      <section class="view" id="view-progress">
-        <div class="progress-list" id="progressList"></div>
-      </section>
+      <div class="controls">
+        <button class="btn btn-primary" id="timerStartBtn">开始</button>
+        <button class="btn btn-ghost" id="timerResetBtn">重置</button>
+      </div>
     </main>
 
-    <!-- 底部白噪音控制台 -->
+    <!-- 底部白噪音 -->
     <div class="sound-bar">
       <div class="sound-buttons">
-        <span class="sound-label">白噪音</span>
-        <button class="sound-chip" data-sound="rain">🌧️ 细雨</button>
-        <button class="sound-chip" data-sound="wave">🌊 海浪</button>
-        <button class="sound-chip" data-sound="fire">🔥 暖噪</button>
+        <span class="sound-label" id="soundTitle">白噪音</span>
+        <button class="sound-chip" data-sound="rain">🌧️ <span data-i18n="rain">细雨</span></button>
+        <button class="sound-chip" data-sound="wave">🌊 <span data-i18n="wave">海浪</span></button>
+        <button class="sound-chip" data-sound="fire">🔥 <span data-i18n="fire">暖噪</span></button>
       </div>
       <div class="volume-wrap">
         <span>🔈</span>
-        <input type="range" id="volumeSlider" min="0" max="100" value="45" title="音量" />
+        <input type="range" id="volumeSlider" min="0" max="100" value="45" />
       </div>
     </div>
   </div>
 
   <script>
-    // ---------- 1. 主题切换 ----------
+    // ---------- 多语言配置 ----------
+    const i18n = {
+      zh: {
+        brandTitle: 'CECP 专注倒计时',
+        ready: '准备就绪',
+        running: '专注中...',
+        paused: '已暂停',
+        done: '已完成！',
+        todayLabel: '今日完成',
+        taskPlaceholder: '写下这次要专注的事...',
+        pomodoro: '专注 25m',
+        short: '短休 5m',
+        long: '长休 15m',
+        custom: '自定义',
+        minUnit: '分钟',
+        apply: '应用',
+        start: '开始',
+        pause: '暂停',
+        resume: '继续',
+        reset: '重置',
+        modePomodoro: '番茄专注',
+        modeShort: '短休息',
+        modeLong: '长休息',
+        modeCustom: '自定义专注',
+        catReady: '小猫准备好陪你专注啦',
+        catRunning: '嘘…小猫正在陪你认真工作',
+        catPaused: '小猫先打个盹，等你回来',
+        catDone: '太棒了！小猫为你鼓掌 🎉',
+        soundTitle: '白噪音',
+        rain: '细雨',
+        wave: '海浪',
+        fire: '暖噪',
+        notifyTitle: '⏰ 倒计时结束',
+        notifyBody: '辛苦啦，休息一下吧！'
+      },
+      en: {
+        brandTitle: 'CECP Focus Timer',
+        ready: 'Ready',
+        running: 'Focusing...',
+        paused: 'Paused',
+        done: 'Completed!',
+        todayLabel: 'Today',
+        taskPlaceholder: 'What are you focusing on?',
+        pomodoro: 'Focus 25m',
+        short: 'Short 5m',
+        long: 'Long 15m',
+        custom: 'Custom',
+        minUnit: 'min',
+        apply: 'Apply',
+        start: 'Start',
+        pause: 'Pause',
+        resume: 'Resume',
+        reset: 'Reset',
+        modePomodoro: 'Focus Session',
+        modeShort: 'Short Break',
+        modeLong: 'Long Break',
+        modeCustom: 'Custom Timer',
+        catReady: 'Kitty is ready to focus with you',
+        catRunning: 'Shh... Kitty is quietly cheering for you',
+        catPaused: 'Kitty is taking a quick nap...',
+        catDone: 'Awesome job! Time is up 🎉',
+        soundTitle: 'Ambient',
+        rain: 'Rain',
+        wave: 'Waves',
+        fire: 'Warm',
+        notifyTitle: '⏰ Time is up!',
+        notifyBody: 'Great work! Take a short break.'
+      }
+    };
+
+    let lang = localStorage.getItem('cecp_timer_lang') || 'zh';
+    const langBtn = document.getElementById('langBtn');
+
+    function t(key) {
+      return i18n[lang][key] || key;
+    }
+
+    function applyLang() {
+      langBtn.textContent = lang === 'zh' ? 'EN' : '中';
+      document.getElementById('brandTitle').textContent = t('brandTitle');
+      document.getElementById('todayLabel').textContent = t('todayLabel');
+      document.getElementById('taskInput').placeholder = t('taskPlaceholder');
+      document.querySelector('[data-key="pomodoro"]').textContent = t('pomodoro');
+      document.querySelector('[data-key="short"]').textContent = t('short');
+      document.querySelector('[data-key="long"]').textContent = t('long');
+      document.getElementById('customModeBtn').textContent = t('custom');
+      document.getElementById('minUnit').textContent = t('minUnit');
+      document.getElementById('applyCustomBtn').textContent = t('apply');
+      document.getElementById('timerResetBtn').textContent = t('reset');
+      document.getElementById('soundTitle').textContent = t('soundTitle');
+      document.querySelector('[data-i18n="rain"]').textContent = t('rain');
+      document.querySelector('[data-i18n="wave"]').textContent = t('wave');
+      document.querySelector('[data-i18n="fire"]').textContent = t('fire');
+      syncStateLabels();
+    }
+
+    langBtn.addEventListener('click', () => {
+      lang = lang === 'zh' ? 'en' : 'zh';
+      localStorage.setItem('cecp_timer_lang', lang);
+      applyLang();
+    });
+
+    // ---------- 主题切换 ----------
     const html = document.documentElement;
     const themeDots = document.querySelectorAll('.theme-dot');
 
@@ -697,20 +778,7 @@
     setTheme(localStorage.getItem('cecp_focus_theme') || 'ocean');
     themeDots.forEach(dot => dot.addEventListener('click', () => setTheme(dot.dataset.themePick)));
 
-    // ---------- 2. 顶部视图切换 ----------
-    const navPills = document.querySelectorAll('.nav-pill');
-    const views = document.querySelectorAll('.view');
-    navPills.forEach(pill => {
-      pill.addEventListener('click', () => {
-        navPills.forEach(p => p.classList.remove('active'));
-        views.forEach(v => v.classList.remove('active'));
-        pill.classList.add('active');
-        document.getElementById('view-' + pill.dataset.view).classList.add('active');
-        if (pill.dataset.view === 'progress') renderTimeProgress();
-      });
-    });
-
-    // 全屏切换
+    // 全屏
     document.getElementById('fullscreenBtn').addEventListener('click', () => {
       if (!document.fullscreenElement) {
         document.documentElement.requestFullscreen?.();
@@ -719,14 +787,14 @@
       }
     });
 
-    // ---------- 3. 专注任务记忆 ----------
+    // ---------- 任务记忆 ----------
     const taskInput = document.getElementById('taskInput');
     const taskCheck = document.getElementById('taskCheck');
     taskInput.value = localStorage.getItem('cecp_focus_task') || '';
     taskInput.addEventListener('input', () => localStorage.setItem('cecp_focus_task', taskInput.value));
     taskCheck.addEventListener('change', () => taskInput.classList.toggle('done', taskCheck.checked));
 
-    // ---------- 4. 专注倒计时 ----------
+    // ---------- 精准时间戳倒计时 ----------
     const COUNT_KEY = 'cecp_focus_completed_v1';
     const completedCountEl = document.getElementById('completedCount');
     const timerDisplay = document.getElementById('timerDisplay');
@@ -735,17 +803,21 @@
     const timerRing = document.getElementById('timerRing');
     const timerStartBtn = document.getElementById('timerStartBtn');
     const timerResetBtn = document.getElementById('timerResetBtn');
+    const catStage = document.getElementById('catStage');
+    const catBubble = document.getElementById('catBubble');
     const modeChips = document.querySelectorAll('.mode-chip[data-minutes]');
     const customModeBtn = document.getElementById('customModeBtn');
     const customRow = document.getElementById('customRow');
 
-    const CIRCUMFERENCE = 2 * Math.PI * 104;
+    const CIRCUMFERENCE = 2 * Math.PI * 96;
     timerRing.style.strokeDasharray = CIRCUMFERENCE;
 
     let totalSeconds = 25 * 60;
     let remainingSeconds = totalSeconds;
+    let endTimeMs = null;
     let timerInterval = null;
-    let isRunning = false;
+    let timerState = 'ready'; // ready | running | paused | done
+    let currentModeKey = 'pomodoro';
 
     function getTodayKey() {
       const d = new Date();
@@ -773,10 +845,42 @@
       return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
     }
 
+    function syncStateLabels() {
+      const modeMap = {
+        pomodoro: t('modePomodoro'),
+        short: t('modeShort'),
+        long: t('modeLong'),
+        custom: t('modeCustom')
+      };
+      timerModeLabel.textContent = modeMap[currentModeKey] || t('modePomodoro');
+
+      catStage.classList.remove('cat-running', 'cat-paused', 'cat-done');
+      if (timerState === 'running') {
+        timerStatus.textContent = t('running');
+        timerStartBtn.textContent = t('pause');
+        catStage.classList.add('cat-running');
+        catBubble.textContent = t('catRunning');
+      } else if (timerState === 'paused') {
+        timerStatus.textContent = t('paused');
+        timerStartBtn.textContent = t('resume');
+        catStage.classList.add('cat-paused');
+        catBubble.textContent = t('catPaused');
+      } else if (timerState === 'done') {
+        timerStatus.textContent = t('done');
+        timerStartBtn.textContent = t('start');
+        catStage.classList.add('cat-done');
+        catBubble.textContent = t('catDone');
+      } else {
+        timerStatus.textContent = t('ready');
+        timerStartBtn.textContent = t('start');
+        catBubble.textContent = t('catReady');
+      }
+    }
+
     function updateTimerUI() {
       const str = formatTime(remainingSeconds);
       timerDisplay.textContent = str;
-      document.title = isRunning ? `${str} · 专注中` : '静谧专注空间';
+      document.title = timerState === 'running' ? `${str} · ${t('brandTitle')}` : t('brandTitle');
       const ratio = totalSeconds > 0 ? remainingSeconds / totalSeconds : 0;
       timerRing.style.strokeDashoffset = CIRCUMFERENCE * (1 - ratio);
     }
@@ -790,7 +894,7 @@
           osc.type = 'sine';
           osc.frequency.value = freq;
           gain.gain.setValueAtTime(0.001, ctx.currentTime + i * 0.14);
-          gain.gain.exponentialRampToValueAtTime(0.15, ctx.currentTime + i * 0.14 + 0.04);
+          gain.gain.exponentialRampToValueAtTime(0.16, ctx.currentTime + i * 0.14 + 0.04);
           gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.14 + 0.6);
           osc.connect(gain);
           gain.connect(ctx.destination);
@@ -800,19 +904,45 @@
       } catch {}
     }
 
-    function stopTimer() {
-      clearInterval(timerInterval);
-      timerInterval = null;
-      isRunning = false;
-      timerStartBtn.textContent = '开始';
+    function sendNotification() {
+      if ('Notification' in window && Notification.permission === 'granted') {
+        try {
+          new Notification(t('notifyTitle'), { body: t('notifyBody'), icon: './cecp-logo.svg' });
+        } catch {}
+      }
     }
 
-    function setMinutes(mins, label) {
-      stopTimer();
+    function stopInterval() {
+      clearInterval(timerInterval);
+      timerInterval = null;
+    }
+
+    function tick() {
+      if (timerState !== 'running' || !endTimeMs) return;
+      const diff = Math.max(0, Math.ceil((endTimeMs - Date.now()) / 1000));
+      remainingSeconds = diff;
+      updateTimerUI();
+
+      if (diff <= 0) {
+        stopInterval();
+        timerState = 'done';
+        endTimeMs = null;
+        addCount();
+        playChime();
+        sendNotification();
+        syncStateLabels();
+        updateTimerUI();
+      }
+    }
+
+    function setMinutes(mins, modeKey) {
+      stopInterval();
+      currentModeKey = modeKey;
       totalSeconds = mins * 60;
       remainingSeconds = totalSeconds;
-      timerModeLabel.textContent = label;
-      timerStatus.textContent = '准备就绪';
+      endTimeMs = null;
+      timerState = 'ready';
+      syncStateLabels();
       updateTimerUI();
     }
 
@@ -821,7 +951,7 @@
         document.querySelectorAll('.mode-chip').forEach(c => c.classList.remove('active'));
         chip.classList.add('active');
         customRow.classList.remove('show');
-        setMinutes(Number(chip.dataset.minutes), chip.dataset.label);
+        setMinutes(Number(chip.dataset.minutes), chip.dataset.key);
       });
     });
 
@@ -833,137 +963,50 @@
 
     document.getElementById('applyCustomBtn').addEventListener('click', () => {
       const m = Math.max(1, Math.min(180, Number(document.getElementById('customInput').value) || 25));
-      setMinutes(m, `自定义 ${m} 分钟`);
+      setMinutes(m, 'custom');
     });
 
     timerStartBtn.addEventListener('click', () => {
-      if (isRunning) {
-        stopTimer();
-        timerStatus.textContent = '已暂停';
-        timerStartBtn.textContent = '继续';
+      if ('Notification' in window && Notification.permission === 'default') {
+        Notification.requestPermission().catch(() => {});
+      }
+
+      if (timerState === 'running') {
+        tick();
+        stopInterval();
+        timerState = 'paused';
+        endTimeMs = null;
+        syncStateLabels();
         updateTimerUI();
         return;
       }
+
       if (remainingSeconds <= 0) remainingSeconds = totalSeconds;
-      isRunning = true;
-      timerStartBtn.textContent = '暂停';
-      timerStatus.textContent = '专注中...';
+      endTimeMs = Date.now() + remainingSeconds * 1000;
+      timerState = 'running';
+      syncStateLabels();
       updateTimerUI();
-      timerInterval = setInterval(() => {
-        remainingSeconds--;
-        updateTimerUI();
-        if (remainingSeconds <= 0) {
-          stopTimer();
-          timerStatus.textContent = '已完成！';
-          addCount();
-          playChime();
-          updateTimerUI();
-        }
-      }, 1000);
+      timerInterval = setInterval(tick, 250);
     });
 
     timerResetBtn.addEventListener('click', () => {
-      stopTimer();
+      stopInterval();
       remainingSeconds = totalSeconds;
-      timerStatus.textContent = '准备就绪';
+      endTimeMs = null;
+      timerState = 'ready';
+      syncStateLabels();
       updateTimerUI();
     });
 
-    updateTimerUI();
-
-    // ---------- 5. 4-7-8 呼吸引导 ----------
-    const breathOrb = document.getElementById('breathOrb');
-    const breathPhase = document.getElementById('breathPhase');
-    const breathSec = document.getElementById('breathSec');
-    const breathToggleBtn = document.getElementById('breathToggleBtn');
-
-    let breathTimer = null;
-    let breathing = false;
-    const steps = [
-      { label: '深吸气...', secs: 4, scale: 1.65, transition: '4s ease-out' },
-      { label: '屏住呼吸', secs: 7, scale: 1.65, transition: '0.3s linear' },
-      { label: '缓缓呼气...', secs: 8, scale: 1.0, transition: '8s ease-in-out' }
-    ];
-
-    function runBreathStep(stepIdx, leftSec) {
-      if (!breathing) return;
-      const step = steps[stepIdx];
-      if (leftSec === step.secs) {
-        breathPhase.textContent = step.label;
-        breathOrb.style.transition = `transform ${step.transition}`;
-        breathOrb.style.transform = `scale(${step.scale})`;
-      }
-      breathSec.textContent = `${leftSec} 秒`;
-      breathTimer = setTimeout(() => {
-        if (leftSec > 1) {
-          runBreathStep(stepIdx, leftSec - 1);
-        } else {
-          const next = (stepIdx + 1) % steps.length;
-          runBreathStep(next, steps[next].secs);
-        }
-      }, 1000);
-    }
-
-    breathToggleBtn.addEventListener('click', () => {
-      if (breathing) {
-        breathing = false;
-        clearTimeout(breathTimer);
-        breathToggleBtn.textContent = '开始呼吸';
-        breathPhase.textContent = '已暂停';
-        breathSec.textContent = '点击按钮重新开始';
-        breathOrb.style.transition = 'transform 0.6s ease';
-        breathOrb.style.transform = 'scale(1)';
-      } else {
-        breathing = true;
-        breathToggleBtn.textContent = '停止';
-        runBreathStep(0, steps[0].secs);
-      }
+    // 切回页面时立刻同步真实时间
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden && timerState === 'running') tick();
     });
 
-    // ---------- 6. 时间可视化进度 ----------
-    function renderTimeProgress() {
-      const now = new Date();
-      const year = now.getFullYear();
+    applyLang();
+    updateTimerUI();
 
-      const startOfYear = new Date(year, 0, 1);
-      const endOfYear = new Date(year + 1, 0, 1);
-      const yearPct = ((now - startOfYear) / (endOfYear - startOfYear)) * 100;
-      const daysLeftYear = Math.ceil((endOfYear - now) / 86400000);
-
-      const startOfMonth = new Date(year, now.getMonth(), 1);
-      const endOfMonth = new Date(year, now.getMonth() + 1, 1);
-      const monthPct = ((now - startOfMonth) / (endOfMonth - startOfMonth)) * 100;
-      const daysLeftMonth = Math.ceil((endOfMonth - now) / 86400000);
-
-      const dayOfWeek = (now.getDay() + 6) % 7; // 周一=0
-      const startOfWeek = new Date(year, now.getMonth(), now.getDate() - dayOfWeek);
-      const weekPct = ((now - startOfWeek) / (7 * 86400000)) * 100;
-
-      const startOfDay = new Date(year, now.getMonth(), now.getDate());
-      const dayPct = ((now - startOfDay) / 86400000) * 100;
-
-      const items = [
-        { title: `${year} 年已过`, pct: yearPct, sub: `距离年底还剩 ${daysLeftYear} 天` },
-        { title: `本月 (${now.getMonth() + 1}月) 已过`, pct: monthPct, sub: `距离月末还剩 ${daysLeftMonth} 天` },
-        { title: '本周已过', pct: weekPct, sub: '周一至周日进度' },
-        { title: '今日已过', pct: dayPct, sub: `当前 ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}` }
-      ];
-
-      document.getElementById('progressList').innerHTML = items.map(it => `
-        <div class="prog-item">
-          <div class="prog-top">
-            <span class="prog-title">${it.title}</span>
-            <span class="prog-pct">${it.pct.toFixed(1)}%</span>
-          </div>
-          <div class="prog-track">
-            <div class="prog-fill" style="width: ${Math.min(100, it.pct).toFixed(2)}%;"></div>
-          </div>
-          <div class="prog-sub">${it.sub}</div>
-        </div>
-      `).join('');
-    }
-
-    // ---------- 7. 纯代码合成白噪音 (Web Audio API) ----------
+    // ---------- 纯代码合成白噪音 ----------
     let audioCtx = null;
     let masterGain = null;
     let currentSource = null;
@@ -999,7 +1042,6 @@
 
       stopAmbientSound();
 
-      // 生成 3 秒无缝噪音缓冲
       const bufferSize = audioCtx.sampleRate * 3;
       const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
       const data = buffer.getChannelData(0);
@@ -1008,11 +1050,9 @@
       for (let i = 0; i < bufferSize; i++) {
         const white = Math.random() * 2 - 1;
         if (type === 'rain') {
-          // 粉红/柔化白噪
           data[i] = (lastOut + 0.08 * white) / 1.08;
           lastOut = data[i];
         } else {
-          // 布朗噪音（更低沉，适合海浪/暖噪）
           data[i] = (lastOut + 0.02 * white) / 1.02;
           lastOut = data[i];
           data[i] *= 2.4;
@@ -1036,10 +1076,9 @@
         const waveGain = audioCtx.createGain();
         waveGain.gain.value = 0.65;
 
-        // 用低频振荡器模拟海浪起伏
         const lfo = audioCtx.createOscillator();
         const lfoGain = audioCtx.createGain();
-        lfo.frequency.value = 0.12; // ~8秒一个浪潮
+        lfo.frequency.value = 0.12;
         lfoGain.gain.value = 0.35;
         lfo.connect(lfoGain);
         lfoGain.connect(waveGain.gain);
@@ -1050,7 +1089,6 @@
         filter.connect(waveGain);
         waveGain.connect(masterGain);
       } else {
-        // 暖噪 / 炉火感
         filter.type = 'lowpass';
         filter.frequency.value = 260;
         noise.connect(filter);
