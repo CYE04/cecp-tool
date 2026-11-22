@@ -80,6 +80,19 @@ html, body {
   top: 0 !important;
   left: 0 !important;
   z-index: 2;
+  transition: transform 0.2s ease;
+}
+
+@media (min-width: 1100px) and (min-height: 680px) {
+  #timerApp {
+    transform: scale(1.22);
+  }
+}
+
+@media (min-width: 1440px) and (min-height: 820px) {
+  #timerApp {
+    transform: scale(1.32);
+  }
 }
 
 /* 左上角返回官网胶囊（仅在 iframe 嵌入时显示） */
@@ -243,20 +256,23 @@ html, body {
 }
 
 #cecpYearPanel {
-  width: min(440px, calc(100vw - 32px));
+  width: min(540px, calc(100vw - 40px));
 }
 
 #cecpDrawPanel {
-  width: min(580px, calc(100vw - 32px));
+  width: min(960px, calc(100vw - 40px));
 }
 
 #cecpScorePanel {
-  width: min(720px, calc(100vw - 32px));
+  width: min(1020px, calc(100vw - 40px));
 }
 
-#cecpStagePanel,
+#cecpStagePanel {
+  width: min(980px, calc(100vw - 40px));
+}
+
 #cecpWheelPanel {
-  width: min(780px, calc(100vw - 32px));
+  width: min(1020px, calc(100vw - 40px));
 }
 
 /* 年度点阵进度 */
@@ -283,7 +299,7 @@ html, body {
 .cecp-dot-grid {
   display: grid;
   grid-template-columns: repeat(19, 1fr);
-  gap: 7px;
+  gap: 8px;
   margin-bottom: 18px;
 }
 
@@ -428,7 +444,27 @@ html, body {
   border-radius: 7px;
 }
 
-/* 抽签 & 分组面板 */
+/* 抽签 & 分组面板（两栏布局） */
+.cecp-draw-layout {
+  display: grid;
+  grid-template-columns: 290px 1fr;
+  gap: 20px;
+  align-items: stretch;
+}
+
+@media (max-width: 760px) {
+  .cecp-draw-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.cecp-draw-left,
+.cecp-draw-right {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
 .cecp-field-bar {
   display: flex;
   align-items: center;
@@ -445,18 +481,26 @@ html, body {
 
 .cecp-textarea {
   width: 100%;
-  min-height: 92px;
-  max-height: 150px;
+  min-height: 240px;
+  max-height: 360px;
+  flex: 1;
   resize: vertical;
-  padding: 10px 12px;
+  padding: 11px 13px;
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.09);
   background: #1c1c1f;
   color: #f4f4f5;
   font-size: 13.5px;
-  line-height: 1.5;
+  line-height: 1.55;
   outline: none;
-  margin-bottom: 14px;
+  margin-bottom: 0;
+}
+
+@media (max-width: 760px) {
+  .cecp-textarea {
+    min-height: 120px;
+    max-height: 200px;
+  }
 }
 
 .cecp-textarea:focus {
@@ -501,31 +545,61 @@ html, body {
 .cecp-check-label {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   font-size: 13px;
   color: #d4d4d8;
   cursor: pointer;
   user-select: none;
 }
 
-.cecp-check-label input {
-  accent-color: #2f81f7;
-  width: 15px;
-  height: 15px;
+.cecp-check-label input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 34px;
+  height: 20px;
+  border-radius: 999px;
+  background: #3f3f46;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  position: relative;
   cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.18s ease, border-color 0.18s ease;
+  outline: none;
+}
+
+.cecp-check-label input[type="checkbox"]::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
+  transition: transform 0.18s ease;
+}
+
+.cecp-check-label input[type="checkbox"]:checked {
+  background: #2f81f7;
+  border-color: #2f81f7;
+}
+
+.cecp-check-label input[type="checkbox"]:checked::before {
+  transform: translateX(14px);
 }
 
 .cecp-result-stage {
   background: #18181b;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 14px;
-  padding: 18px 14px;
-  min-height: 92px;
+  padding: 24px 18px;
+  min-height: 170px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 12px;
   text-align: center;
 }
 
@@ -533,16 +607,16 @@ html, body {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 8px;
+  gap: 10px;
 }
 
 .cecp-winner-pill {
-  padding: 8px 18px;
+  padding: 10px 22px;
   border-radius: 999px;
   background: rgba(226, 176, 94, 0.16);
   border: 1px solid rgba(226, 176, 94, 0.55);
   color: #f5cd79;
-  font-size: 20px;
+  font-size: 26px;
   font-weight: 700;
   letter-spacing: 0.01em;
 }
@@ -745,28 +819,28 @@ html, body {
 }
 
 .cecp-team-score {
-  font-size: 48px;
+  font-size: 62px;
   font-weight: 800;
   line-height: 1;
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.02em;
-  margin: 4px 0;
+  margin: 8px 0;
 }
 
 .cecp-team-btns {
   display: flex;
-  gap: 6px;
+  gap: 8px;
   width: 100%;
 }
 
 .cecp-score-btn {
   flex: 1;
-  height: 36px;
-  border-radius: 9px;
+  height: 42px;
+  border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   background: #27272a;
   color: #f4f4f5;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
   cursor: pointer;
   transition: background 0.15s ease, transform 0.1s ease;
@@ -967,45 +1041,47 @@ html, body {
   border-color: #2f81f7;
 }
 
-.cecp-stage-exit {
+.cecp-pure-exit {
   display: none;
   position: fixed;
   right: 20px;
   bottom: 20px;
   z-index: 10001;
-  padding: 7px 14px;
+  padding: 8px 16px;
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  background: rgba(20, 20, 22, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(20, 20, 22, 0.78);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   color: #e4e4e7;
-  font-size: 12.5px;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, "PingFang SC", sans-serif;
+  font-size: 13px;
   font-weight: 600;
   cursor: pointer;
-  opacity: 0.45;
+  opacity: 0.5;
   transition: opacity 0.2s ease, border-color 0.15s ease;
 }
 
-.cecp-stage-exit:hover {
+.cecp-pure-exit:hover {
   opacity: 1;
-  border-color: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.35);
 }
 
-/* 纯净投屏模式 */
-body.cecp-stage-pure .cecp-switcher,
-body.cecp-stage-pure .cecp-back-home,
-body.cecp-stage-pure #cecpStagePanel .cecp-panel-head,
-body.cecp-stage-pure #cecpStagePanel .cecp-stage-presets,
-body.cecp-stage-pure #cecpStagePanel .cecp-stage-edit-row,
-body.cecp-stage-pure #cecpStagePanel .cecp-stage-controls {
+/* 统一纯净全屏投屏模式 */
+body.cecp-pure-mode .cecp-switcher,
+body.cecp-pure-mode .cecp-back-home {
   display: none !important;
 }
 
-body.cecp-stage-pure #cecpStagePanel {
+body.cecp-pure-mode .cecp-pure-exit {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+body.cecp-pure-mode .cecp-panel.show {
   top: 50%;
   transform: translate(-50%, -50%);
-  width: min(1040px, calc(100vw - 48px));
   max-height: calc(100vh - 32px);
   background: transparent;
   border: none;
@@ -1015,42 +1091,160 @@ body.cecp-stage-pure #cecpStagePanel {
   padding: 12px;
 }
 
-body.cecp-stage-pure #cecpStagePanel .cecp-stage-screen {
+/* 纯净投屏：聚会大屏 */
+body.cecp-pure-mode #cecpStagePanel.show {
+  width: min(1100px, calc(100vw - 48px));
+}
+
+body.cecp-pure-mode #cecpStagePanel .cecp-panel-head,
+body.cecp-pure-mode #cecpStagePanel .cecp-stage-presets,
+body.cecp-pure-mode #cecpStagePanel .cecp-stage-edit-row,
+body.cecp-pure-mode #cecpStagePanel .cecp-stage-controls {
+  display: none !important;
+}
+
+body.cecp-pure-mode #cecpStagePanel .cecp-stage-screen {
   background: transparent;
   border: none;
   padding: 16px;
   margin: 0;
 }
 
-body.cecp-stage-pure #cecpStagePanel .cecp-stage-title {
-  font-size: clamp(32px, 5.2vw, 66px);
+body.cecp-pure-mode #cecpStagePanel .cecp-stage-title {
+  font-size: clamp(36px, 5.5vw, 72px);
   margin-bottom: 14px;
 }
 
-body.cecp-stage-pure #cecpStagePanel .cecp-stage-time {
-  font-size: clamp(82px, 17vw, 196px);
-  margin: 10px 0 20px;
+body.cecp-pure-mode #cecpStagePanel .cecp-stage-time {
+  font-size: clamp(88px, 18vw, 210px);
+  margin: 10px 0 22px;
 }
 
-body.cecp-stage-pure #cecpStagePanel .cecp-stage-subtitle {
-  font-size: clamp(18px, 2.6vw, 30px);
+body.cecp-pure-mode #cecpStagePanel .cecp-stage-subtitle {
+  font-size: clamp(18px, 2.6vw, 32px);
 }
 
-body.cecp-stage-pure .cecp-stage-exit {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
+/* 纯净投屏：互动大转盘 */
+body.cecp-pure-mode #cecpWheelPanel.show {
+  width: min(920px, calc(100vw - 40px));
+}
+
+body.cecp-pure-mode #cecpWheelPanel .cecp-panel-head,
+body.cecp-pure-mode #cecpWheelPanel .cecp-wheel-right {
+  display: none !important;
+}
+
+body.cecp-pure-mode #cecpWheelPanel .cecp-wheel-layout {
+  grid-template-columns: 1fr;
+  justify-items: center;
+}
+
+body.cecp-pure-mode #cecpWheelPanel .cecp-wheel-left {
+  gap: 18px;
+  width: 100%;
+}
+
+body.cecp-pure-mode #cecpWheelPanel .cecp-wheel-stage {
+  width: min(66vh, 560px);
+  height: min(66vh, 560px);
+}
+
+body.cecp-pure-mode #cecpWheelPanel .cecp-wheel-center-btn {
+  width: 82px;
+  height: 82px;
+  font-size: 16px;
+}
+
+body.cecp-pure-mode #cecpWheelPanel .cecp-wheel-result {
+  max-width: 600px;
+  min-height: 58px;
+  font-size: 16px;
+}
+
+body.cecp-pure-mode #cecpWheelPanel .cecp-wheel-result.has-winner {
+  font-size: 26px;
+  padding: 12px 24px;
+}
+
+/* 纯净投屏：抽签分组 */
+body.cecp-pure-mode #cecpDrawPanel.show {
+  width: min(980px, calc(100vw - 48px));
+}
+
+body.cecp-pure-mode #cecpDrawPanel .cecp-panel-head,
+body.cecp-pure-mode #cecpDrawPanel .cecp-draw-left {
+  display: none !important;
+}
+
+body.cecp-pure-mode #cecpDrawPanel .cecp-draw-layout {
+  grid-template-columns: 1fr;
+}
+
+body.cecp-pure-mode #cecpDrawPanel .cecp-result-stage {
+  min-height: 240px;
+  background: rgba(20, 20, 22, 0.72);
+  backdrop-filter: blur(18px);
+}
+
+body.cecp-pure-mode #cecpDrawPanel .cecp-winner-pill {
+  font-size: 40px;
+  padding: 14px 30px;
+}
+
+body.cecp-pure-mode #cecpDrawPanel .cecp-groups-grid {
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+@media (max-width: 720px) {
+  body.cecp-pure-mode #cecpDrawPanel .cecp-groups-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* 纯净投屏：计分板 */
+body.cecp-pure-mode #cecpScorePanel.show {
+  width: min(1240px, calc(100vw - 56px));
+}
+
+body.cecp-pure-mode #cecpScorePanel .cecp-panel-head {
+  display: none !important;
+}
+
+body.cecp-pure-mode #cecpScorePanel .cecp-score-grid {
+  gap: 18px;
+}
+
+body.cecp-pure-mode #cecpScorePanel .cecp-team-card {
+  padding: 24px 20px 26px;
+  background: rgba(20, 20, 22, 0.78);
+  backdrop-filter: blur(18px);
+  gap: 14px;
+}
+
+body.cecp-pure-mode #cecpScorePanel .cecp-team-name {
+  font-size: 22px;
+}
+
+body.cecp-pure-mode #cecpScorePanel .cecp-team-score {
+  font-size: clamp(72px, 9.5vw, 128px);
+  margin: 10px 0;
+}
+
+body.cecp-pure-mode #cecpScorePanel .cecp-score-btn {
+  height: 48px;
+  font-size: 17px;
 }
 
 /* ---------- 互动大转盘 ---------- */
 .cecp-wheel-layout {
   display: grid;
-  grid-template-columns: 340px 1fr;
-  gap: 20px;
+  grid-template-columns: 440px 1fr;
+  gap: 24px;
   align-items: start;
 }
 
-@media (max-width: 700px) {
+@media (max-width: 860px) {
   .cecp-wheel-layout {
     grid-template-columns: 1fr;
   }
@@ -1065,13 +1259,20 @@ body.cecp-stage-pure .cecp-stage-exit {
 
 .cecp-wheel-stage {
   position: relative;
-  width: 310px;
-  height: 310px;
+  width: 420px;
+  height: 420px;
   display: grid;
   place-items: center;
 }
 
-@media (max-width: 400px) {
+@media (max-width: 900px) {
+  .cecp-wheel-stage {
+    width: 340px;
+    height: 340px;
+  }
+}
+
+@media (max-width: 440px) {
   .cecp-wheel-stage {
     width: 270px;
     height: 270px;
@@ -1093,9 +1294,9 @@ body.cecp-stage-pure .cecp-stage-exit {
   transform: translateX(-50%);
   width: 0;
   height: 0;
-  border-left: 12px solid transparent;
-  border-right: 12px solid transparent;
-  border-top: 22px solid #f5cd79;
+  border-left: 13px solid transparent;
+  border-right: 13px solid transparent;
+  border-top: 24px solid #f5cd79;
   filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.55));
   z-index: 4;
   pointer-events: none;
@@ -1106,13 +1307,13 @@ body.cecp-stage-pure .cecp-stage-exit {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 62px;
-  height: 62px;
+  width: 72px;
+  height: 72px;
   border-radius: 50%;
   border: 3px solid rgba(255, 255, 255, 0.85);
   background: #141416;
   color: #ffffff;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 800;
   cursor: pointer;
   z-index: 3;
@@ -1166,9 +1367,16 @@ body.cecp-stage-pure .cecp-stage-exit {
 }
 
 .cecp-wheel-textarea {
-  min-height: 175px;
-  max-height: 240px;
+  min-height: 230px;
+  max-height: 310px;
   margin-bottom: 0;
+}
+
+@media (max-width: 860px) {
+  .cecp-wheel-textarea {
+    min-height: 130px;
+    max-height: 200px;
+  }
 }
 
 .cecp-wheel-presets {

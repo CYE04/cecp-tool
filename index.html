@@ -570,72 +570,87 @@
         <section id="cecpDrawPanel" class="cecp-panel" aria-label="抽签与分组">
             <div class="cecp-panel-head">
                 <div class="cecp-panel-title">🎲 活动抽签 &amp; 随机分组</div>
-                <div class="cecp-sub-seg" role="tablist">
-                    <button type="button" class="cecp-sub-btn active" data-draw-mode="draw">随机抽签</button>
-                    <button type="button" class="cecp-sub-btn" data-draw-mode="group">一键分组</button>
-                </div>
-            </div>
-
-            <div class="cecp-field-bar">
-                <span class="cecp-muted">参与名单（换行、逗号或顿号分隔） · <strong id="cecpNamesCount" style="color:#f4f4f5;">共 0 人</strong></span>
-                <div style="display:flex;gap:6px;">
-                    <button type="button" class="cecp-btn cecp-btn-sm" id="cecpFillNumbersBtn">填入 1~20 号</button>
-                    <button type="button" class="cecp-btn cecp-btn-sm" id="cecpClearNamesBtn">清空</button>
-                </div>
-            </div>
-            <textarea id="cecpNamesInput" class="cecp-textarea" placeholder="每行输入一个名字或编号，例如：&#10;张三&#10;李四&#10;王五"></textarea>
-
-            <!-- 子模式 1：随机抽签 -->
-            <div id="cecpDrawModeBox">
-                <div class="cecp-controls-row">
-                    <div class="cecp-control-group">
-                        <span>每次抽取</span>
-                        <input type="number" id="cecpDrawPickCount" class="cecp-num-input" min="1" max="20" value="1" />
-                        <span>人</span>
-                        <label class="cecp-check-label" style="margin-left:6px;">
-                            <input type="checkbox" id="cecpDrawNoRepeat" checked />
-                            <span>不重复抽取</span>
-                        </label>
-                        <span class="cecp-muted" id="cecpDrawRemainInfo"></span>
+                <div class="cecp-score-actions">
+                    <div class="cecp-sub-seg" role="tablist">
+                        <button type="button" class="cecp-sub-btn active" data-draw-mode="draw">随机抽签</button>
+                        <button type="button" class="cecp-sub-btn" data-draw-mode="group">一键分组</button>
                     </div>
-                    <div style="display:flex;gap:6px;">
-                        <button type="button" class="cecp-btn cecp-btn-sm" id="cecpDrawResetPoolBtn">重置抽签池</button>
-                        <button type="button" class="cecp-btn cecp-btn-primary" id="cecpDrawStartBtn">开始抽签</button>
-                    </div>
-                </div>
-
-                <div class="cecp-result-stage" id="cecpDrawResultBox">
-                    <span class="cecp-muted">点击「开始抽签」抽取幸运儿</span>
-                </div>
-
-                <div class="cecp-history-wrap" id="cecpDrawHistoryWrap" style="display:none;">
-                    <div class="cecp-muted">已抽中记录</div>
-                    <div class="cecp-history-pills" id="cecpDrawHistoryPills"></div>
+                    <button type="button" class="cecp-btn cecp-btn-sm" id="cecpDrawMuteBtn">🔊 音效</button>
+                    <button type="button" class="cecp-btn cecp-btn-sm cecp-btn-gold" id="cecpDrawPureBtn">⛶ 纯净投屏</button>
                 </div>
             </div>
 
-            <!-- 子模式 2：一键分组 -->
-            <div id="cecpGroupModeBox" style="display:none;">
-                <div class="cecp-controls-row">
-                    <div class="cecp-control-group">
-                        <span>分成</span>
-                        <div class="cecp-group-pills">
-                            <button type="button" class="cecp-group-pill active" data-groups="2">2 组</button>
-                            <button type="button" class="cecp-group-pill" data-groups="3">3 组</button>
-                            <button type="button" class="cecp-group-pill" data-groups="4">4 组</button>
-                            <button type="button" class="cecp-group-pill" data-groups="5">5 组</button>
-                            <button type="button" class="cecp-group-pill" data-groups="6">6 组</button>
+            <div class="cecp-draw-layout">
+                <div class="cecp-draw-left">
+                    <div class="cecp-field-bar">
+                        <span class="cecp-muted">参与名单 · <strong id="cecpNamesCount" style="color:#f4f4f5;">共 0 人</strong></span>
+                        <div style="display:flex;gap:4px;flex-wrap:wrap;">
+                            <button type="button" class="cecp-btn cecp-btn-sm cecp-fill-btn" data-fill-max="10">1~10</button>
+                            <button type="button" class="cecp-btn cecp-btn-sm cecp-fill-btn" data-fill-max="20">1~20</button>
+                            <button type="button" class="cecp-btn cecp-btn-sm cecp-fill-btn" data-fill-max="30">1~30</button>
+                            <button type="button" class="cecp-btn cecp-btn-sm" id="cecpClearNamesBtn">清空</button>
                         </div>
-                        <input type="number" id="cecpGroupCustomCount" class="cecp-num-input" min="2" max="12" value="2" title="自定义组数" />
-                        <span>组</span>
                     </div>
-                    <div style="display:flex;gap:6px;">
-                        <button type="button" class="cecp-btn cecp-btn-sm" id="cecpGroupCopyBtn">复制分组结果</button>
-                        <button type="button" class="cecp-btn cecp-btn-primary" id="cecpGroupStartBtn">随机分组</button>
-                    </div>
+                    <textarea id="cecpNamesInput" class="cecp-textarea" placeholder="每行、逗号或顿号分隔，例如：&#10;张三&#10;李四&#10;王五"></textarea>
                 </div>
 
-                <div class="cecp-groups-grid" id="cecpGroupsGrid"></div>
+                <div class="cecp-draw-right">
+                    <!-- 子模式 1：随机抽签 -->
+                    <div id="cecpDrawModeBox">
+                        <div class="cecp-controls-row">
+                            <div class="cecp-control-group">
+                                <span>每次抽取</span>
+                                <input type="number" id="cecpDrawPickCount" class="cecp-num-input" min="1" max="20" value="1" />
+                                <span>人</span>
+                                <label class="cecp-check-label" style="margin-left:6px;">
+                                    <input type="checkbox" id="cecpDrawNoRepeat" checked />
+                                    <span>不重复抽取</span>
+                                </label>
+                                <span class="cecp-muted" id="cecpDrawRemainInfo"></span>
+                            </div>
+                            <div style="display:flex;gap:6px;">
+                                <button type="button" class="cecp-btn cecp-btn-sm" id="cecpDrawResetPoolBtn">重置抽签池</button>
+                                <button type="button" class="cecp-btn cecp-btn-primary" id="cecpDrawStartBtn">开始抽签</button>
+                            </div>
+                        </div>
+
+                        <div class="cecp-result-stage" id="cecpDrawResultBox">
+                            <span class="cecp-muted">点击「开始抽签」抽取幸运儿</span>
+                        </div>
+
+                        <div class="cecp-history-wrap" id="cecpDrawHistoryWrap" style="display:none;">
+                            <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+                                <span class="cecp-muted">已抽中记录</span>
+                                <button type="button" class="cecp-btn cecp-btn-sm" id="cecpDrawClearHistoryBtn">清空记录</button>
+                            </div>
+                            <div class="cecp-history-pills" id="cecpDrawHistoryPills"></div>
+                        </div>
+                    </div>
+
+                    <!-- 子模式 2：一键分组 -->
+                    <div id="cecpGroupModeBox" style="display:none;">
+                        <div class="cecp-controls-row">
+                            <div class="cecp-control-group">
+                                <span>分成</span>
+                                <div class="cecp-group-pills">
+                                    <button type="button" class="cecp-group-pill active" data-groups="2">2 组</button>
+                                    <button type="button" class="cecp-group-pill" data-groups="3">3 组</button>
+                                    <button type="button" class="cecp-group-pill" data-groups="4">4 组</button>
+                                    <button type="button" class="cecp-group-pill" data-groups="5">5 组</button>
+                                    <button type="button" class="cecp-group-pill" data-groups="6">6 组</button>
+                                </div>
+                                <input type="number" id="cecpGroupCustomCount" class="cecp-num-input" min="2" max="12" value="2" title="自定义组数" />
+                                <span>组</span>
+                            </div>
+                            <div style="display:flex;gap:6px;">
+                                <button type="button" class="cecp-btn cecp-btn-sm" id="cecpGroupCopyBtn">复制分组结果</button>
+                                <button type="button" class="cecp-btn cecp-btn-primary" id="cecpGroupStartBtn">随机分组</button>
+                            </div>
+                        </div>
+
+                        <div class="cecp-groups-grid" id="cecpGroupsGrid"></div>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -647,7 +662,7 @@
                     <button type="button" class="cecp-btn cecp-btn-sm" id="cecpScoreMuteBtn">🔊 音效</button>
                     <button type="button" class="cecp-btn cecp-btn-sm" id="cecpAddTeamBtn">+ 添加队伍</button>
                     <button type="button" class="cecp-btn cecp-btn-sm" id="cecpResetScoreBtn">全部清零</button>
-                    <button type="button" class="cecp-btn cecp-btn-sm cecp-btn-gold" id="cecpFullscreenBtn">⛶ 全屏投影</button>
+                    <button type="button" class="cecp-btn cecp-btn-sm cecp-btn-gold" id="cecpFullscreenBtn">⛶ 纯净投屏</button>
                 </div>
             </div>
 
@@ -719,15 +734,13 @@
             </div>
         </section>
 
-        <button type="button" id="cecpStageExitBtn" class="cecp-stage-exit">✕ 退出投屏</button>
-
         <!-- 互动大转盘面板 -->
         <section id="cecpWheelPanel" class="cecp-panel" aria-label="互动大转盘">
             <div class="cecp-panel-head">
                 <div class="cecp-panel-title">🎡 互动大转盘</div>
                 <div class="cecp-score-actions">
                     <button type="button" class="cecp-btn cecp-btn-sm" id="cecpWheelMuteBtn">🔊 音效</button>
-                    <button type="button" class="cecp-btn cecp-btn-sm cecp-btn-gold" id="cecpWheelFullscreenBtn">⛶ 全屏</button>
+                    <button type="button" class="cecp-btn cecp-btn-sm cecp-btn-gold" id="cecpWheelFullscreenBtn">⛶ 纯净投屏</button>
                 </div>
             </div>
 
@@ -764,6 +777,7 @@
             </div>
         </section>
 
+        <button type="button" id="cecpPureExitBtn" class="cecp-pure-exit">✕ 退出投屏</button>
         <canvas id="cecpConfettiCanvas" class="cecp-confetti-canvas" aria-hidden="true"></canvas>
 
     </body>

@@ -63,10 +63,42 @@
   };
 
   let onSwitchCallbacks = {};
+  let pureEnteredFullscreen = false;
+  const pureExitBtn = document.getElementById('cecpPureExitBtn');
+
+  function refreshActiveWheel() {
+    if (panels.wheel && panels.wheel.classList.contains('show') && typeof drawWheel === 'function') {
+      requestAnimationFrame(drawWheel);
+    }
+  }
+
+  function enterPureMode() {
+    document.body.classList.add('cecp-pure-mode');
+    if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
+      pureEnteredFullscreen = true;
+      document.documentElement.requestFullscreen().catch(function () {
+        pureEnteredFullscreen = false;
+      });
+    }
+    refreshActiveWheel();
+  }
+
+  function exitPureMode() {
+    document.body.classList.remove('cecp-pure-mode');
+    if (pureEnteredFullscreen && document.fullscreenElement && document.exitFullscreen) {
+      pureEnteredFullscreen = false;
+      document.exitFullscreen().catch(function () {});
+    }
+    refreshActiveWheel();
+  }
+
+  if (pureExitBtn) {
+    pureExitBtn.addEventListener('click', exitPureMode);
+  }
 
   function switchTab(tab) {
-    if (tab !== 'stage' && document.body.classList.contains('cecp-stage-pure')) {
-      document.body.classList.remove('cecp-stage-pure');
+    if (document.body.classList.contains('cecp-pure-mode')) {
+      exitPureMode();
     }
     switchBtns.forEach(function (b) {
       b.classList.toggle('active', b.dataset.cecpTab === tab);
@@ -151,8 +183,10 @@
   // ---------- 3. 随机抽签 & 一键分组 ----------
   const namesInput = document.getElementById('cecpNamesInput');
   const namesCountEl = document.getElementById('cecpNamesCount');
-  const fillNumbersBtn = document.getElementById('cecpFillNumbersBtn');
+  const fillBtns = document.querySelectorAll('.cecp-fill-btn[data-fill-max]');
   const clearNamesBtn = document.getElementById('cecpClearNamesBtn');
+  const drawMuteBtn = document.getElementById('cecpDrawMuteBtn');
+  const drawPureBtn = document.getElementById('cecpDrawPureBtn');
   const subBtns = document.querySelectorAll('.cecp-sub-btn[data-draw-mode]');
   const drawModeBox = document.getElementById('cecpDrawModeBox');
   const groupModeBox = document.getElementById('cecpGroupModeBox');
@@ -162,6 +196,7 @@
   const drawRemainInfo = document.getElementById('cecpDrawRemainInfo');
   const drawStartBtn = document.getElementById('cecpDrawStartBtn');
   const drawResetPoolBtn = document.getElementById('cecpDrawResetPoolBtn');
+  const drawClearHistoryBtn = document.getElementById('cecpDrawClearHistoryBtn');
   const drawResultBox = document.getElementById('cecpDrawResultBox');
   const drawHistoryWrap = document.getElementById('cecpDrawHistoryWrap');
   const drawHistoryPills = document.getElementById('cecpDrawHistoryPills');
@@ -176,6 +211,7 @@
   let isRolling = false;
   let rollTimer = null;
   let lastGroups = [];
+  let drawMuted = false;
 
   function parseNames() {
     if (!namesInput) return [];
@@ -245,15 +281,35 @@
     updateNamesMeta();
   }
 
-  if (fillNumbersBtn) {
-    fillNumbersBtn.addEventListener('click', function () {
+  fillBtns.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      const max = parseInt(btn.dataset.fillMax, 10) || 20;
       const nums = [];
-      for (let i = 1; i <= 20; i++) nums.push(i + '号');
+      for (let i = 1; i <= max; i++) nums.push(i + '号');
       namesInput.value = nums.join('\n');
       localStorage.setItem(NAMES_KEY, namesInput.value);
       drawnHistory = [];
       renderDrawHistory();
       updateNamesMeta();
+    });
+  });
+
+  if (drawMuteBtn) {
+    drawMuteBtn.addEventListener('click', function () {
+      drawMuted = !drawMuted;
+      drawMuteBtn.textContent = drawMuted ? '🔇 静音' : '🔊 音效';
+    });
+  }
+
+  if (drawPureBtn) {
+    drawPureBtn.addEventListener('click', enterPureMode);
+  }
+
+  if (drawClearHistoryBtn) {
+    drawClearHistoryBtn.addEventListener('click', function () {
+      drawnHistory = [];
+      renderDrawHistory();
+      updatePoolStatus();
     });
   }
 
@@ -339,7 +395,12 @@
             renderDrawHistory();
             updatePoolStatus();
           }
-          playTone([523.25, 659.25, 783.99]);
+          if (!drawMuted) {
+            playTone([523.25, 659.25, 783.99]);
+          }
+          if (typeof launchConfetti === 'function') {
+            launchConfetti();
+          }
         }
       }, 55);
     });
@@ -550,18 +611,8 @@
     });
   }
 
-  function toggleFullscreen() {
-    if (!document.fullscreenElement) {
-      if (document.documentElement.requestFullscreen) {
-        document.documentElement.requestFullscreen().catch(function () {});
-      }
-    } else if (document.exitFullscreen) {
-      document.exitFullscreen().catch(function () {});
-    }
-  }
-
   if (scoreFullscreenBtn) {
-    scoreFullscreenBtn.addEventListener('click', toggleFullscreen);
+    scoreFullscreenBtn.addEventListener('click', enterPureMode);
   }
 
   // ---------- 5. 聚会大屏倒计时 / 提示牌 ----------
@@ -613,7 +664,6 @@
   const stageResetBtn = document.getElementById('cecpStageResetBtn');
   const stageStartBtn = document.getElementById('cecpStageStartBtn');
   const stagePureBtn = document.getElementById('cecpStagePureBtn');
-  const stageExitBtn = document.getElementById('cecpStageExitBtn');
 
   let stageCfg = {
     mode: 'countdown',
@@ -637,7 +687,6 @@
   let stageState = 'ready'; // ready | running | paused | done
   let stageEndMs = null;
   let stageTicker = null;
-  let stagePureEnteredFullscreen = false;
 
   function saveStageCfg() {
     localStorage.setItem(STAGE_KEY, JSON.stringify(stageCfg));
@@ -786,24 +835,6 @@
     renderStageDisplay();
   }
 
-  function enterStagePureMode() {
-    document.body.classList.add('cecp-stage-pure');
-    if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
-      stagePureEnteredFullscreen = true;
-      document.documentElement.requestFullscreen().catch(function () {
-        stagePureEnteredFullscreen = false;
-      });
-    }
-  }
-
-  function exitStagePureMode() {
-    document.body.classList.remove('cecp-stage-pure');
-    if (stagePureEnteredFullscreen && document.fullscreenElement && document.exitFullscreen) {
-      stagePureEnteredFullscreen = false;
-      document.exitFullscreen().catch(function () {});
-    }
-  }
-
   if (stageTitleInput) {
     stageTitleInput.value = stageCfg.title;
     stageTitleInput.addEventListener('input', function () {
@@ -903,23 +934,32 @@
   }
 
   if (stagePureBtn) {
-    stagePureBtn.addEventListener('click', enterStagePureMode);
-  }
-
-  if (stageExitBtn) {
-    stageExitBtn.addEventListener('click', exitStagePureMode);
+    stagePureBtn.addEventListener('click', enterPureMode);
   }
 
   document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && document.body.classList.contains('cecp-stage-pure')) {
-      exitStagePureMode();
+    if (e.key === 'Escape' && document.body.classList.contains('cecp-pure-mode')) {
+      exitPureMode();
+      return;
+    }
+    if (e.code === 'Space' && document.body.classList.contains('cecp-pure-mode')) {
+      const tag = document.activeElement && document.activeElement.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || tag === 'BUTTON') return;
+      if (panels.wheel && panels.wheel.classList.contains('show')) {
+        e.preventDefault();
+        spinWheel();
+      } else if (panels.draw && panels.draw.classList.contains('show') && drawStartBtn && drawModeBox && drawModeBox.style.display !== 'none') {
+        e.preventDefault();
+        drawStartBtn.click();
+      }
     }
   });
 
   document.addEventListener('fullscreenchange', function () {
-    if (!document.fullscreenElement && stagePureEnteredFullscreen) {
-      stagePureEnteredFullscreen = false;
-      document.body.classList.remove('cecp-stage-pure');
+    if (!document.fullscreenElement && pureEnteredFullscreen) {
+      pureEnteredFullscreen = false;
+      document.body.classList.remove('cecp-pure-mode');
+      refreshActiveWheel();
     }
   });
 
@@ -1017,7 +1057,7 @@
     if (wheelCountEl) wheelCountEl.textContent = items.length + ' 项';
 
     const parent = wheelCanvas.parentElement;
-    const cssSize = (parent && parent.clientWidth > 60) ? parent.clientWidth : 310;
+    const cssSize = (parent && parent.clientWidth > 60) ? parent.clientWidth : 420;
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     wheelCanvas.width = cssSize * dpr;
     wheelCanvas.height = cssSize * dpr;
@@ -1045,7 +1085,9 @@
     }
 
     const slice = (Math.PI * 2) / items.length;
-    const fontSize = items.length > 16 ? 10 : items.length > 10 ? 11.5 : 13;
+    const scale = cssSize / 340;
+    const baseFont = items.length > 16 ? 10 : items.length > 10 ? 12 : 14;
+    const fontSize = Math.max(10, Math.round(baseFont * scale));
 
     items.forEach(function (label, i) {
       const start = wheelAngle + i * slice;
@@ -1062,17 +1104,20 @@
       ctx.strokeStyle = 'rgba(20, 20, 22, 0.75)';
       ctx.stroke();
 
+      const mid = start + slice / 2;
+      const isLeftHalf = Math.cos(mid) < 0;
       ctx.save();
       ctx.translate(cx, cy);
-      ctx.rotate(start + slice / 2);
-      ctx.textAlign = 'right';
+      ctx.rotate(isLeftHalf ? mid + Math.PI : mid);
+      ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillStyle = '#ffffff';
       ctx.font = '700 ' + fontSize + 'px -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif';
       ctx.shadowColor = 'rgba(0, 0, 0, 0.45)';
       ctx.shadowBlur = 4;
       const shortText = label.length > 8 ? label.slice(0, 8) + '…' : label;
-      ctx.fillText(shortText, radius - 14, 0);
+      const textRadius = radius * 0.62;
+      ctx.fillText(shortText, isLeftHalf ? -textRadius : textRadius, 0, radius * 0.54);
       ctx.restore();
     });
   }
@@ -1245,7 +1290,7 @@
   }
 
   if (wheelFullscreenBtn) {
-    wheelFullscreenBtn.addEventListener('click', toggleFullscreen);
+    wheelFullscreenBtn.addEventListener('click', enterPureMode);
   }
 
   if (wheelSyncDrawBtn) {
@@ -1284,13 +1329,7 @@
     });
   }
 
-  onSwitchCallbacks.wheel = function () {
-    requestAnimationFrame(drawWheel);
-  };
-  window.addEventListener('resize', function () {
-    if (panels.wheel && panels.wheel.classList.contains('show')) {
-      drawWheel();
-    }
-  });
+  onSwitchCallbacks.wheel = refreshActiveWheel;
+  window.addEventListener('resize', refreshActiveWheel);
   drawWheel();
 })();
