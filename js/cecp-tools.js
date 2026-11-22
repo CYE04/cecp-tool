@@ -1628,11 +1628,25 @@
   let soundWetGain = null;
   let soundReverbNode = null;
   let soundCompressor = null;
+  const APPLAUSE_AUDIO_SRC = './asset/audio/applause.m4a';
+  const APPLAUSE_DURATION_MS = 4000;
   let whiteNoiseBuf = null;
   let pinkNoiseBuf = null;
   let activeSfxNodes = [];
   let activeSfxTimers = [];
+  let activeSfxAudios = [];
+  let applausePreloaded = false;
   let soundVolume = 0.8;
+
+  function preloadSoundSamples() {
+    if (applausePreloaded) return;
+    applausePreloaded = true;
+    try {
+      const pre = new Audio(APPLAUSE_AUDIO_SRC);
+      pre.preload = 'auto';
+      pre.load();
+    } catch (e) {}
+  }
 
   try {
     const savedVol = parseInt(localStorage.getItem(SOUND_VOL_KEY) || '', 10);
@@ -1770,6 +1784,13 @@
       clearTimeout(id);
     });
     activeSfxTimers = [];
+    activeSfxAudios.forEach(function (a) {
+      try {
+        a.pause();
+        a.currentTime = 0;
+      } catch (e) {}
+    });
+    activeSfxAudios = [];
     activeSfxNodes.forEach(function (node) {
       try { if (node.stop) node.stop(); } catch (e) {}
       try { node.disconnect(); } catch (e) {}
@@ -1799,57 +1820,74 @@
   }
 
   function playSfx(type, pad) {
+    if (type === 'applause') {
+      while (activeSfxAudios.length >= 3) {
+        const oldest = activeSfxAudios.shift();
+        if (oldest && typeof oldest._cecpCleanup === 'function') {
+          oldest._cecpCleanup(true);
+        }
+      }
+      try {
+        const audio = new Audio(APPLAUSE_AUDIO_SRC);
+        audio.volume = Math.max(0, Math.min(1, soundVolume));
+        let cleaned = false;
+        let safetyTimer = null;
+
+        const cleanupAudio = function (skipPadClass) {
+          if (cleaned) return;
+          cleaned = true;
+          if (safetyTimer) {
+            clearTimeout(safetyTimer);
+            safetyTimer = null;
+          }
+          try {
+            audio.pause();
+            audio.currentTime = 0;
+          } catch (e) {}
+          const idx = activeSfxAudios.indexOf(audio);
+          if (idx !== -1) activeSfxAudios.splice(idx, 1);
+          if (!skipPadClass && pad && activeSfxAudios.length === 0) {
+            pad.classList.remove('playing');
+          }
+        };
+
+        audio._cecpCleanup = cleanupAudio;
+        activeSfxAudios.push(audio);
+
+        if (pad) {
+          pad.classList.remove('playing');
+          void pad.offsetWidth;
+          pad.classList.add('playing');
+        }
+
+        audio.addEventListener('ended', function () {
+          cleanupAudio(false);
+        }, { once: true });
+        audio.addEventListener('error', function () {
+          cleanupAudio(false);
+        }, { once: true });
+
+        safetyTimer = setTimeout(function () {
+          cleanupAudio(false);
+        }, APPLAUSE_DURATION_MS + 400);
+        activeSfxTimers.push(safetyTimer);
+
+        const playPromise = audio.play();
+        if (playPromise && typeof playPromise.catch === 'function') {
+          playPromise.catch(function () {
+            cleanupAudio(false);
+            showToast('掌声音频加载失败，请确认已上传 asset/audio/applause.m4a');
+          });
+        }
+      } catch (e) {
+        showToast('掌声音频加载失败，请确认已上传 asset/audio/applause.m4a');
+      }
+      return;
+    }
+
     const ctx = ensureSoundBus();
     if (!ctx || !soundMasterGain) return;
     const now = ctx.currentTime;
-
-    if (type === 'applause') {
-      const dur = 2.6;
-      // 温暖人群掌声氛围底噪
-      const bedSrc = trackNode(ctx.createBufferSource());
-      bedSrc.buffer = pinkNoiseBuf;
-      bedSrc.loop = true;
-      const bedLp = trackNode(ctx.createBiquadFilter());
-      bedLp.type = 'lowpass';
-      bedLp.frequency.value = 1750;
-      const bedGain = trackNode(ctx.createGain());
-      bedGain.gain.setValueAtTime(0.0001, now);
-      bedGain.gain.linearRampToValueAtTime(0.14, now + 0.25);
-      bedGain.gain.setValueAtTime(0.14, now + 1.4);
-      bedGain.gain.exponentialRampToValueAtTime(0.0001, now + dur);
-      bedSrc.connect(bedLp);
-      bedLp.connect(bedGain);
-      connectVoice(ctx, bedGain, 0, 0.55);
-      bedSrc.start(now);
-      bedSrc.stop(now + dur + 0.05);
-
-      // 135 个立体声错峰单次拍掌瞬态
-      const clapCount = 135;
-      for (let i = 0; i < clapCount; i++) {
-        const progress = i / clapCount;
-        const t = now + Math.pow(progress, 0.92) * 2.15 + Math.random() * 0.08;
-        const envScale = progress < 0.14 ? (progress / 0.14) : progress > 0.68 ? Math.max(0.12, (1 - progress) / 0.32) : 1;
-        const src = trackNode(ctx.createBufferSource());
-        src.buffer = whiteNoiseBuf;
-        const bp = trackNode(ctx.createBiquadFilter());
-        bp.type = 'bandpass';
-        bp.frequency.value = 850 + Math.random() * 1550;
-        bp.Q.value = 1.2 + Math.random() * 0.7;
-        const g = trackNode(ctx.createGain());
-        const peak = (0.08 + Math.random() * 0.09) * envScale;
-        const clapLen = 0.015 + Math.random() * 0.012;
-        g.gain.setValueAtTime(0.0001, t);
-        g.gain.exponentialRampToValueAtTime(peak, t + 0.003);
-        g.gain.exponentialRampToValueAtTime(0.0001, t + clapLen);
-        src.connect(bp);
-        bp.connect(g);
-        connectVoice(ctx, g, (Math.random() - 0.5) * 1.7, 0.52);
-        src.start(t, Math.random() * 1.5, clapLen + 0.01);
-        src.stop(t + clapLen + 0.015);
-      }
-      markPadPlaying(pad, 2650);
-      return;
-    }
 
     if (type === 'drumroll') {
       let offset = 0;
@@ -2125,7 +2163,15 @@
       if (soundMasterGain && sharedAudioCtx) {
         soundMasterGain.gain.setTargetAtTime(soundVolume, sharedAudioCtx.currentTime, 0.02);
       }
+      activeSfxAudios.forEach(function (a) {
+        a.volume = soundVolume;
+      });
     });
+  }
+
+  onSwitchCallbacks.sound = preloadSoundSamples;
+  if (panels.sound && panels.sound.classList.contains('show')) {
+    preloadSoundSamples();
   }
 
   if (soundGrid) {
