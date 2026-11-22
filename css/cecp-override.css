@@ -61,3 +61,133 @@ html, body {
   position: relative;
   z-index: 2;
 }
+
+/* 顶部极简模式切换（倒计时 / 年度点阵） */
+.cecp-switcher {
+  position: fixed;
+  top: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  display: flex;
+  gap: 4px;
+  background: rgba(20, 20, 22, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 4px;
+  border-radius: 12px;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, "PingFang SC", sans-serif;
+}
+
+.cecp-switch-btn {
+  border: none;
+  background: transparent;
+  color: #8e8e93;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.cecp-switch-btn:hover {
+  color: #f4f4f5;
+}
+
+.cecp-switch-btn.active {
+  background: #27272a;
+  color: #ffffff;
+}
+
+/* 年度点阵进度面板 */
+#cecpYearPanel {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -47%);
+  z-index: 9998;
+  width: min(440px, calc(100vw - 32px));
+  background: rgba(20, 20, 22, 0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 20px;
+  padding: 22px;
+  color: #f4f4f5;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, "PingFang SC", sans-serif;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  display: none;
+}
+
+#cecpYearPanel.show {
+  display: block;
+}
+
+.cecp-matrix-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.cecp-matrix-title {
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.cecp-matrix-meta {
+  font-size: 14px;
+  color: #8e8e93;
+  font-variant-numeric: tabular-nums;
+}
+
+.cecp-dot-grid {
+  display: grid;
+  grid-template-columns: repeat(19, 1fr);
+  gap: 7px;
+  margin-bottom: 18px;
+}
+
+.cecp-day-dot {
+  aspect-ratio: 1;
+  width: 100%;
+  border-radius: 50%;
+  background: #222226;
+}
+
+.cecp-day-dot.past {
+  background: #46464d;
+}
+
+.cecp-day-dot.today {
+  background: #2f81f7;
+  box-shadow: 0 0 10px rgba(47, 129, 247, 0.7), 0 0 3px #2f81f7;
+  transform: scale(1.16);
+}
+
+.cecp-mini-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.cecp-mini-stat {
+  text-align: center;
+}
+
+.cecp-mini-val {
+  font-size: 15px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.cecp-mini-key {
+  font-size: 12px;
+  color: #8e8e93;
+  margin-top: 2px;
+}
