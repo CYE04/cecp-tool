@@ -12,7 +12,7 @@
 
 ```html
 <iframe
-  src="https://你的用户名.github.io/仓库名/tool/"
+  src="https://cye04.github.io/cecp-tool/"
   style="width: 100%; min-height: 760px; border: none; border-radius: 14px;"
   loading="lazy">
 </iframe>
