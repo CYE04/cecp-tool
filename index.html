@@ -1,0 +1,1209 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>实用工具箱</title>
+  <style>
+    :root {
+      --bg: #f6f7f9;
+      --surface: #ffffff;
+      --surface-2: #f0f2f5;
+      --text: #18181b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --accent: #2563eb;
+      --accent-soft: rgba(37, 99, 235, 0.1);
+      --accent-hover: #1d4ed8;
+      --danger: #dc2626;
+      --danger-soft: rgba(220, 38, 38, 0.1);
+      --success: #16a34a;
+      --success-soft: rgba(22, 163, 74, 0.12);
+      --warning: #d97706;
+      --radius: 14px;
+      --shadow: 0 1px 3px rgba(15, 23, 42, 0.06), 0 4px 16px rgba(15, 23, 42, 0.04);
+    }
+
+    [data-theme="dark"] {
+      --bg: #0f1117;
+      --surface: #181b24;
+      --surface-2: #222633;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --border: #2c3140;
+      --accent: #3b82f6;
+      --accent-soft: rgba(59, 130, 246, 0.15);
+      --accent-hover: #60a5fa;
+      --danger: #f87171;
+      --danger-soft: rgba(248, 113, 113, 0.15);
+      --success: #4ade80;
+      --success-soft: rgba(74, 222, 128, 0.15);
+      --warning: #fbbf24;
+      --shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.55;
+      padding: 20px 16px 40px;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .container {
+      max-width: 920px;
+      margin: 0 auto;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: var(--accent);
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .brand h1 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    .brand p {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .theme-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 7px 12px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: border-color 0.15s, background 0.15s;
+    }
+
+    .theme-btn:hover {
+      border-color: var(--accent);
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 8px;
+      background: var(--surface);
+      padding: 6px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      margin-bottom: 20px;
+      overflow-x: auto;
+    }
+
+    .tab-btn {
+      flex: 1;
+      min-width: 110px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      padding: 9px 14px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s;
+    }
+
+    .tab-btn:hover {
+      color: var(--text);
+      background: var(--surface-2);
+    }
+
+    .tab-btn.active {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .panel {
+      display: none;
+    }
+
+    .panel.active {
+      display: block;
+      animation: fadeIn 0.18s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Cards & Grid */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    @media (max-width: 720px) {
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .card + .card {
+      margin-top: 16px;
+    }
+
+    .grid-2 .card + .card {
+      margin-top: 0;
+    }
+
+    .card-title {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .badge {
+      font-size: 0.74rem;
+      font-weight: 600;
+      padding: 3px 9px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    /* Form Controls */
+    .form-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    .field {
+      flex: 1;
+      min-width: 140px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    input[type="text"],
+    input[type="date"],
+    input[type="number"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 9px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      color: var(--text);
+      font-size: 0.92rem;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: var(--accent);
+    }
+
+    .btn {
+      padding: 9px 16px;
+      border-radius: 10px;
+      border: none;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.15s;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-hover);
+    }
+
+    .btn-ghost {
+      background: var(--surface-2);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn-ghost:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .btn-danger-sm {
+      background: transparent;
+      color: var(--text-muted);
+      padding: 4px 8px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      font-size: 0.82rem;
+    }
+
+    .btn-danger-sm:hover {
+      background: var(--danger-soft);
+      color: var(--danger);
+    }
+
+    /* Countdown List */
+    .countdown-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .countdown-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+    }
+
+    .countdown-meta h3 {
+      font-size: 0.96rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .countdown-meta p {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .countdown-days {
+      text-align: right;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .days-num {
+      font-size: 1.5rem;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      color: var(--accent);
+    }
+
+    .days-num.today {
+      color: var(--success);
+    }
+
+    .days-num.past {
+      color: var(--text-muted);
+    }
+
+    .days-label {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .result-box {
+      margin-top: 12px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      background: var(--accent-soft);
+      color: var(--text);
+      font-size: 0.92rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .result-highlight {
+      font-weight: 800;
+      color: var(--accent);
+      font-size: 1.15rem;
+    }
+
+    /* Pomodoro */
+    .timer-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 16px 0 8px;
+    }
+
+    .timer-modes {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 22px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .mode-pill {
+      padding: 6px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      color: var(--text-muted);
+      font-size: 0.84rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .mode-pill.active {
+      background: var(--accent-soft);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .timer-ring {
+      position: relative;
+      width: 210px;
+      height: 210px;
+      display: grid;
+      place-items: center;
+      margin-bottom: 20px;
+    }
+
+    .timer-ring svg {
+      position: absolute;
+      inset: 0;
+      transform: rotate(-90deg);
+    }
+
+    .timer-ring circle {
+      fill: none;
+      stroke-width: 8;
+    }
+
+    .ring-bg {
+      stroke: var(--surface-2);
+    }
+
+    .ring-fg {
+      stroke: var(--accent);
+      stroke-linecap: round;
+      transition: stroke-dashoffset 0.35s linear;
+    }
+
+    .timer-display {
+      font-size: 2.75rem;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.02em;
+    }
+
+    .timer-sub {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    .timer-controls {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    /* Text Tool */
+    textarea.text-area {
+      min-height: 200px;
+      resize: vertical;
+      line-height: 1.65;
+    }
+
+    .stats-bar {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+      gap: 10px;
+      margin: 14px 0;
+    }
+
+    .stat-card {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      text-align: center;
+    }
+
+    .stat-val {
+      font-size: 1.25rem;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      color: var(--accent);
+    }
+
+    .stat-key {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .action-bar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    /* Math Reciprocal & Ratio */
+    .math-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .math-box {
+      padding: 12px;
+      border-radius: 10px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+    }
+
+    .math-box .k {
+      font-size: 0.76rem;
+      color: var(--text-muted);
+    }
+
+    .math-box .v {
+      font-size: 1.15rem;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      margin-top: 2px;
+      word-break: break-all;
+    }
+
+    .empty-tip {
+      text-align: center;
+      color: var(--text-muted);
+      padding: 24px 12px;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <div class="brand">
+        <div class="brand-icon">T</div>
+        <div>
+          <h1>日常实用工具箱</h1>
+          <p>纯前端 · 本地存储 · 可直接嵌入 Halo</p>
+        </div>
+      </div>
+      <button class="theme-btn" id="themeToggle" type="button">
+        <span id="themeIcon">🌙</span>
+        <span id="themeText">深色模式</span>
+      </button>
+    </header>
+
+    <nav class="tabs" role="tablist">
+      <button class="tab-btn active" data-tab="countdown">📅 倒数日 & 日期</button>
+      <button class="tab-btn" data-tab="timer">🍅 专注计时器</button>
+      <button class="tab-btn" data-tab="text">📝 字数与排版</button>
+      <button class="tab-btn" data-tab="math">🔢 倒数与比例</button>
+    </nav>
+
+    <!-- 1. 倒数日 & 日期计算 -->
+    <section class="panel active" id="panel-countdown">
+      <div class="card">
+        <div class="card-title">
+          <span>我的倒数日</span>
+          <span class="badge">数据保存在本地浏览器</span>
+        </div>
+        <form id="addCountdownForm" class="form-row">
+          <div class="field" style="flex: 2;">
+            <label for="cdTitle">事件名称</label>
+            <input type="text" id="cdTitle" placeholder="例如：圣诞节 / 年终总结 / 发薪日" required />
+          </div>
+          <div class="field">
+            <label for="cdDate">目标日期</label>
+            <input type="date" id="cdDate" required />
+          </div>
+          <div class="field">
+            <label for="cdTag">分类</label>
+            <select id="cdTag">
+              <option value="日常">日常</option>
+              <option value="工作">工作</option>
+              <option value="节日">节日</option>
+              <option value="重要">重要</option>
+            </select>
+          </div>
+          <div class="field" style="flex: 0; justify-content: flex-end;">
+            <label>&nbsp;</label>
+            <button type="submit" class="btn btn-primary">添加倒数</button>
+          </div>
+        </form>
+
+        <div id="countdownList" class="countdown-list"></div>
+      </div>
+
+      <div class="grid-2" style="margin-top: 16px;">
+        <div class="card">
+          <div class="card-title">两个日期相差几天</div>
+          <div class="form-row">
+            <div class="field">
+              <label for="diffStart">开始日期</label>
+              <input type="date" id="diffStart" />
+            </div>
+            <div class="field">
+              <label for="diffEnd">结束日期</label>
+              <input type="date" id="diffEnd" />
+            </div>
+          </div>
+          <div class="result-box" id="diffResult">请选择两个日期</div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">日期推算（N 天后 / 前）</div>
+          <div class="form-row">
+            <div class="field">
+              <label for="offsetBase">基准日期</label>
+              <input type="date" id="offsetBase" />
+            </div>
+            <div class="field">
+              <label for="offsetDays">天数（负数往前）</label>
+              <input type="number" id="offsetDays" value="30" />
+            </div>
+          </div>
+          <div class="result-box" id="offsetResult">-</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. 专注计时器 -->
+    <section class="panel" id="panel-timer">
+      <div class="card">
+        <div class="card-title">
+          <span>专注倒计时 / 番茄钟</span>
+          <span class="badge" id="timerStatus">准备就绪</span>
+        </div>
+        <div class="timer-wrap">
+          <div class="timer-modes">
+            <button class="mode-pill active" data-minutes="25" data-label="专注 25 分钟">番茄专注 (25m)</button>
+            <button class="mode-pill" data-minutes="5" data-label="短休息 5 分钟">短休息 (5m)</button>
+            <button class="mode-pill" data-minutes="15" data-label="长休息 15 分钟">长休息 (15m)</button>
+            <button class="mode-pill" id="customModeBtn">自定义</button>
+          </div>
+
+          <div class="form-row" id="customMinutesRow" style="display: none; max-width: 260px; margin-bottom: 16px;">
+            <div class="field">
+              <label for="customMinutesInput">自定义分钟数</label>
+              <input type="number" id="customMinutesInput" min="1" max="180" value="45" />
+            </div>
+            <div class="field" style="flex: 0; justify-content: flex-end;">
+              <label>&nbsp;</label>
+              <button type="button" class="btn btn-ghost" id="applyCustomMinutes">应用</button>
+            </div>
+          </div>
+
+          <div class="timer-ring">
+            <svg viewBox="0 0 210 210" width="210" height="210">
+              <circle class="ring-bg" cx="105" cy="105" r="95"></circle>
+              <circle class="ring-fg" id="timerRing" cx="105" cy="105" r="95"></circle>
+            </svg>
+            <div>
+              <div class="timer-display" id="timerDisplay">25:00</div>
+              <div class="timer-sub" id="timerModeLabel">专注 25 分钟</div>
+            </div>
+          </div>
+
+          <div class="timer-controls">
+            <button class="btn btn-primary" id="timerStartBtn">开始</button>
+            <button class="btn btn-ghost" id="timerResetBtn">重置</button>
+            <button class="btn btn-ghost" id="timerSoundTest">测试提示音</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. 字数与排版工具 -->
+    <section class="panel" id="panel-text">
+      <div class="card">
+        <div class="card-title">
+          <span>字数统计 & 排版清理</span>
+          <span class="badge">写文章常用</span>
+        </div>
+        <textarea id="textInput" class="text-area" placeholder="把文章、Markdown 或需要清理格式的文本粘贴到这里..."></textarea>
+
+        <div class="stats-bar">
+          <div class="stat-card">
+            <div class="stat-val" id="statChars">0</div>
+            <div class="stat-key">总字符</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-val" id="statNoSpace">0</div>
+            <div class="stat-key">不含空格</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-val" id="statCn">0</div>
+            <div class="stat-key">中文字符</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-val" id="statWords">0</div>
+            <div class="stat-key">英文词数</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-val" id="statLines">0</div>
+            <div class="stat-key">行数</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-val" id="statRead">0m</div>
+            <div class="stat-key">预计阅读</div>
+          </div>
+        </div>
+
+        <div class="action-bar">
+          <button class="btn btn-primary" id="btnPangu">中英文加空格</button>
+          <button class="btn btn-ghost" id="btnTrimLines">去除多余空行</button>
+          <button class="btn btn-ghost" id="btnHalfWidth">全角数字/字母转半角</button>
+          <button class="btn btn-ghost" id="btnCopyText">复制文本</button>
+          <button class="btn btn-ghost" id="btnClearText">清空</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. 数学倒数与比例 -->
+    <section class="panel" id="panel-math">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">数学倒数 (1/x) & 常用换算</div>
+          <div class="field">
+            <label for="mathInputX">输入数值 x</label>
+            <input type="number" id="mathInputX" step="any" value="4" placeholder="输入任意非零数字" />
+          </div>
+          <div class="math-grid" id="mathResults"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">百分比 / 比例缩放</div>
+          <div class="form-row">
+            <div class="field">
+              <label for="ratioBase">原数值 A</label>
+              <input type="number" id="ratioBase" step="any" value="100" />
+            </div>
+            <div class="field">
+              <label for="ratioTarget">新数值 B</label>
+              <input type="number" id="ratioTarget" step="any" value="125" />
+            </div>
+          </div>
+          <div class="result-box" id="ratioResult">-</div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // ---------- 主题切换 ----------
+    const root = document.documentElement;
+    const themeToggle = document.getElementById('themeToggle');
+    const themeIcon = document.getElementById('themeIcon');
+    const themeText = document.getElementById('themeText');
+
+    function applyTheme(theme) {
+      root.setAttribute('data-theme', theme);
+      localStorage.setItem('halo_tool_theme', theme);
+      if (theme === 'dark') {
+        themeIcon.textContent = '☀️';
+        themeText.textContent = '浅色模式';
+      } else {
+        themeIcon.textContent = '🌙';
+        themeText.textContent = '深色模式';
+      }
+    }
+
+    const savedTheme = localStorage.getItem('halo_tool_theme');
+    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    applyTheme(savedTheme || (prefersDark ? 'dark' : 'light'));
+
+    themeToggle.addEventListener('click', () => {
+      const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      applyTheme(next);
+    });
+
+    // ---------- Tab 切换 ----------
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const panels = document.querySelectorAll('.panel');
+    tabBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        tabBtns.forEach(b => b.classList.remove('active'));
+        panels.forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('panel-' + btn.dataset.tab).classList.add('active');
+      });
+    });
+
+    // ---------- 工具 1：倒数日 & 日期计算 ----------
+    const STORAGE_KEY = 'halo_tool_countdowns_v1';
+    const todayStr = () => {
+      const d = new Date();
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${y}-${m}-${day}`;
+    };
+
+    function parseLocalDate(str) {
+      const [y, m, d] = str.split('-').map(Number);
+      return new Date(y, m - 1, d);
+    }
+
+    function getDefaultCountdowns() {
+      const now = new Date();
+      const nextYear = now.getFullYear() + 1;
+      const fridayOffset = (5 - now.getDay() + 7) % 7 || 7;
+      const nextFri = new Date(now.getFullYear(), now.getMonth(), now.getDate() + fridayOffset);
+      const friStr = `${nextFri.getFullYear()}-${String(nextFri.getMonth() + 1).padStart(2, '0')}-${String(nextFri.getDate()).padStart(2, '0')}`;
+      return [
+        { id: '1', title: '本周五', date: friStr, tag: '日常' },
+        { id: '2', title: `${nextYear} 年元旦`, date: `${nextYear}-01-01`, tag: '节日' }
+      ];
+    }
+
+    let countdowns = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null') || getDefaultCountdowns();
+
+    function saveCountdowns() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(countdowns));
+    }
+
+    function renderCountdowns() {
+      const list = document.getElementById('countdownList');
+      if (!countdowns.length) {
+        list.innerHTML = '<div class="empty-tip">还没有倒数日，在上方添加一个吧</div>';
+        return;
+      }
+
+      const today = parseLocalDate(todayStr());
+      const weekdays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+
+      const sorted = [...countdowns].sort((a, b) => a.date.localeCompare(b.date));
+      list.innerHTML = sorted.map(item => {
+        const target = parseLocalDate(item.date);
+        const diffDays = Math.round((target - today) / 86400000);
+        let numClass = '';
+        let statusText = '';
+        let displayNum = Math.abs(diffDays);
+
+        if (diffDays > 0) {
+          statusText = '天后';
+        } else if (diffDays === 0) {
+          numClass = 'today';
+          displayNum = '今天';
+          statusText = '就是今天';
+        } else {
+          numClass = 'past';
+          statusText = '天前（已过）';
+        }
+
+        return `
+          <div class="countdown-item">
+            <div class="countdown-meta">
+              <h3>
+                <span>${escapeHtml(item.title)}</span>
+                <span class="badge">${escapeHtml(item.tag)}</span>
+              </h3>
+              <p>${item.date} · ${weekdays[target.getDay()]}</p>
+            </div>
+            <div class="countdown-days">
+              <div>
+                <div class="days-num ${numClass}">${displayNum}</div>
+                <div class="days-label">${statusText}</div>
+              </div>
+              <button class="btn-danger-sm" onclick="deleteCountdown('${item.id}')" title="删除">✕</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    window.deleteCountdown = function(id) {
+      countdowns = countdowns.filter(c => c.id !== id);
+      saveCountdowns();
+      renderCountdowns();
+    };
+
+    document.getElementById('addCountdownForm').addEventListener('submit', e => {
+      e.preventDefault();
+      const title = document.getElementById('cdTitle').value.trim();
+      const date = document.getElementById('cdDate').value;
+      const tag = document.getElementById('cdTag').value;
+      if (!title || !date) return;
+      countdowns.push({ id: String(Date.now()), title, date, tag });
+      saveCountdowns();
+      renderCountdowns();
+      document.getElementById('cdTitle').value = '';
+    });
+
+    function escapeHtml(str) {
+      return str.replace(/[&<>"']/g, s => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      }[s]));
+    }
+
+    // 日期差计算
+    const diffStart = document.getElementById('diffStart');
+    const diffEnd = document.getElementById('diffEnd');
+    const diffResult = document.getElementById('diffResult');
+    diffStart.value = todayStr();
+    const weekLater = new Date();
+    weekLater.setDate(weekLater.getDate() + 14);
+    diffEnd.value = `${weekLater.getFullYear()}-${String(weekLater.getMonth() + 1).padStart(2, '0')}-${String(weekLater.getDate()).padStart(2, '0')}`;
+
+    function calcDateDiff() {
+      if (!diffStart.value || !diffEnd.value) return;
+      const d1 = parseLocalDate(diffStart.value);
+      const d2 = parseLocalDate(diffEnd.value);
+      const totalDays = Math.round((d2 - d1) / 86400000);
+      const absDays = Math.abs(totalDays);
+
+      // 计算工作日
+      const start = d1 <= d2 ? new Date(d1) : new Date(d2);
+      const end = d1 <= d2 ? new Date(d2) : new Date(d1);
+      let workdays = 0;
+      const cur = new Date(start);
+      while (cur < end) {
+        const day = cur.getDay();
+        if (day !== 0 && day !== 6) workdays++;
+        cur.setDate(cur.getDate() + 1);
+      }
+
+      const weeks = Math.floor(absDays / 7);
+      const rem = absDays % 7;
+      diffResult.innerHTML = `
+        <span>相差 <span class="result-highlight">${absDays}</span> 天</span>
+        <span>约 ${weeks} 周 ${rem} 天</span>
+        <span>工作日 <strong>${workdays}</strong> 天</span>
+      `;
+    }
+
+    diffStart.addEventListener('change', calcDateDiff);
+    diffEnd.addEventListener('change', calcDateDiff);
+
+    // 日期推算
+    const offsetBase = document.getElementById('offsetBase');
+    const offsetDays = document.getElementById('offsetDays');
+    const offsetResult = document.getElementById('offsetResult');
+    offsetBase.value = todayStr();
+
+    function calcDateOffset() {
+      if (!offsetBase.value) return;
+      const days = parseInt(offsetDays.value, 10) || 0;
+      const d = parseLocalDate(offsetBase.value);
+      d.setDate(d.getDate() + days);
+      const weekdays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+      const resStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+      offsetResult.innerHTML = `
+        <span>目标日期：<span class="result-highlight">${resStr}</span></span>
+        <span>${weekdays[d.getDay()]}</span>
+      `;
+    }
+
+    offsetBase.addEventListener('change', calcDateOffset);
+    offsetDays.addEventListener('input', calcDateOffset);
+
+    renderCountdowns();
+    calcDateDiff();
+    calcDateOffset();
+
+    // ---------- 工具 2：专注计时器 ----------
+    const timerDisplay = document.getElementById('timerDisplay');
+    const timerModeLabel = document.getElementById('timerModeLabel');
+    const timerStatus = document.getElementById('timerStatus');
+    const timerRing = document.getElementById('timerRing');
+    const timerStartBtn = document.getElementById('timerStartBtn');
+    const timerResetBtn = document.getElementById('timerResetBtn');
+    const modePills = document.querySelectorAll('.mode-pill[data-minutes]');
+    const customModeBtn = document.getElementById('customModeBtn');
+    const customMinutesRow = document.getElementById('customMinutesRow');
+
+    const CIRCUMFERENCE = 2 * Math.PI * 95;
+    timerRing.style.strokeDasharray = CIRCUMFERENCE;
+
+    let totalSeconds = 25 * 60;
+    let remainingSeconds = totalSeconds;
+    let timerInterval = null;
+    let isRunning = false;
+
+    function updateTimerUI() {
+      const m = Math.floor(remainingSeconds / 60);
+      const s = remainingSeconds % 60;
+      timerDisplay.textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+      const progress = totalSeconds > 0 ? remainingSeconds / totalSeconds : 0;
+      timerRing.style.strokeDashoffset = CIRCUMFERENCE * (1 - progress);
+    }
+
+    function playChime() {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        [523.25, 659.25, 783.99].forEach((freq, idx) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.value = freq;
+          gain.gain.setValueAtTime(0.001, ctx.currentTime + idx * 0.16);
+          gain.gain.exponentialRampToValueAtTime(0.18, ctx.currentTime + idx * 0.16 + 0.04);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + idx * 0.16 + 0.55);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(ctx.currentTime + idx * 0.16);
+          osc.stop(ctx.currentTime + idx * 0.16 + 0.6);
+        });
+      } catch (e) {}
+    }
+
+    function stopTimer() {
+      clearInterval(timerInterval);
+      timerInterval = null;
+      isRunning = false;
+      timerStartBtn.textContent = '开始';
+    }
+
+    function setTimerMinutes(mins, label) {
+      stopTimer();
+      totalSeconds = mins * 60;
+      remainingSeconds = totalSeconds;
+      timerModeLabel.textContent = label;
+      timerStatus.textContent = '准备就绪';
+      updateTimerUI();
+    }
+
+    modePills.forEach(pill => {
+      pill.addEventListener('click', () => {
+        document.querySelectorAll('.mode-pill').forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+        customMinutesRow.style.display = 'none';
+        setTimerMinutes(Number(pill.dataset.minutes), pill.dataset.label);
+      });
+    });
+
+    customModeBtn.addEventListener('click', () => {
+      document.querySelectorAll('.mode-pill').forEach(p => p.classList.remove('active'));
+      customModeBtn.classList.add('active');
+      customMinutesRow.style.display = 'flex';
+    });
+
+    document.getElementById('applyCustomMinutes').addEventListener('click', () => {
+      const m = Math.max(1, Math.min(180, Number(document.getElementById('customMinutesInput').value) || 25));
+      setTimerMinutes(m, `自定义 ${m} 分钟`);
+    });
+
+    timerStartBtn.addEventListener('click', () => {
+      if (isRunning) {
+        stopTimer();
+        timerStatus.textContent = '已暂停';
+        timerStartBtn.textContent = '继续';
+        return;
+      }
+      if (remainingSeconds <= 0) remainingSeconds = totalSeconds;
+      isRunning = true;
+      timerStartBtn.textContent = '暂停';
+      timerStatus.textContent = '计时中...';
+      timerInterval = setInterval(() => {
+        remainingSeconds--;
+        updateTimerUI();
+        if (remainingSeconds <= 0) {
+          stopTimer();
+          timerStatus.textContent = '已完成！';
+          playChime();
+        }
+      }, 1000);
+    });
+
+    timerResetBtn.addEventListener('click', () => {
+      stopTimer();
+      remainingSeconds = totalSeconds;
+      timerStatus.textContent = '准备就绪';
+      updateTimerUI();
+    });
+
+    document.getElementById('timerSoundTest').addEventListener('click', playChime);
+    updateTimerUI();
+
+    // ---------- 工具 3：字数统计 & 排版清理 ----------
+    const textInput = document.getElementById('textInput');
+
+    function updateTextStats() {
+      const val = textInput.value;
+      const chars = val.length;
+      const noSpace = val.replace(/\s/g, '').length;
+      const cn = (val.match(/[\u4e00-\u9fa5]/g) || []).length;
+      const enWords = (val.replace(/[\u4e00-\u9fa5]/g, ' ').match(/[A-Za-z0-9_'-]+/g) || []).length;
+      const lines = val ? val.split(/\r\n|\r|\n/).length : 0;
+      const readMin = Math.max(val.trim() ? 1 : 0, Math.ceil((cn + enWords) / 350));
+
+      document.getElementById('statChars').textContent = chars;
+      document.getElementById('statNoSpace').textContent = noSpace;
+      document.getElementById('statCn').textContent = cn;
+      document.getElementById('statWords').textContent = enWords;
+      document.getElementById('statLines').textContent = lines;
+      document.getElementById('statRead').textContent = `${readMin}m`;
+    }
+
+    textInput.addEventListener('input', updateTextStats);
+
+    document.getElementById('btnPangu').addEventListener('click', () => {
+      let t = textInput.value;
+      t = t.replace(/([\u4e00-\u9fa5])([A-Za-z0-9])/g, '$1 $2');
+      t = t.replace(/([A-Za-z0-9])([\u4e00-\u9fa5])/g, '$1 $2');
+      textInput.value = t;
+      updateTextStats();
+    });
+
+    document.getElementById('btnTrimLines').addEventListener('click', () => {
+      textInput.value = textInput.value
+        .split(/\r?\n/)
+        .map(line => line.trimEnd())
+        .join('\n')
+        .replace(/\n{3,}/g, '\n\n')
+        .trim();
+      updateTextStats();
+    });
+
+    document.getElementById('btnHalfWidth').addEventListener('click', () => {
+      textInput.value = textInput.value.replace(/[\uff01-\uff5e]/g, ch =>
+        String.fromCharCode(ch.charCodeAt(0) - 0xfee0)
+      ).replace(/\u3000/g, ' ');
+      updateTextStats();
+    });
+
+    document.getElementById('btnCopyText').addEventListener('click', async () => {
+      if (!textInput.value) return;
+      try {
+        await navigator.clipboard.writeText(textInput.value);
+        const btn = document.getElementById('btnCopyText');
+        const old = btn.textContent;
+        btn.textContent = '已复制 ✓';
+        setTimeout(() => (btn.textContent = old), 1200);
+      } catch (e) {}
+    });
+
+    document.getElementById('btnClearText').addEventListener('click', () => {
+      textInput.value = '';
+      updateTextStats();
+    });
+
+    // ---------- 工具 4：数学倒数与比例 ----------
+    const mathInputX = document.getElementById('mathInputX');
+    const mathResults = document.getElementById('mathResults');
+
+    function calcMath() {
+      const x = parseFloat(mathInputX.value);
+      if (isNaN(x)) {
+        mathResults.innerHTML = '<div class="math-box"><div class="k">提示</div><div class="v">请输入有效数字</div></div>';
+        return;
+      }
+      const reciprocal = x === 0 ? '无定义 (不能除以 0)' : (1 / x).toPrecision(8).replace(/\.?0+$/, '');
+      const percent = (x * 100).toFixed(2).replace(/\.?0+$/, '') + '%';
+      const square = (x * x).toPrecision(8).replace(/\.?0+$/, '');
+      const sqrt = x < 0 ? '虚数' : Math.sqrt(x).toPrecision(8).replace(/\.?0+$/, '');
+
+      mathResults.innerHTML = `
+        <div class="math-box"><div class="k">倒数 (1 / x)</div><div class="v">${reciprocal}</div></div>
+        <div class="math-box"><div class="k">百分比 (x × 100%)</div><div class="v">${percent}</div></div>
+        <div class="math-box"><div class="k">平方 (x²)</div><div class="v">${square}</div></div>
+        <div class="math-box"><div class="k">平方根 (√x)</div><div class="v">${sqrt}</div></div>
+      `;
+    }
+
+    mathInputX.addEventListener('input', calcMath);
+    calcMath();
+
+    const ratioBase = document.getElementById('ratioBase');
+    const ratioTarget = document.getElementById('ratioTarget');
+    const ratioResult = document.getElementById('ratioResult');
+
+    function calcRatio() {
+      const a = parseFloat(ratioBase.value);
+      const b = parseFloat(ratioTarget.value);
+      if (isNaN(a) || isNaN(b) || a === 0) {
+        ratioResult.textContent = '请输入有效数值（原数值 A 不能为 0）';
+        return;
+      }
+      const diff = b - a;
+      const pct = ((diff / a) * 100).toFixed(2);
+      const mult = (b / a).toFixed(4).replace(/\.?0+$/, '');
+      const sign = diff > 0 ? '+' : '';
+      ratioResult.innerHTML = `
+        <span>变化率：<span class="result-highlight">${sign}${pct}%</span></span>
+        <span>差值：<strong>${sign}${diff}</strong></span>
+        <span>倍数：<strong>${mult}×</strong></span>
+      `;
+    }
+
+    ratioBase.addEventListener('input', calcRatio);
+    ratioTarget.addEventListener('input', calcRatio);
+    calcRatio();
+  </script>
+</body>
+</html>
