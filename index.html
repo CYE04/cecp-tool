@@ -546,14 +546,25 @@
         <!-- 左上角返回官网（仅在 iframe 嵌入时自动显示） -->
         <a id="cecpBackHome" class="cecp-back-home" href="https://cecp.it" target="_top">← <span class="cecp-back-label">返回官网</span></a>
 
-        <!-- 顶部模式切换 -->
-        <div class="cecp-switcher" role="tablist">
-            <button type="button" class="cecp-switch-btn active" data-cecp-tab="timer">🐱 倒计时</button>
-            <button type="button" class="cecp-switch-btn" data-cecp-tab="stage">📺 聚会大屏</button>
-            <button type="button" class="cecp-switch-btn" data-cecp-tab="wheel">🎡 大转盘</button>
-            <button type="button" class="cecp-switch-btn" data-cecp-tab="draw">🎲 抽签分组</button>
-            <button type="button" class="cecp-switch-btn" data-cecp-tab="score">🏆 计分板</button>
-            <button type="button" class="cecp-switch-btn" data-cecp-tab="year">⏳ 年度</button>
+        <!-- 顶部两层分类导航 -->
+        <div class="cecp-nav-wrap">
+            <div class="cecp-cat-bar" role="tablist" aria-label="功能分类">
+                <button type="button" class="cecp-cat-btn active" data-cecp-cat="time">⏱️ 时间</button>
+                <button type="button" class="cecp-cat-btn" data-cecp-cat="event">⛪ 聚会</button>
+                <button type="button" class="cecp-cat-btn" data-cecp-cat="game">🎮 游戏</button>
+            </div>
+            <div class="cecp-sub-bar" role="tablist" aria-label="子工具">
+                <button type="button" class="cecp-switch-btn active" data-cecp-group="time" data-cecp-tab="timer">🐱 小猫倒计时</button>
+                <button type="button" class="cecp-switch-btn" data-cecp-group="time" data-cecp-tab="flip">🕰️ 翻页时钟</button>
+                <button type="button" class="cecp-switch-btn" data-cecp-group="time" data-cecp-tab="year">⏳ 年度进度</button>
+
+                <button type="button" class="cecp-switch-btn group-hidden" data-cecp-group="event" data-cecp-tab="stage">📺 聚会大屏</button>
+                <button type="button" class="cecp-switch-btn group-hidden" data-cecp-group="event" data-cecp-tab="sound">🥁 氛围音效</button>
+
+                <button type="button" class="cecp-switch-btn group-hidden" data-cecp-group="game" data-cecp-tab="wheel">🎡 大转盘</button>
+                <button type="button" class="cecp-switch-btn group-hidden" data-cecp-group="game" data-cecp-tab="draw">🎲 抽签分组</button>
+                <button type="button" class="cecp-switch-btn group-hidden" data-cecp-group="game" data-cecp-tab="score">🏆 计分板</button>
+            </div>
         </div>
 
         <!-- 年度点阵进度面板 -->
@@ -774,6 +785,129 @@
                         <button type="button" class="cecp-btn cecp-btn-primary" id="cecpWheelSpinBtn2">开始转动</button>
                     </div>
                 </div>
+            </div>
+        </section>
+
+        <!-- 机械翻页时钟面板 -->
+        <section id="cecpFlipPanel" class="cecp-panel" aria-label="机械翻页时钟">
+            <div class="cecp-panel-head">
+                <div class="cecp-panel-title">🕰️ 机械翻页时钟</div>
+                <div class="cecp-score-actions">
+                    <div class="cecp-sub-seg" role="tablist">
+                        <button type="button" class="cecp-sub-btn active" data-flip-format="24">24H</button>
+                        <button type="button" class="cecp-sub-btn" data-flip-format="12">12H</button>
+                    </div>
+                    <label class="cecp-check-label">
+                        <input type="checkbox" id="cecpFlipShowSec" checked />
+                        <span>秒数</span>
+                    </label>
+                    <label class="cecp-check-label">
+                        <input type="checkbox" id="cecpFlipShowDate" checked />
+                        <span>日期</span>
+                    </label>
+                    <button type="button" class="cecp-btn cecp-btn-sm cecp-btn-gold" id="cecpFlipPureBtn">⛶ 纯净投屏</button>
+                </div>
+            </div>
+
+            <div class="cecp-flip-stage" id="cecpFlipStage">
+                <div class="cecp-flip-clock" id="cecpFlipClock">
+                    <div class="cecp-flip-card" id="cecpFlipHour">
+                        <span class="cecp-flip-ampm" id="cecpFlipAmPm">AM</span>
+                        <div class="cecp-flip-top"><span class="cecp-flip-num">00</span></div>
+                        <div class="cecp-flip-bottom"><span class="cecp-flip-num">00</span></div>
+                        <div class="cecp-flip-leaf-top"><span class="cecp-flip-num">00</span></div>
+                        <div class="cecp-flip-leaf-bottom"><span class="cecp-flip-num">00</span></div>
+                        <div class="cecp-flip-hinge"></div>
+                    </div>
+
+                    <div class="cecp-flip-sep" aria-hidden="true"><i></i><i></i></div>
+
+                    <div class="cecp-flip-card" id="cecpFlipMin">
+                        <div class="cecp-flip-top"><span class="cecp-flip-num">00</span></div>
+                        <div class="cecp-flip-bottom"><span class="cecp-flip-num">00</span></div>
+                        <div class="cecp-flip-leaf-top"><span class="cecp-flip-num">00</span></div>
+                        <div class="cecp-flip-leaf-bottom"><span class="cecp-flip-num">00</span></div>
+                        <div class="cecp-flip-hinge"></div>
+                    </div>
+
+                    <div class="cecp-flip-sep" id="cecpFlipSecSep" aria-hidden="true"><i></i><i></i></div>
+
+                    <div class="cecp-flip-card" id="cecpFlipSec">
+                        <div class="cecp-flip-top"><span class="cecp-flip-num">00</span></div>
+                        <div class="cecp-flip-bottom"><span class="cecp-flip-num">00</span></div>
+                        <div class="cecp-flip-leaf-top"><span class="cecp-flip-num">00</span></div>
+                        <div class="cecp-flip-leaf-bottom"><span class="cecp-flip-num">00</span></div>
+                        <div class="cecp-flip-hinge"></div>
+                    </div>
+                </div>
+                <div class="cecp-flip-date" id="cecpFlipDate">2026 年 11 月 22 日 · 星期日</div>
+            </div>
+        </section>
+
+        <!-- 现场氛围音效板面板 -->
+        <section id="cecpSoundPanel" class="cecp-panel" aria-label="现场氛围音效板">
+            <div class="cecp-panel-head">
+                <div class="cecp-panel-title">🥁 现场氛围音效板</div>
+                <div class="cecp-score-actions">
+                    <div class="cecp-sound-vol-wrap">
+                        <span>🔊</span>
+                        <input type="range" id="cecpSoundVol" class="cecp-vol-range" min="0" max="100" value="80" aria-label="音量" />
+                        <span id="cecpSoundVolVal" style="min-width:34px;text-align:right;font-variant-numeric:tabular-nums;">80%</span>
+                    </div>
+                    <button type="button" class="cecp-btn cecp-btn-sm" id="cecpSoundStopBtn">⏹ 停止全部</button>
+                    <button type="button" class="cecp-btn cecp-btn-sm cecp-btn-gold" id="cecpSoundPureBtn">⛶ 纯净投屏</button>
+                </div>
+            </div>
+
+            <div class="cecp-sound-grid" id="cecpSoundGrid">
+                <button type="button" class="cecp-sound-pad" data-sfx="applause" style="--pad-color:#f5cd79;--pad-glow:rgba(245,205,121,0.28);">
+                    <span class="cecp-pad-key">1</span>
+                    <span class="cecp-pad-icon">👏</span>
+                    <span class="cecp-pad-name">热烈掌声</span>
+                    <span class="cecp-pad-sub">欢迎 / 鼓励</span>
+                </button>
+                <button type="button" class="cecp-sound-pad" data-sfx="drumroll" style="--pad-color:#fb923c;--pad-glow:rgba(251,146,60,0.28);">
+                    <span class="cecp-pad-key">2</span>
+                    <span class="cecp-pad-icon">🥁</span>
+                    <span class="cecp-pad-name">悬念鼓点</span>
+                    <span class="cecp-pad-sub">抽奖 / 揭晓前</span>
+                </button>
+                <button type="button" class="cecp-sound-pad" data-sfx="fanfare" style="--pad-color:#3b82f6;--pad-glow:rgba(59,130,246,0.32);">
+                    <span class="cecp-pad-key">3</span>
+                    <span class="cecp-pad-icon">🎺</span>
+                    <span class="cecp-pad-name">胜利号角</span>
+                    <span class="cecp-pad-sub">颁奖 / 夺冠</span>
+                </button>
+                <button type="button" class="cecp-sound-pad" data-sfx="correct" style="--pad-color:#22c55e;--pad-glow:rgba(34,197,94,0.3);">
+                    <span class="cecp-pad-key">4</span>
+                    <span class="cecp-pad-icon">✅</span>
+                    <span class="cecp-pad-name">答对提示</span>
+                    <span class="cecp-pad-sub">清脆叮咚</span>
+                </button>
+                <button type="button" class="cecp-sound-pad" data-sfx="wrong" style="--pad-color:#ef4444;--pad-glow:rgba(239,68,68,0.28);">
+                    <span class="cecp-pad-key">5</span>
+                    <span class="cecp-pad-icon">❌</span>
+                    <span class="cecp-pad-name">答错蜂鸣</span>
+                    <span class="cecp-pad-sub">趣味淘汰</span>
+                </button>
+                <button type="button" class="cecp-sound-pad" data-sfx="dingdong" style="--pad-color:#38bdf8;--pad-glow:rgba(56,189,248,0.3);">
+                    <span class="cecp-pad-key">6</span>
+                    <span class="cecp-pad-icon">🔔</span>
+                    <span class="cecp-pad-name">聚会提示钟</span>
+                    <span class="cecp-pad-sub">安静 / 环节切换</span>
+                </button>
+                <button type="button" class="cecp-sound-pad" data-sfx="countdown321" style="--pad-color:#a855f7;--pad-glow:rgba(168,85,247,0.32);">
+                    <span class="cecp-pad-key">7</span>
+                    <span class="cecp-pad-icon">⏱️</span>
+                    <span class="cecp-pad-name">3-2-1 倒数</span>
+                    <span class="cecp-pad-sub">游戏开始</span>
+                </button>
+                <button type="button" class="cecp-sound-pad" data-sfx="wow" style="--pad-color:#ec4899;--pad-glow:rgba(236,72,153,0.3);">
+                    <span class="cecp-pad-key">8</span>
+                    <span class="cecp-pad-icon">🎉</span>
+                    <span class="cecp-pad-name">惊喜彩蛋</span>
+                    <span class="cecp-pad-sub">音效 + 礼花</span>
+                </button>
             </div>
         </section>
 

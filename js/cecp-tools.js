@@ -103,17 +103,34 @@
     backBtn.classList.add('show');
   }
 
+  const catBtns = document.querySelectorAll('.cecp-cat-btn');
   const switchBtns = document.querySelectorAll('.cecp-switch-btn');
   const mainEl = document.getElementById('main');
   const panels = {
+    flip: document.getElementById('cecpFlipPanel'),
+    year: document.getElementById('cecpYearPanel'),
     stage: document.getElementById('cecpStagePanel'),
+    sound: document.getElementById('cecpSoundPanel'),
     wheel: document.getElementById('cecpWheelPanel'),
     draw: document.getElementById('cecpDrawPanel'),
-    score: document.getElementById('cecpScorePanel'),
-    year: document.getElementById('cecpYearPanel')
+    score: document.getElementById('cecpScorePanel')
   };
 
+  const TAB_TO_CAT = {
+    timer: 'time',
+    flip: 'time',
+    year: 'time',
+    stage: 'event',
+    sound: 'event',
+    wheel: 'game',
+    draw: 'game',
+    score: 'game'
+  };
+  const lastTabByCat = { time: 'timer', event: 'stage', game: 'wheel' };
+
   let onSwitchCallbacks = {};
+  let onLeaveCallbacks = {};
+  let currentActiveTab = 'timer';
   let pureEnteredFullscreen = false;
   const pureExitBtn = document.getElementById('cecpPureExitBtn');
 
@@ -147,10 +164,28 @@
     pureExitBtn.addEventListener('click', exitPureMode);
   }
 
+  function showCategoryBar(cat) {
+    catBtns.forEach(function (c) {
+      c.classList.toggle('active', c.dataset.cecpCat === cat);
+    });
+    switchBtns.forEach(function (b) {
+      b.classList.toggle('group-hidden', b.dataset.cecpGroup !== cat);
+    });
+  }
+
   function switchTab(tab) {
     if (document.body.classList.contains('cecp-pure-mode')) {
       exitPureMode();
     }
+    if (currentActiveTab && currentActiveTab !== tab && onLeaveCallbacks[currentActiveTab]) {
+      onLeaveCallbacks[currentActiveTab]();
+    }
+    currentActiveTab = tab;
+
+    const cat = TAB_TO_CAT[tab] || 'time';
+    lastTabByCat[cat] = tab;
+    showCategoryBar(cat);
+
     switchBtns.forEach(function (b) {
       b.classList.toggle('active', b.dataset.cecpTab === tab);
     });
@@ -163,6 +198,14 @@
     if (tab === 'year') renderYearMatrix();
     if (onSwitchCallbacks[tab]) onSwitchCallbacks[tab]();
   }
+
+  catBtns.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      const cat = btn.dataset.cecpCat;
+      const targetTab = lastTabByCat[cat] || 'timer';
+      switchTab(targetTab);
+    });
+  });
 
   switchBtns.forEach(function (btn) {
     btn.addEventListener('click', function () {
@@ -1407,4 +1450,530 @@
   onSwitchCallbacks.wheel = refreshActiveWheel;
   window.addEventListener('resize', refreshActiveWheel);
   drawWheel();
+
+  // ---------- 7. 机械翻页时钟 (Flip Clock) ----------
+  const FLIP_KEY = 'cecp_tool_flip_v1';
+  const flipStage = document.getElementById('cecpFlipStage');
+  const flipHourCard = document.getElementById('cecpFlipHour');
+  const flipMinCard = document.getElementById('cecpFlipMin');
+  const flipSecCard = document.getElementById('cecpFlipSec');
+  const flipSecSep = document.getElementById('cecpFlipSecSep');
+  const flipAmPmEl = document.getElementById('cecpFlipAmPm');
+  const flipDateEl = document.getElementById('cecpFlipDate');
+  const flipFormatBtns = document.querySelectorAll('.cecp-sub-btn[data-flip-format]');
+  const flipShowSecInput = document.getElementById('cecpFlipShowSec');
+  const flipShowDateInput = document.getElementById('cecpFlipShowDate');
+  const flipPureBtn = document.getElementById('cecpFlipPureBtn');
+
+  let flipCfg = { is24h: true, showSeconds: true, showDate: true };
+  try {
+    const savedFlip = JSON.parse(localStorage.getItem(FLIP_KEY) || 'null');
+    if (savedFlip && typeof savedFlip === 'object') {
+      flipCfg = Object.assign(flipCfg, savedFlip);
+    }
+  } catch (e) {}
+
+  let flipTicker = null;
+
+  function saveFlipCfg() {
+    localStorage.setItem(FLIP_KEY, JSON.stringify(flipCfg));
+  }
+
+  function setCardText(card, selector, value) {
+    const el = card.querySelector(selector + ' .cecp-flip-num');
+    if (el) el.textContent = value;
+  }
+
+  function updateFlipCard(card, nextVal, animate) {
+    if (!card) return;
+    const prevVal = card.dataset.val;
+    if (prevVal === nextVal) return;
+
+    if (card._flipTimer) {
+      clearTimeout(card._flipTimer);
+      card._flipTimer = null;
+    }
+
+    if (!animate || !prevVal) {
+      card.classList.remove('flipping');
+      setCardText(card, '.cecp-flip-top', nextVal);
+      setCardText(card, '.cecp-flip-bottom', nextVal);
+      setCardText(card, '.cecp-flip-leaf-top', nextVal);
+      setCardText(card, '.cecp-flip-leaf-bottom', nextVal);
+      card.dataset.val = nextVal;
+      return;
+    }
+
+    card.classList.remove('flipping');
+    setCardText(card, '.cecp-flip-top', nextVal);
+    setCardText(card, '.cecp-flip-bottom', prevVal);
+    setCardText(card, '.cecp-flip-leaf-top', prevVal);
+    setCardText(card, '.cecp-flip-leaf-bottom', nextVal);
+    void card.offsetWidth;
+    card.classList.add('flipping');
+    card.dataset.val = nextVal;
+
+    card._flipTimer = setTimeout(function () {
+      card.classList.remove('flipping');
+      setCardText(card, '.cecp-flip-bottom', nextVal);
+      setCardText(card, '.cecp-flip-leaf-top', nextVal);
+      card._flipTimer = null;
+    }, 490);
+  }
+
+  function applyFlipUI() {
+    flipFormatBtns.forEach(function (b) {
+      b.classList.toggle('active', (b.dataset.flipFormat === '24') === flipCfg.is24h);
+    });
+    if (flipShowSecInput) flipShowSecInput.checked = !!flipCfg.showSeconds;
+    if (flipShowDateInput) flipShowDateInput.checked = !!flipCfg.showDate;
+    if (flipStage) flipStage.classList.toggle('no-seconds', !flipCfg.showSeconds);
+    if (flipSecCard) flipSecCard.style.display = flipCfg.showSeconds ? 'block' : 'none';
+    if (flipSecSep) flipSecSep.style.display = flipCfg.showSeconds ? 'flex' : 'none';
+    if (flipDateEl) flipDateEl.style.display = flipCfg.showDate ? 'block' : 'none';
+    if (flipAmPmEl) flipAmPmEl.classList.toggle('show', !flipCfg.is24h);
+  }
+
+  function syncFlipClock(animate) {
+    const now = new Date();
+    let hours = now.getHours();
+    const isPm = hours >= 12;
+    if (!flipCfg.is24h) {
+      hours = hours % 12 || 12;
+    }
+    const hh = String(hours).padStart(2, '0');
+    const mm = String(now.getMinutes()).padStart(2, '0');
+    const ss = String(now.getSeconds()).padStart(2, '0');
+
+    updateFlipCard(flipHourCard, hh, animate);
+    updateFlipCard(flipMinCard, mm, animate);
+    if (flipCfg.showSeconds) {
+      updateFlipCard(flipSecCard, ss, animate);
+    }
+    if (flipAmPmEl) {
+      flipAmPmEl.textContent = isPm ? 'PM' : 'AM';
+    }
+    if (flipDateEl && flipCfg.showDate) {
+      const weekdays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+      flipDateEl.textContent = now.getFullYear() + ' 年 ' + (now.getMonth() + 1) + ' 月 ' + now.getDate() + ' 日 · ' + weekdays[now.getDay()];
+    }
+  }
+
+  function startFlipClock() {
+    stopFlipClock();
+    syncFlipClock(false);
+    flipTicker = setInterval(function () {
+      syncFlipClock(true);
+    }, 250);
+  }
+
+  function stopFlipClock() {
+    if (flipTicker) {
+      clearInterval(flipTicker);
+      flipTicker = null;
+    }
+  }
+
+  flipFormatBtns.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      flipCfg.is24h = btn.dataset.flipFormat === '24';
+      saveFlipCfg();
+      applyFlipUI();
+      syncFlipClock(false);
+    });
+  });
+
+  if (flipShowSecInput) {
+    flipShowSecInput.addEventListener('change', function () {
+      flipCfg.showSeconds = flipShowSecInput.checked;
+      saveFlipCfg();
+      applyFlipUI();
+      syncFlipClock(false);
+    });
+  }
+
+  if (flipShowDateInput) {
+    flipShowDateInput.addEventListener('change', function () {
+      flipCfg.showDate = flipShowDateInput.checked;
+      saveFlipCfg();
+      applyFlipUI();
+      syncFlipClock(false);
+    });
+  }
+
+  if (flipPureBtn) {
+    flipPureBtn.addEventListener('click', enterPureMode);
+  }
+
+  document.addEventListener('visibilitychange', function () {
+    if (!document.hidden && panels.flip && panels.flip.classList.contains('show')) {
+      syncFlipClock(false);
+    }
+  });
+
+  applyFlipUI();
+  onSwitchCallbacks.flip = startFlipClock;
+  onLeaveCallbacks.flip = stopFlipClock;
+
+  // ---------- 8. 现场氛围音效板 (Web Audio API) ----------
+  const SOUND_VOL_KEY = 'cecp_tool_soundvol_v1';
+  const soundGrid = document.getElementById('cecpSoundGrid');
+  const soundVolSlider = document.getElementById('cecpSoundVol');
+  const soundVolVal = document.getElementById('cecpSoundVolVal');
+  const soundStopBtn = document.getElementById('cecpSoundStopBtn');
+  const soundPureBtn = document.getElementById('cecpSoundPureBtn');
+
+  let soundMasterGain = null;
+  let activeSfxNodes = [];
+  let activeSfxTimers = [];
+  let soundVolume = 0.8;
+
+  try {
+    const savedVol = parseInt(localStorage.getItem(SOUND_VOL_KEY) || '', 10);
+    if (!isNaN(savedVol) && savedVol >= 0 && savedVol <= 100) {
+      soundVolume = savedVol / 100;
+    }
+  } catch (e) {}
+
+  function ensureSoundBus() {
+    const Ctx = window.AudioContext || window.webkitAudioContext;
+    if (!Ctx) return null;
+    if (!sharedAudioCtx) sharedAudioCtx = new Ctx();
+    if (sharedAudioCtx.state === 'suspended') sharedAudioCtx.resume();
+    if (!soundMasterGain) {
+      soundMasterGain = sharedAudioCtx.createGain();
+      soundMasterGain.gain.value = soundVolume;
+      soundMasterGain.connect(sharedAudioCtx.destination);
+    }
+    return sharedAudioCtx;
+  }
+
+  function createNoiseBuffer(ctx, durationSec) {
+    const length = Math.floor(ctx.sampleRate * durationSec);
+    const buffer = ctx.createBuffer(1, length, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < length; i++) {
+      data[i] = Math.random() * 2 - 1;
+    }
+    return buffer;
+  }
+
+  function trackNode(node) {
+    activeSfxNodes.push(node);
+    return node;
+  }
+
+  function stopAllSfx(quiet) {
+    activeSfxTimers.forEach(function (id) {
+      clearTimeout(id);
+    });
+    activeSfxTimers = [];
+    activeSfxNodes.forEach(function (node) {
+      try { if (node.stop) node.stop(); } catch (e) {}
+      try { node.disconnect(); } catch (e) {}
+    });
+    activeSfxNodes = [];
+    if (soundGrid) {
+      soundGrid.querySelectorAll('.cecp-sound-pad').forEach(function (p) {
+        p.classList.remove('playing');
+        if (p.dataset.origName) {
+          const nameEl = p.querySelector('.cecp-pad-name');
+          if (nameEl) nameEl.textContent = p.dataset.origName;
+        }
+      });
+    }
+    if (!quiet) showToast('已停止全部音效');
+  }
+
+  function markPadPlaying(pad, durationMs) {
+    if (!pad) return;
+    pad.classList.remove('playing');
+    void pad.offsetWidth;
+    pad.classList.add('playing');
+    const id = setTimeout(function () {
+      pad.classList.remove('playing');
+    }, durationMs);
+    activeSfxTimers.push(id);
+  }
+
+  function playSfx(type, pad) {
+    const ctx = ensureSoundBus();
+    if (!ctx || !soundMasterGain) return;
+    const now = ctx.currentTime;
+
+    if (type === 'applause') {
+      const dur = 2.3;
+      const noiseBuf = createNoiseBuffer(ctx, 0.25);
+      for (let i = 0; i < 24; i++) {
+        const t = now + i * 0.085 + (Math.random() * 0.035);
+        const src = trackNode(ctx.createBufferSource());
+        src.buffer = noiseBuf;
+        const filter = ctx.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.frequency.value = 1100 + Math.random() * 1400;
+        filter.Q.value = 0.85;
+        const gain = ctx.createGain();
+        const envScale = i < 4 ? (i + 1) / 4 : i > 16 ? Math.max(0.15, (24 - i) / 8) : 1;
+        gain.gain.setValueAtTime(0.001, t);
+        gain.gain.exponentialRampToValueAtTime(0.24 * envScale, t + 0.015);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + 0.16);
+        src.connect(filter);
+        filter.connect(gain);
+        gain.connect(soundMasterGain);
+        src.start(t);
+        src.stop(t + 0.18);
+      }
+      markPadPlaying(pad, dur * 1000);
+      return;
+    }
+
+    if (type === 'drumroll') {
+      const noiseBuf = createNoiseBuffer(ctx, 0.14);
+      let offset = 0;
+      const hits = 18;
+      for (let i = 0; i < hits; i++) {
+        const step = 0.14 - (i / hits) * 0.075;
+        const t = now + offset;
+        offset += step;
+        const src = trackNode(ctx.createBufferSource());
+        src.buffer = noiseBuf;
+        const filter = ctx.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.frequency.value = 1800;
+        filter.Q.value = 1.2;
+        const g = ctx.createGain();
+        const amp = 0.12 + (i / hits) * 0.22;
+        g.gain.setValueAtTime(0.001, t);
+        g.gain.exponentialRampToValueAtTime(amp, t + 0.006);
+        g.gain.exponentialRampToValueAtTime(0.001, t + 0.09);
+        src.connect(filter);
+        filter.connect(g);
+        g.connect(soundMasterGain);
+        src.start(t);
+        src.stop(t + 0.1);
+
+        const bodyOsc = trackNode(ctx.createOscillator());
+        const bodyGain = ctx.createGain();
+        bodyOsc.type = 'triangle';
+        bodyOsc.frequency.setValueAtTime(175, t);
+        bodyOsc.frequency.exponentialRampToValueAtTime(95, t + 0.06);
+        bodyGain.gain.setValueAtTime(amp * 0.6, t);
+        bodyGain.gain.exponentialRampToValueAtTime(0.001, t + 0.07);
+        bodyOsc.connect(bodyGain);
+        bodyGain.connect(soundMasterGain);
+        bodyOsc.start(t);
+        bodyOsc.stop(t + 0.08);
+      }
+      const crashTime = now + offset + 0.04;
+      const crashSrc = trackNode(ctx.createBufferSource());
+      crashSrc.buffer = createNoiseBuffer(ctx, 0.8);
+      const hp = ctx.createBiquadFilter();
+      hp.type = 'highpass';
+      hp.frequency.value = 3200;
+      const crashGain = ctx.createGain();
+      crashGain.gain.setValueAtTime(0.32, crashTime);
+      crashGain.gain.exponentialRampToValueAtTime(0.001, crashTime + 0.72);
+      crashSrc.connect(hp);
+      hp.connect(crashGain);
+      crashGain.connect(soundMasterGain);
+      crashSrc.start(crashTime);
+      crashSrc.stop(crashTime + 0.75);
+      markPadPlaying(pad, (offset + 0.75) * 1000);
+      return;
+    }
+
+    if (type === 'fanfare') {
+      const notes = [
+        { freq: 523.25, t: 0, dur: 0.16 },
+        { freq: 659.25, t: 0.14, dur: 0.16 },
+        { freq: 783.99, t: 0.28, dur: 0.18 },
+        { freq: 1046.5, t: 0.44, dur: 0.85 },
+        { freq: 783.99, t: 0.44, dur: 0.85 },
+        { freq: 659.25, t: 0.44, dur: 0.85 }
+      ];
+      notes.forEach(function (n) {
+        const osc = trackNode(ctx.createOscillator());
+        const filter = ctx.createBiquadFilter();
+        const gain = ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(n.freq, now + n.t);
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(2200, now + n.t);
+        gain.gain.setValueAtTime(0.001, now + n.t);
+        gain.gain.exponentialRampToValueAtTime(0.14, now + n.t + 0.025);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + n.t + n.dur);
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(soundMasterGain);
+        osc.start(now + n.t);
+        osc.stop(now + n.t + n.dur + 0.04);
+      });
+      markPadPlaying(pad, 1350);
+      return;
+    }
+
+    if (type === 'correct') {
+      [{ freq: 659.25, t: 0, dur: 0.22 }, { freq: 987.77, t: 0.11, dur: 0.45 }].forEach(function (n) {
+        const osc = trackNode(ctx.createOscillator());
+        const g = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(n.freq, now + n.t);
+        g.gain.setValueAtTime(0.001, now + n.t);
+        g.gain.exponentialRampToValueAtTime(0.28, now + n.t + 0.02);
+        g.gain.exponentialRampToValueAtTime(0.001, now + n.t + n.dur);
+        osc.connect(g);
+        g.connect(soundMasterGain);
+        osc.start(now + n.t);
+        osc.stop(now + n.t + n.dur + 0.03);
+      });
+      markPadPlaying(pad, 600);
+      return;
+    }
+
+    if (type === 'wrong') {
+      [{ freq: 175, t: 0, dur: 0.2 }, { freq: 135, t: 0.2, dur: 0.42 }].forEach(function (n) {
+        const osc = trackNode(ctx.createOscillator());
+        const filter = ctx.createBiquadFilter();
+        const g = ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(n.freq, now + n.t);
+        filter.type = 'lowpass';
+        filter.frequency.value = 650;
+        g.gain.setValueAtTime(0.001, now + n.t);
+        g.gain.exponentialRampToValueAtTime(0.22, now + n.t + 0.02);
+        g.gain.exponentialRampToValueAtTime(0.001, now + n.t + n.dur);
+        osc.connect(filter);
+        filter.connect(g);
+        g.connect(soundMasterGain);
+        osc.start(now + n.t);
+        osc.stop(now + n.t + n.dur + 0.03);
+      });
+      markPadPlaying(pad, 650);
+      return;
+    }
+
+    if (type === 'dingdong') {
+      [{ freq: 783.99, t: 0, dur: 0.55 }, { freq: 659.25, t: 0.34, dur: 0.9 }].forEach(function (n) {
+        const osc = trackNode(ctx.createOscillator());
+        const g = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(n.freq, now + n.t);
+        g.gain.setValueAtTime(0.001, now + n.t);
+        g.gain.exponentialRampToValueAtTime(0.28, now + n.t + 0.015);
+        g.gain.exponentialRampToValueAtTime(0.001, now + n.t + n.dur);
+        osc.connect(g);
+        g.connect(soundMasterGain);
+        osc.start(now + n.t);
+        osc.stop(now + n.t + n.dur + 0.03);
+      });
+      markPadPlaying(pad, 1250);
+      return;
+    }
+
+    if (type === 'countdown321') {
+      const beats = [
+        { label: '3...', freq: 660, t: 0, dur: 0.22 },
+        { label: '2...', freq: 660, t: 0.72, dur: 0.22 },
+        { label: '1...', freq: 660, t: 1.44, dur: 0.22 },
+        { label: 'GO!', freq: 1320, t: 2.16, dur: 0.55 }
+      ];
+      const nameEl = pad ? pad.querySelector('.cecp-pad-name') : null;
+      if (pad && nameEl && !pad.dataset.origName) {
+        pad.dataset.origName = nameEl.textContent;
+      }
+      beats.forEach(function (b) {
+        const osc = trackNode(ctx.createOscillator());
+        const g = ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(b.freq, now + b.t);
+        g.gain.setValueAtTime(0.001, now + b.t);
+        g.gain.exponentialRampToValueAtTime(0.28, now + b.t + 0.015);
+        g.gain.exponentialRampToValueAtTime(0.001, now + b.t + b.dur);
+        osc.connect(g);
+        g.connect(soundMasterGain);
+        osc.start(now + b.t);
+        osc.stop(now + b.t + b.dur + 0.03);
+        if (nameEl) {
+          activeSfxTimers.push(setTimeout(function () {
+            nameEl.textContent = b.label;
+          }, b.t * 1000));
+        }
+      });
+      if (nameEl && pad.dataset.origName) {
+        activeSfxTimers.push(setTimeout(function () {
+          nameEl.textContent = pad.dataset.origName;
+        }, 2800));
+      }
+      markPadPlaying(pad, 2750);
+      return;
+    }
+
+    if (type === 'wow') {
+      [523.25, 587.33, 659.25, 783.99, 880, 1046.5, 1318.5].forEach(function (freq, idx) {
+        const t = now + idx * 0.055;
+        const osc = trackNode(ctx.createOscillator());
+        const g = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, t);
+        g.gain.setValueAtTime(0.001, t);
+        g.gain.exponentialRampToValueAtTime(0.22, t + 0.015);
+        g.gain.exponentialRampToValueAtTime(0.001, t + 0.45);
+        osc.connect(g);
+        g.connect(soundMasterGain);
+        osc.start(t);
+        osc.stop(t + 0.48);
+      });
+      launchConfetti();
+      markPadPlaying(pad, 950);
+    }
+  }
+
+  if (soundVolSlider) {
+    soundVolSlider.value = Math.round(soundVolume * 100);
+    if (soundVolVal) soundVolVal.textContent = Math.round(soundVolume * 100) + '%';
+    soundVolSlider.addEventListener('input', function () {
+      const pct = parseInt(soundVolSlider.value, 10) || 0;
+      soundVolume = Math.max(0, Math.min(1, pct / 100));
+      localStorage.setItem(SOUND_VOL_KEY, String(pct));
+      if (soundVolVal) soundVolVal.textContent = pct + '%';
+      if (soundMasterGain && sharedAudioCtx) {
+        soundMasterGain.gain.setTargetAtTime(soundVolume, sharedAudioCtx.currentTime, 0.02);
+      }
+    });
+  }
+
+  if (soundGrid) {
+    soundGrid.addEventListener('click', function (e) {
+      const pad = e.target.closest('.cecp-sound-pad');
+      if (!pad) return;
+      playSfx(pad.dataset.sfx, pad);
+    });
+  }
+
+  if (soundStopBtn) {
+    soundStopBtn.addEventListener('click', function () {
+      stopAllSfx(false);
+    });
+  }
+
+  if (soundPureBtn) {
+    soundPureBtn.addEventListener('click', enterPureMode);
+  }
+
+  document.addEventListener('keydown', function (e) {
+    if (!panels.sound || !panels.sound.classList.contains('show')) return;
+    const tag = document.activeElement && document.activeElement.tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+    if (e.key >= '1' && e.key <= '8') {
+      const pads = soundGrid ? soundGrid.querySelectorAll('.cecp-sound-pad') : [];
+      const pad = pads[parseInt(e.key, 10) - 1];
+      if (pad) {
+        e.preventDefault();
+        playSfx(pad.dataset.sfx, pad);
+      }
+    } else if (e.key === '0') {
+      e.preventDefault();
+      stopAllSfx(false);
+    }
+  });
 })();
