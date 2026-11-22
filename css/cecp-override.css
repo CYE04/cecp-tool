@@ -1,7 +1,45 @@
-/* CECP 主题双 Logo 背景水印 + 居中对齐 */
-html, body {
+/* CECP 主题双 Logo 背景水印 + 原生文档流滚动（适配手机/平板触控滑动） */
+html {
   background-color: #141416 !important;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-x: clip;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+body {
+  background-color: #141416 !important;
+  margin: 0;
+  padding: calc(104px + env(safe-area-inset-top, 0px)) 20px calc(28px + env(safe-area-inset-bottom, 0px));
+  min-height: 100vh;
+  min-height: 100dvh;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  overflow-x: clip;
+  overflow-y: visible !important;
+}
+
+/* 顶部渐变遮罩，避免滚动内容在悬浮双层导航缝隙中穿帮 */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: calc(106px + env(safe-area-inset-top, 0px));
+  background: linear-gradient(180deg, rgba(20, 20, 22, 0.94) 0%, rgba(20, 20, 22, 0.72) 68%, rgba(20, 20, 22, 0) 100%);
+  pointer-events: none;
+  z-index: 9990;
+}
+
+body.cecp-pure-mode::before {
+  display: none;
+}
+
+#audios {
+  display: none !important;
 }
 
 #background {
@@ -64,7 +102,7 @@ html, body {
   top: 0 !important;
   left: 0 !important;
   margin: 0 !important;
-  padding-top: 86px;
+  padding-top: calc(92px + env(safe-area-inset-top, 0px));
   box-sizing: border-box;
   justify-content: center !important;
   align-items: center !important;
@@ -83,6 +121,12 @@ html, body {
   transition: transform 0.2s ease;
 }
 
+@media (min-width: 768px) and (max-width: 1099px) and (min-height: 680px) {
+  #timerApp {
+    transform: scale(1.12);
+  }
+}
+
 @media (min-width: 1100px) and (min-height: 680px) {
   #timerApp {
     transform: scale(1.22);
@@ -95,10 +139,30 @@ html, body {
   }
 }
 
+@media (max-height: 540px) {
+  #main {
+    padding-top: 80px;
+  }
+
+  #main #timerApp {
+    transform: scale(0.72);
+  }
+}
+
+@media (max-height: 430px) {
+  #main {
+    padding-top: 72px;
+  }
+
+  #main #timerApp {
+    transform: scale(0.58);
+  }
+}
+
 /* 左上角返回官网胶囊（仅在 iframe 嵌入时显示） */
 .cecp-back-home {
   position: fixed;
-  top: 18px;
+  top: calc(18px + env(safe-area-inset-top, 0px));
   left: 18px;
   z-index: 9999;
   display: none;
@@ -133,7 +197,7 @@ html, body {
 /* 顶部两层分类导航（大类 + 子工具） */
 .cecp-nav-wrap {
   position: fixed;
-  top: 14px;
+  top: calc(14px + env(safe-area-inset-top, 0px));
   left: 50%;
   transform: translateX(-50%);
   z-index: 9999;
@@ -153,6 +217,7 @@ html, body {
   gap: 4px;
   max-width: 100%;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
   background: rgba(20, 20, 22, 0.86);
   backdrop-filter: blur(16px);
@@ -240,7 +305,7 @@ html, body {
 
 @media (max-width: 860px) {
   .cecp-back-home {
-    top: 14px;
+    top: calc(14px + env(safe-area-inset-top, 0px));
     left: 12px;
     padding: 0 10px;
     height: 34px;
@@ -262,15 +327,37 @@ html, body {
   }
 }
 
-/* 统一哑光暗黑面板样式 */
+@media (max-width: 640px) {
+  .cecp-back-home {
+    top: calc(10px + env(safe-area-inset-top, 0px));
+    left: 10px;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    justify-content: center;
+  }
+
+  .cecp-nav-wrap {
+    top: calc(10px + env(safe-area-inset-top, 0px));
+    max-width: calc(100vw - 20px);
+    gap: 5px;
+  }
+
+  .cecp-cat-bar {
+    max-width: calc(100vw - 96px);
+  }
+
+  .cecp-sub-bar {
+    max-width: calc(100vw - 20px);
+  }
+}
+
+/* 统一哑光暗黑面板样式（文档流居中，超屏时原生触摸顺滑滚动） */
 .cecp-panel {
-  position: fixed;
-  top: calc(50% + 42px);
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 9998;
-  max-height: calc(100vh - 114px);
-  overflow-y: auto;
+  position: relative;
+  z-index: 10;
+  margin: auto;
+  max-width: 100%;
   box-sizing: border-box;
   background: rgba(20, 20, 22, 0.92);
   backdrop-filter: blur(20px);
@@ -291,6 +378,20 @@ html, body {
   font-family: inherit;
 }
 
+/* 消除 initial.css 全局 backface-visibility: hidden 对 iOS 触摸滑动与图层渲染的影响 */
+:where(.cecp-panel) div,
+:where(.cecp-panel) button,
+:where(.cecp-panel) a {
+  backface-visibility: visible;
+  -webkit-backface-visibility: visible;
+}
+
+.cecp-panel input,
+.cecp-panel textarea {
+  -webkit-user-select: text !important;
+  user-select: text !important;
+}
+
 .cecp-panel.show {
   display: block;
   animation: cecpPanelIn 0.2s cubic-bezier(0.22, 1, 0.36, 1);
@@ -299,11 +400,11 @@ html, body {
 @keyframes cecpPanelIn {
   0% {
     opacity: 0;
-    transform: translate(-50%, calc(-50% + 10px)) scale(0.985);
+    transform: translateY(10px) scale(0.985);
   }
   100% {
     opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
+    transform: translateY(0) scale(1);
   }
 }
 
@@ -317,31 +418,38 @@ html, body {
 }
 
 #cecpYearPanel {
-  width: min(540px, calc(100vw - 40px));
+  width: 100%;
+  max-width: 540px;
 }
 
 #cecpDrawPanel {
-  width: min(960px, calc(100vw - 40px));
+  width: 100%;
+  max-width: 960px;
 }
 
 #cecpScorePanel {
-  width: min(1020px, calc(100vw - 40px));
+  width: 100%;
+  max-width: 1020px;
 }
 
 #cecpStagePanel {
-  width: min(980px, calc(100vw - 40px));
+  width: 100%;
+  max-width: 980px;
 }
 
 #cecpWheelPanel {
-  width: min(1020px, calc(100vw - 40px));
+  width: 100%;
+  max-width: 1020px;
 }
 
 #cecpFlipPanel {
-  width: min(860px, calc(100vw - 40px));
+  width: 100%;
+  max-width: 860px;
 }
 
 #cecpSoundPanel {
-  width: min(920px, calc(100vw - 40px));
+  width: 100%;
+  max-width: 920px;
 }
 
 /* 年度点阵进度 */
@@ -559,7 +667,7 @@ html, body {
   align-items: stretch;
 }
 
-@media (max-width: 760px) {
+@media (max-width: 820px) {
   .cecp-draw-layout {
     grid-template-columns: 1fr;
   }
@@ -865,8 +973,14 @@ html, body {
 
 .cecp-score-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
   gap: 12px;
+}
+
+@media (max-width: 520px) {
+  .cecp-score-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .cecp-team-card {
@@ -1233,7 +1347,7 @@ html, body {
   display: none;
   position: fixed;
   right: 20px;
-  bottom: 20px;
+  bottom: calc(20px + env(safe-area-inset-bottom, 0px));
   z-index: 10001;
   padding: 8px 16px;
   border-radius: 999px;
@@ -1256,6 +1370,10 @@ html, body {
 }
 
 /* 统一纯净全屏投屏模式 */
+body.cecp-pure-mode {
+  padding: calc(16px + env(safe-area-inset-top, 0px)) 16px calc(68px + env(safe-area-inset-bottom, 0px));
+}
+
 body.cecp-pure-mode .cecp-nav-wrap,
 body.cecp-pure-mode .cecp-back-home {
   display: none !important;
@@ -1268,9 +1386,7 @@ body.cecp-pure-mode .cecp-pure-exit {
 }
 
 body.cecp-pure-mode .cecp-panel.show {
-  top: 50%;
-  transform: translate(-50%, -50%);
-  max-height: calc(100vh - 32px);
+  margin: auto;
   background: transparent;
   border: none;
   box-shadow: none;
@@ -1281,7 +1397,8 @@ body.cecp-pure-mode .cecp-panel.show {
 
 /* 纯净投屏：聚会大屏 */
 body.cecp-pure-mode #cecpStagePanel.show {
-  width: min(1100px, calc(100vw - 48px));
+  width: 100%;
+  max-width: 1100px;
 }
 
 body.cecp-pure-mode #cecpStagePanel .cecp-panel-head,
@@ -1304,7 +1421,7 @@ body.cecp-pure-mode #cecpStagePanel .cecp-stage-title {
 }
 
 body.cecp-pure-mode #cecpStagePanel .cecp-stage-time {
-  font-size: clamp(88px, 18vw, 210px);
+  font-size: clamp(50px, 16vw, 210px);
   margin: 10px 0 22px;
 }
 
@@ -1314,7 +1431,8 @@ body.cecp-pure-mode #cecpStagePanel .cecp-stage-subtitle {
 
 /* 纯净投屏：互动大转盘 */
 body.cecp-pure-mode #cecpWheelPanel.show {
-  width: min(920px, calc(100vw - 40px));
+  width: 100%;
+  max-width: 920px;
 }
 
 body.cecp-pure-mode #cecpWheelPanel .cecp-panel-head,
@@ -1333,8 +1451,8 @@ body.cecp-pure-mode #cecpWheelPanel .cecp-wheel-left {
 }
 
 body.cecp-pure-mode #cecpWheelPanel .cecp-wheel-stage {
-  width: min(66vh, 560px);
-  height: min(66vh, 560px);
+  width: min(66dvh, calc(100vw - 48px), 560px);
+  height: min(66dvh, calc(100vw - 48px), 560px);
 }
 
 body.cecp-pure-mode #cecpWheelPanel .cecp-wheel-center-btn {
@@ -1356,7 +1474,8 @@ body.cecp-pure-mode #cecpWheelPanel .cecp-wheel-result.has-winner {
 
 /* 纯净投屏：抽签分组 */
 body.cecp-pure-mode #cecpDrawPanel.show {
-  width: min(980px, calc(100vw - 48px));
+  width: 100%;
+  max-width: 980px;
 }
 
 body.cecp-pure-mode #cecpDrawPanel .cecp-panel-head,
@@ -1392,7 +1511,8 @@ body.cecp-pure-mode #cecpDrawPanel .cecp-groups-grid {
 
 /* 纯净投屏：计分板 */
 body.cecp-pure-mode #cecpScorePanel.show {
-  width: min(1240px, calc(100vw - 56px));
+  width: 100%;
+  max-width: 1240px;
 }
 
 body.cecp-pure-mode #cecpScorePanel .cecp-panel-head {
@@ -1455,15 +1575,8 @@ body.cecp-pure-mode #cecpScorePanel .cecp-score-btn {
 
 @media (max-width: 900px) {
   .cecp-wheel-stage {
-    width: 340px;
-    height: 340px;
-  }
-}
-
-@media (max-width: 440px) {
-  .cecp-wheel-stage {
-    width: 270px;
-    height: 270px;
+    width: min(340px, calc(100vw - 68px));
+    height: min(340px, calc(100vw - 68px));
   }
 }
 
@@ -1810,15 +1923,15 @@ body.cecp-pure-mode #cecpScorePanel .cecp-score-btn {
 
 @media (max-width: 720px) {
   .cecp-flip-stage {
-    --flip-w: 88px;
-    --flip-h: 104px;
-    --flip-fs: 54px;
+    --flip-w: clamp(72px, 23vw, 118px);
+    --flip-h: clamp(86px, 27vw, 138px);
+    --flip-fs: clamp(44px, 14vw, 72px);
   }
 
   .cecp-flip-stage.no-seconds {
-    --flip-w: 124px;
-    --flip-h: 144px;
-    --flip-fs: 78px;
+    --flip-w: clamp(106px, 34vw, 168px);
+    --flip-h: clamp(124px, 40vw, 196px);
+    --flip-fs: clamp(64px, 20vw, 108px);
   }
 
   .cecp-flip-clock {
@@ -1842,7 +1955,8 @@ body.cecp-pure-mode #cecpScorePanel .cecp-score-btn {
 
 /* 纯净投屏：机械翻页时钟 */
 body.cecp-pure-mode #cecpFlipPanel.show {
-  width: min(1240px, calc(100vw - 48px));
+  width: 100%;
+  max-width: 1240px;
 }
 
 body.cecp-pure-mode #cecpFlipPanel .cecp-panel-head {
@@ -1850,15 +1964,15 @@ body.cecp-pure-mode #cecpFlipPanel .cecp-panel-head {
 }
 
 body.cecp-pure-mode #cecpFlipPanel .cecp-flip-stage {
-  --flip-w: clamp(140px, 21vw, 260px);
-  --flip-h: clamp(164px, 24vw, 290px);
-  --flip-fs: clamp(86px, 14vw, 178px);
+  --flip-w: clamp(84px, 24vw, 260px);
+  --flip-h: clamp(100px, 28vw, 290px);
+  --flip-fs: clamp(50px, 15vw, 178px);
 }
 
 body.cecp-pure-mode #cecpFlipPanel .cecp-flip-stage.no-seconds {
-  --flip-w: clamp(190px, 28vw, 340px);
-  --flip-h: clamp(220px, 32vw, 376px);
-  --flip-fs: clamp(120px, 19vw, 236px);
+  --flip-w: clamp(118px, 34vw, 340px);
+  --flip-h: clamp(138px, 40vw, 376px);
+  --flip-fs: clamp(72px, 21vw, 236px);
 }
 
 body.cecp-pure-mode #cecpFlipPanel .cecp-flip-date {
@@ -1883,6 +1997,8 @@ body.cecp-pure-mode #cecpFlipPanel .cecp-flip-date {
   width: 84px;
   accent-color: #2f81f7;
   cursor: pointer;
+  -webkit-appearance: auto !important;
+  appearance: auto !important;
 }
 
 .cecp-sound-grid {
@@ -1969,7 +2085,8 @@ body.cecp-pure-mode #cecpFlipPanel .cecp-flip-date {
 
 /* 纯净投屏：氛围音效板 */
 body.cecp-pure-mode #cecpSoundPanel.show {
-  width: min(1100px, calc(100vw - 48px));
+  width: 100%;
+  max-width: 1100px;
 }
 
 body.cecp-pure-mode #cecpSoundPanel .cecp-panel-head {
@@ -1993,7 +2110,7 @@ body.cecp-pure-mode #cecpSoundPanel .cecp-pad-name {
 .cecp-toast {
   position: fixed;
   left: 50%;
-  bottom: 28px;
+  bottom: calc(28px + env(safe-area-inset-bottom, 0px));
   transform: translate(-50%, 14px) scale(0.96);
   z-index: 10002;
   padding: 9px 18px;
@@ -2016,6 +2133,115 @@ body.cecp-pure-mode #cecpSoundPanel .cecp-pad-name {
 .cecp-toast.show {
   opacity: 1;
   transform: translate(-50%, 0) scale(1);
+}
+
+/* ---------- 手机与平板深度适配 ---------- */
+@media (max-width: 768px) {
+  .cecp-textarea,
+  .cecp-text-input,
+  .cecp-num-input,
+  .cecp-stage-time-input,
+  .cecp-team-name {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 640px) {
+  body {
+    padding: calc(96px + env(safe-area-inset-top, 0px)) 12px calc(24px + env(safe-area-inset-bottom, 0px));
+  }
+
+  body::before {
+    height: calc(96px + env(safe-area-inset-top, 0px));
+  }
+
+  .cecp-panel {
+    padding: 16px 14px;
+    border-radius: 16px;
+  }
+
+  .cecp-panel-head {
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .cecp-dot-grid {
+    gap: 5px;
+  }
+
+  .cecp-stage-screen {
+    padding: 20px 12px;
+  }
+
+  .cecp-stage-time {
+    font-size: clamp(44px, 13.5vw, 80px);
+  }
+
+  .cecp-sound-pad {
+    min-height: 104px;
+    padding: 12px 10px;
+    border-radius: 14px;
+  }
+
+  body.cecp-pure-mode #cecpSoundPanel .cecp-sound-pad {
+    min-height: 118px;
+  }
+
+  .cecp-sound-vol-wrap {
+    flex: 1 1 100%;
+    justify-content: space-between;
+  }
+
+  .cecp-vol-range {
+    flex: 1;
+    width: auto;
+  }
+
+  .cecp-winner-pill {
+    font-size: 20px;
+    padding: 8px 16px;
+  }
+
+  .cecp-result-stage {
+    min-height: 132px;
+    padding: 18px 12px;
+  }
+
+  .cecp-team-score {
+    font-size: 52px;
+  }
+
+  .cecp-score-btn {
+    height: 44px;
+  }
+
+  .cecp-wheel-center-btn {
+    width: 64px;
+    height: 64px;
+    font-size: 14px;
+  }
+
+  .cecp-toast {
+    bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+    max-width: calc(100vw - 24px);
+    white-space: normal;
+    text-align: center;
+  }
+}
+
+@media (hover: none) {
+  .cecp-pure-exit {
+    opacity: 0.88;
+    padding: 10px 18px;
+    bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+    right: 16px;
+  }
+}
+
+@media (hover: none) and (max-width: 768px) {
+  .cecp-pad-key {
+    display: none;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -196,6 +196,7 @@
       if (panels[key]) panels[key].classList.toggle('show', key === tab);
     });
     if (tab === 'year') renderYearMatrix();
+    window.scrollTo(0, 0);
     if (onSwitchCallbacks[tab]) onSwitchCallbacks[tab]();
   }
 

@@ -23,6 +23,9 @@ html,
 body {
   margin: 0 !important;
   padding: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  height: 100dvh !important;
   overflow: hidden !important;
   background: #141416 !important;
 }
@@ -54,13 +57,15 @@ section.mx-auto,
 iframe[src*="cecp-tool"] {
   position: fixed !important;
   inset: 0 !important;
-  width: 100vw !important;
-  height: 100vh !important;
-  min-height: 100vh !important;
+  width: 100% !important;
+  height: 100% !important;
+  height: 100dvh !important;
+  min-height: 0 !important;
   border: none !important;
   border-radius: 0 !important;
   margin: 0 !important;
   z-index: 99999 !important;
   display: block !important;
   background: #141416 !important;
+  -webkit-overflow-scrolling: touch !important;
 }
