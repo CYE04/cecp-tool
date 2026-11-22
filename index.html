@@ -1,79 +1,38 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="ocean">
+<html lang="zh-CN" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CECP 专注倒计时</title>
-  <link rel="icon" type="image/svg+xml" href="./cecp-logo.svg" />
+  <title>CECP 专注空间</title>
   <style>
     :root {
-      --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #e4e9f2 100%);
-      --card-bg: rgba(255, 255, 255, 0.84);
-      --card-border: rgba(255, 255, 255, 0.95);
-      --surface-2: rgba(15, 23, 42, 0.05);
-      --text: #1e293b;
-      --text-muted: #64748b;
+      --bg: #0a0a0c;
+      --card: #141416;
+      --card-2: #1c1c1f;
+      --border: rgba(255, 255, 255, 0.08);
+      --text: #f4f4f5;
+      --text-muted: #71717a;
+      --accent: #2f81f7;
+      --accent-hover: #3b89f8;
+      --accent-glow: rgba(47, 129, 247, 0.55);
+      --ring-track: rgba(255, 255, 255, 0.08);
+      --dot-past: #3f3f46;
+      --dot-future: #1f1f23;
+    }
+
+    [data-theme="light"] {
+      --bg: #f4f4f5;
+      --card: #ffffff;
+      --card-2: #f4f4f5;
+      --border: rgba(0, 0, 0, 0.08);
+      --text: #18181b;
+      --text-muted: #71717a;
       --accent: #2563eb;
-      --accent-soft: rgba(37, 99, 235, 0.12);
-      --accent-glow: rgba(37, 99, 235, 0.25);
-      --ring-bg: rgba(15, 23, 42, 0.08);
-      --shadow: 0 12px 40px rgba(15, 23, 42, 0.08);
-    }
-
-    [data-theme="ocean"] {
-      --bg-gradient: radial-gradient(circle at 20% 20%, #1e3a5f 0%, #0f172a 55%, #090d16 100%);
-      --card-bg: rgba(15, 23, 42, 0.62);
-      --card-border: rgba(148, 163, 184, 0.18);
-      --surface-2: rgba(255, 255, 255, 0.08);
-      --text: #f1f5f9;
-      --text-muted: #94a3b8;
-      --accent: #38bdf8;
-      --accent-soft: rgba(56, 189, 248, 0.16);
-      --accent-glow: rgba(56, 189, 248, 0.35);
-      --ring-bg: rgba(255, 255, 255, 0.1);
-      --shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
-    }
-
-    [data-theme="sunset"] {
-      --bg-gradient: radial-gradient(circle at 80% 15%, #7c2d12 0%, #4c1d95 55%, #1e1b4b 100%);
-      --card-bg: rgba(24, 16, 42, 0.58);
-      --card-border: rgba(251, 146, 60, 0.22);
-      --surface-2: rgba(255, 255, 255, 0.09);
-      --text: #fff7ed;
-      --text-muted: #cbd5e1;
-      --accent: #fb923c;
-      --accent-soft: rgba(251, 146, 60, 0.18);
-      --accent-glow: rgba(251, 146, 60, 0.35);
-      --ring-bg: rgba(255, 255, 255, 0.12);
-      --shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
-    }
-
-    [data-theme="forest"] {
-      --bg-gradient: radial-gradient(circle at 25% 80%, #14532d 0%, #064e3b 45%, #052e16 100%);
-      --card-bg: rgba(6, 36, 26, 0.6);
-      --card-border: rgba(74, 222, 128, 0.18);
-      --surface-2: rgba(255, 255, 255, 0.08);
-      --text: #ecfdf5;
-      --text-muted: #a7f3d0;
-      --accent: #34d399;
-      --accent-soft: rgba(52, 211, 153, 0.16);
-      --accent-glow: rgba(52, 211, 153, 0.32);
-      --ring-bg: rgba(255, 255, 255, 0.1);
-      --shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
-    }
-
-    [data-theme="midnight"] {
-      --bg-gradient: radial-gradient(circle at 50% 0%, #18181b 0%, #09090b 100%);
-      --card-bg: rgba(24, 24, 27, 0.74);
-      --card-border: rgba(255, 255, 255, 0.1);
-      --surface-2: rgba(255, 255, 255, 0.07);
-      --text: #fafafa;
-      --text-muted: #a1a1aa;
-      --accent: #a78bfa;
-      --accent-soft: rgba(167, 139, 250, 0.16);
-      --accent-glow: rgba(167, 139, 250, 0.32);
-      --ring-bg: rgba(255, 255, 255, 0.09);
-      --shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+      --accent-hover: #1d4ed8;
+      --accent-glow: rgba(37, 99, 235, 0.4);
+      --ring-track: rgba(0, 0, 0, 0.07);
+      --dot-past: #a1a1aa;
+      --dot-future: #e4e4e7;
     }
 
     * {
@@ -83,20 +42,21 @@
     }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-      background: var(--bg-gradient);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      background: var(--bg);
       color: var(--text);
       min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 20px 16px;
-      transition: background 0.4s ease, color 0.25s ease;
+      padding: 16px;
+      -webkit-font-smoothing: antialiased;
+      transition: background 0.2s, color 0.2s;
     }
 
     .app {
       width: 100%;
-      max-width: 520px;
+      max-width: 460px;
       display: flex;
       flex-direction: column;
       gap: 12px;
@@ -107,274 +67,179 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 10px;
-      flex-wrap: wrap;
+      gap: 8px;
     }
 
     .brand {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 9px;
     }
 
     .brand-logo {
-      width: 36px;
-      height: 36px;
-      border-radius: 10px;
-      background: rgba(255, 255, 255, 0.94);
-      padding: 4px;
-      display: grid;
-      place-items: center;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      background: #ffffff;
+      padding: 3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       flex-shrink: 0;
     }
 
-    .brand-logo img {
+    .brand-logo svg {
       width: 100%;
       height: 100%;
-      object-fit: contain;
+      display: block;
     }
 
-    .brand-title {
-      font-size: 1.05rem;
-      font-weight: 700;
+    .brand-name {
+      font-size: 0.92rem;
+      font-weight: 600;
       letter-spacing: -0.01em;
     }
 
-    .topbar-right {
+    .seg-control {
       display: flex;
-      align-items: center;
-      gap: 7px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      padding: 3px;
+      border-radius: 10px;
+      gap: 2px;
     }
 
-    .theme-dots {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      background: var(--card-bg);
-      backdrop-filter: blur(16px);
-      border: 1px solid var(--card-border);
-      padding: 6px 10px;
-      border-radius: 999px;
-    }
-
-    .theme-dot {
-      width: 15px;
-      height: 15px;
-      border-radius: 50%;
-      border: 2px solid transparent;
-      cursor: pointer;
-      transition: transform 0.15s, border-color 0.15s;
-    }
-
-    .theme-dot:hover {
-      transform: scale(1.15);
-    }
-
-    .theme-dot.active {
-      border-color: var(--text);
-      transform: scale(1.15);
-    }
-
-    .pill-btn {
-      height: 32px;
-      padding: 0 10px;
-      border-radius: 999px;
-      border: 1px solid var(--card-border);
-      background: var(--card-bg);
-      backdrop-filter: blur(16px);
-      color: var(--text);
-      font-size: 0.78rem;
-      font-weight: 600;
-      cursor: pointer;
-      display: grid;
-      place-items: center;
-      transition: border-color 0.15s, transform 0.15s;
-    }
-
-    .pill-btn:hover {
-      border-color: var(--accent);
-      transform: scale(1.04);
-    }
-
-    /* 主卡片 */
-    .glass-card {
-      position: relative;
-      background: var(--card-bg);
-      backdrop-filter: blur(22px);
-      -webkit-backdrop-filter: blur(22px);
-      border: 1px solid var(--card-border);
-      border-radius: 24px;
-      padding: 22px 22px 24px;
-      box-shadow: var(--shadow);
-    }
-
-    .focus-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 14px;
-    }
-
-    .status-badge {
-      font-size: 0.76rem;
-      font-weight: 600;
-      padding: 4px 10px;
-      border-radius: 999px;
-      background: var(--accent-soft);
-      color: var(--accent);
-    }
-
-    .today-stat {
-      font-size: 0.82rem;
-      color: var(--text-muted);
-    }
-
-    /* 陪伴小猫咪 */
-    .cat-stage {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-
-    .cat-svg {
-      width: 112px;
-      height: 76px;
-      overflow: visible;
-    }
-
-    .cat-tail {
-      transform-origin: 86px 58px;
-      animation: tailSway 2.8s ease-in-out infinite;
-    }
-
-    .cat-running .cat-tail {
-      animation: tailSway 1.2s ease-in-out infinite;
-    }
-
-    .cat-eye {
-      transform-origin: center;
-      animation: blink 4.5s infinite;
-    }
-
-    .cat-sleep-z {
-      opacity: 0;
-      font-size: 11px;
-      font-weight: 700;
-      fill: var(--accent);
-    }
-
-    .cat-paused .cat-sleep-z {
-      animation: floatZ 2.2s ease-in-out infinite;
-    }
-
-    .cat-heart {
-      opacity: 0;
-      fill: #fb7185;
-    }
-
-    .cat-done .cat-heart {
-      animation: popHeart 1.4s ease-out infinite;
-    }
-
-    .cat-bubble {
-      font-size: 0.78rem;
-      color: var(--text-muted);
-      margin-top: 2px;
-      min-height: 18px;
-    }
-
-    @keyframes tailSway {
-      0%, 100% { transform: rotate(-6deg); }
-      50% { transform: rotate(10deg); }
-    }
-
-    @keyframes blink {
-      0%, 92%, 100% { transform: scaleY(1); }
-      96% { transform: scaleY(0.1); }
-    }
-
-    @keyframes floatZ {
-      0% { opacity: 0; transform: translate(0, 4px); }
-      50% { opacity: 0.9; }
-      100% { opacity: 0; transform: translate(6px, -10px); }
-    }
-
-    @keyframes popHeart {
-      0% { opacity: 0; transform: translateY(4px) scale(0.7); }
-      40% { opacity: 1; transform: translateY(-4px) scale(1.1); }
-      100% { opacity: 0; transform: translateY(-12px) scale(0.9); }
-    }
-
-    /* 任务栏 */
-    .task-bar {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      background: var(--surface-2);
-      border: 1px solid var(--card-border);
-      border-radius: 12px;
-      padding: 8px 12px;
-      margin-bottom: 16px;
-    }
-
-    .task-check {
-      width: 17px;
-      height: 17px;
-      accent-color: var(--accent);
-      cursor: pointer;
-      flex-shrink: 0;
-    }
-
-    .task-input {
-      flex: 1;
+    .seg-btn {
       border: none;
       background: transparent;
-      color: var(--text);
-      font-size: 0.9rem;
-      font-family: inherit;
-      outline: none;
-    }
-
-    .task-input::placeholder {
       color: var(--text-muted);
-    }
-
-    .task-input.done {
-      text-decoration: line-through;
-      opacity: 0.6;
-    }
-
-    /* 预设模式 */
-    .timer-modes {
-      display: flex;
-      gap: 6px;
-      justify-content: center;
-      flex-wrap: wrap;
-      margin-bottom: 16px;
-    }
-
-    .mode-chip {
       padding: 5px 12px;
-      border-radius: 999px;
-      border: 1px solid transparent;
-      background: var(--surface-2);
-      color: var(--text-muted);
+      border-radius: 7px;
       font-size: 0.8rem;
-      font-weight: 600;
+      font-weight: 500;
       cursor: pointer;
       transition: all 0.15s;
     }
 
-    .mode-chip:hover {
+    .seg-btn:hover {
       color: var(--text);
     }
 
-    .mode-chip.active {
-      background: var(--accent-soft);
-      border-color: var(--accent);
-      color: var(--accent);
+    .seg-btn.active {
+      background: var(--card-2);
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .icon-pill {
+      height: 30px;
+      min-width: 30px;
+      padding: 0 8px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--text-muted);
+      font-size: 0.76rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      transition: color 0.15s, border-color 0.15s;
+    }
+
+    .icon-pill:hover {
+      color: var(--text);
+      border-color: var(--text-muted);
+    }
+
+    /* 主卡片 */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 22px;
+    }
+
+    .view {
+      display: none;
+    }
+
+    .view.active {
+      display: block;
+      animation: fadeIn 0.16s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    /* ---------- 专注视图 ---------- */
+    .focus-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+    }
+
+    .status-text {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--text-muted);
+    }
+
+    .status-dot.running {
+      background: var(--accent);
+      box-shadow: 0 0 8px var(--accent-glow);
+    }
+
+    .count-text {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .mode-bar {
+      display: flex;
+      background: var(--card-2);
+      border-radius: 10px;
+      padding: 3px;
+      gap: 3px;
+      margin-bottom: 20px;
+    }
+
+    .mode-btn {
+      flex: 1;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      padding: 6px 8px;
+      border-radius: 7px;
+      font-size: 0.78rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .mode-btn.active {
+      background: var(--card);
+      color: var(--text);
+      font-weight: 600;
     }
 
     .custom-row {
@@ -382,7 +247,7 @@
       justify-content: center;
       align-items: center;
       gap: 8px;
-      margin-bottom: 14px;
+      margin-bottom: 16px;
     }
 
     .custom-row.show {
@@ -390,373 +255,352 @@
     }
 
     .custom-input {
-      width: 84px;
-      padding: 6px 10px;
-      border-radius: 10px;
-      border: 1px solid var(--card-border);
-      background: var(--surface-2);
+      width: 72px;
+      padding: 6px 8px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--card-2);
       color: var(--text);
-      font-size: 0.88rem;
+      font-size: 0.85rem;
       text-align: center;
       outline: none;
     }
 
-    /* 计时圆环 */
-    .ring-wrap {
+    .custom-input:focus {
+      border-color: var(--accent);
+    }
+
+    .ring-box {
       position: relative;
-      width: 214px;
-      height: 214px;
+      width: 210px;
+      height: 210px;
       margin: 0 auto 20px;
       display: grid;
       place-items: center;
     }
 
-    .ring-wrap svg {
+    .ring-box svg {
       position: absolute;
       inset: 0;
       transform: rotate(-90deg);
     }
 
-    .ring-wrap circle {
+    .ring-box circle {
       fill: none;
-      stroke-width: 7;
+      stroke-width: 4;
     }
 
-    .ring-bg {
-      stroke: var(--ring-bg);
+    .ring-track {
+      stroke: var(--ring-track);
     }
 
-    .ring-fg {
+    .ring-prog {
       stroke: var(--accent);
       stroke-linecap: round;
-      filter: drop-shadow(0 0 8px var(--accent-glow));
-      transition: stroke-dashoffset 0.35s linear;
+      transition: stroke-dashoffset 0.3s linear;
     }
 
-    .time-text {
-      font-size: 3rem;
-      font-weight: 800;
+    .time-main {
+      font-size: 3.1rem;
+      font-weight: 700;
       font-variant-numeric: tabular-nums;
-      letter-spacing: 0.03em;
+      letter-spacing: -0.02em;
       text-align: center;
-      line-height: 1.1;
+      line-height: 1;
     }
 
     .time-sub {
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       color: var(--text-muted);
       text-align: center;
-      margin-top: 4px;
+      margin-top: 6px;
     }
 
-    .controls {
+    .task-input {
+      width: 100%;
+      padding: 9px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--card-2);
+      color: var(--text);
+      font-size: 0.85rem;
+      font-family: inherit;
+      text-align: center;
+      outline: none;
+      margin-bottom: 16px;
+      transition: border-color 0.15s;
+    }
+
+    .task-input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .task-input:focus {
+      border-color: var(--accent);
+    }
+
+    .btn-row {
       display: flex;
+      gap: 8px;
       justify-content: center;
-      gap: 10px;
     }
 
     .btn {
-      padding: 10px 20px;
-      border-radius: 12px;
+      padding: 9px 22px;
+      border-radius: 10px;
       border: none;
-      font-size: 0.9rem;
+      font-size: 0.88rem;
       font-weight: 600;
       cursor: pointer;
-      transition: transform 0.12s, opacity 0.15s;
-    }
-
-    .btn:active {
-      transform: scale(0.97);
+      transition: opacity 0.15s, background 0.15s;
     }
 
     .btn-primary {
       background: var(--accent);
-      color: #0b1120;
-      min-width: 112px;
-      box-shadow: 0 4px 16px var(--accent-glow);
-    }
-
-    [data-theme="light"] .btn-primary {
       color: #fff;
+      min-width: 110px;
     }
 
-    .btn-ghost {
-      background: var(--surface-2);
+    .btn-primary:hover {
+      background: var(--accent-hover);
+    }
+
+    .btn-secondary {
+      background: var(--card-2);
       color: var(--text);
-      border: 1px solid var(--card-border);
+      border: 1px solid var(--border);
     }
 
-    /* 底部白噪音 */
-    .sound-bar {
-      background: var(--card-bg);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-      border: 1px solid var(--card-border);
-      border-radius: 18px;
-      padding: 11px 16px;
+    .btn-secondary:hover {
+      border-color: var(--text-muted);
+    }
+
+    /* ---------- 点阵年度进度（1:1 极简风格） ---------- */
+    .matrix-head {
       display: flex;
-      align-items: center;
+      align-items: baseline;
       justify-content: space-between;
-      gap: 10px;
-      flex-wrap: wrap;
+      margin-bottom: 16px;
     }
 
-    .sound-buttons {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      flex-wrap: wrap;
-    }
-
-    .sound-label {
-      font-size: 0.78rem;
-      color: var(--text-muted);
-      margin-right: 2px;
-    }
-
-    .sound-chip {
-      padding: 5px 10px;
-      border-radius: 999px;
-      border: 1px solid var(--card-border);
-      background: var(--surface-2);
-      color: var(--text-muted);
-      font-size: 0.78rem;
-      cursor: pointer;
-      transition: all 0.15s;
-    }
-
-    .sound-chip.active {
-      background: var(--accent-soft);
-      border-color: var(--accent);
-      color: var(--accent);
+    .matrix-title {
+      font-size: 1.05rem;
       font-weight: 600;
+      letter-spacing: -0.01em;
     }
 
-    .volume-wrap {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 0.82rem;
+    .matrix-meta {
+      font-size: 0.88rem;
       color: var(--text-muted);
+      font-variant-numeric: tabular-nums;
     }
 
-    input[type="range"] {
-      width: 78px;
-      accent-color: var(--accent);
-      cursor: pointer;
+    .dot-grid {
+      display: grid;
+      grid-template-columns: repeat(19, 1fr);
+      gap: 7px;
+      margin-bottom: 18px;
+    }
+
+    .day-dot {
+      aspect-ratio: 1;
+      width: 100%;
+      border-radius: 50%;
+      background: var(--dot-future);
+    }
+
+    .day-dot.past {
+      background: var(--dot-past);
+    }
+
+    .day-dot.today {
+      background: var(--accent);
+      box-shadow: 0 0 10px var(--accent-glow), 0 0 3px var(--accent);
+      transform: scale(1.15);
+    }
+
+    .mini-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+    }
+
+    .mini-stat {
+      text-align: center;
+    }
+
+    .mini-stat-val {
+      font-size: 0.92rem;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .mini-stat-key {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin-top: 2px;
     }
   </style>
 </head>
 <body>
   <div class="app">
-    <!-- 顶部：CECP Logo + 主题 + 语言 + 全屏 -->
     <header class="topbar">
       <div class="brand">
-        <div class="brand-logo">
-          <img src="./cecp-logo.svg" alt="CECP Logo" />
+        <div class="brand-logo" title="CECP">
+          <!-- 内联 SVG 确保永远不会加载失败 -->
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="154 0 810 810" preserveAspectRatio="xMidYMid meet">
+            <path fill="#26310b" fill-rule="evenodd" d="M 808 655 L 765 655 L 731 659 L 694 672 L 664 687 L 644 693 L 677 701 L 710 701 L 726 698 L 746 692 L 768 682 L 800 662 Z M 755 672 L 749 677 L 728 683 L 699 689 L 675 690 L 677 687 L 712 676 L 739 671 Z M 316 655 L 324 664 L 350 681 L 371 691 L 387 696 L 420 701 L 435 701 L 476 692 L 450 682 L 426 670 L 392 659 L 356 655 Z M 370 671 L 378 670 L 444 685 L 447 688 L 423 687 L 398 683 L 372 675 Z M 555 532 L 545 536 L 538 543 L 529 562 L 529 656 L 593 656 L 592 557 L 585 544 L 578 537 L 567 532 Z M 529 491 L 531 498 L 540 508 L 556 516 L 550 526 L 570 526 L 564 516 L 580 508 L 591 493 L 591 491 L 574 491 L 569 502 L 559 509 L 549 500 L 546 491 Z M 324 470 L 327 512 L 340 550 L 354 576 L 393 612 L 385 584 L 379 551 L 374 538 L 353 502 L 331 475 Z M 347 516 L 352 520 L 367 552 L 376 576 L 378 590 L 372 582 L 354 546 L 346 522 Z M 799 465 L 766 497 L 752 522 L 739 562 L 736 588 L 731 608 L 742 601 L 757 587 L 769 570 L 784 542 L 796 499 Z M 781 506 L 782 510 L 770 541 L 755 571 L 744 586 L 743 582 L 754 555 L 774 514 Z M 562 443 L 584 464 L 594 487 L 595 508 L 602 508 L 600 489 L 593 470 L 580 454 Z M 559 442 L 545 450 L 530 465 L 521 485 L 518 508 L 525 508 L 526 488 L 534 467 L 539 460 Z M 567 441 L 581 451 L 596 467 L 607 487 L 612 508 L 622 508 L 617 491 L 605 471 L 590 455 Z M 553 441 L 531 454 L 520 465 L 507 483 L 497 508 L 508 507 L 515 482 L 522 470 L 538 452 Z M 567 437 L 585 446 L 603 459 L 623 483 L 633 507 L 645 508 L 634 487 L 613 463 L 589 446 Z M 553 437 L 529 447 L 509 461 L 488 484 L 475 508 L 487 508 L 489 499 L 501 477 L 519 457 L 535 446 Z M 379 489 L 381 495 L 388 502 L 392 502 L 406 494 L 410 496 L 410 617 L 412 623 L 423 626 L 425 624 L 425 488 L 557 418 L 563 417 L 696 486 L 700 627 L 711 627 L 713 624 L 712 495 L 715 494 L 733 504 L 741 490 L 607 420 L 565 400 L 555 400 Z M 798 324 L 798 357 L 806 402 L 830 458 L 833 462 L 839 464 L 844 424 L 844 402 L 836 373 L 824 350 L 814 338 Z M 817 370 L 822 376 L 832 407 L 836 425 L 836 434 L 833 432 L 824 409 L 815 375 Z M 314 303 L 307 309 L 294 329 L 286 346 L 279 368 L 275 390 L 275 421 L 279 450 L 282 450 L 310 394 L 315 377 L 318 359 L 318 328 Z M 302 352 L 303 362 L 295 390 L 293 404 L 290 413 L 286 418 L 285 405 L 296 362 Z M 902 263 L 899 265 L 892 281 L 879 329 L 874 369 L 876 405 L 871 423 L 878 418 L 890 399 L 905 369 L 913 336 L 913 311 L 908 281 Z M 897 322 L 898 335 L 896 348 L 886 382 L 881 392 L 881 381 L 894 324 Z M 720 206 L 721 213 L 734 236 L 755 263 L 784 290 L 832 321 L 833 316 L 809 274 L 791 249 L 765 226 L 739 212 Z M 758 241 L 760 240 L 776 254 L 810 290 L 808 291 L 778 266 Z M 831 160 L 830 169 L 836 235 L 842 259 L 858 305 L 859 326 L 861 328 L 864 326 L 867 317 L 875 271 L 873 236 L 868 214 L 860 195 L 846 172 L 835 161 Z M 849 212 L 852 215 L 858 234 L 862 254 L 864 280 L 861 290 L 849 227 Z M 551 155 L 551 216 L 549 218 L 488 218 L 488 237 L 551 238 L 551 366 L 570 366 L 571 238 L 632 237 L 631 217 L 571 218 L 571 155 Z M 460 96 L 448 106 L 446 117 L 448 122 L 454 128 L 467 129 L 474 123 L 478 115 L 478 107 L 472 98 L 468 96 Z M 395 94 L 386 94 L 372 99 L 354 112 L 338 128 L 324 155 L 313 197 L 318 194 L 330 179 L 352 163 L 372 143 L 393 109 Z M 370 118 L 371 123 L 365 133 L 332 165 L 332 161 L 348 138 L 363 122 Z M 736 93 L 734 93 L 736 105 L 751 142 L 773 177 L 807 215 L 812 227 L 811 233 L 751 172 L 727 140 L 705 118 L 680 105 L 655 97 L 629 92 L 637 108 L 647 121 L 678 150 L 699 164 L 753 188 L 785 216 L 798 230 L 814 253 L 831 287 L 840 310 L 843 329 L 851 348 L 854 371 L 855 416 L 852 444 L 838 491 L 824 523 L 808 550 L 779 586 L 763 602 L 738 622 L 679 656 L 625 677 L 565 692 L 552 691 L 516 682 L 455 661 L 404 634 L 359 603 L 334 578 L 313 549 L 300 525 L 277 471 L 269 444 L 265 419 L 264 375 L 266 353 L 279 300 L 285 291 L 289 278 L 295 271 L 304 266 L 321 262 L 323 271 L 329 278 L 339 283 L 349 284 L 361 278 L 368 268 L 370 262 L 369 247 L 364 239 L 351 232 L 339 232 L 332 235 L 327 240 L 321 256 L 309 257 L 298 261 L 300 254 L 315 229 L 333 212 L 371 197 L 373 198 L 376 208 L 385 214 L 401 215 L 407 213 L 422 199 L 426 190 L 426 183 L 423 176 L 414 169 L 404 165 L 394 165 L 384 169 L 377 175 L 369 193 L 359 194 L 344 199 L 343 197 L 353 189 L 357 184 L 356 183 L 341 194 L 316 217 L 296 244 L 276 283 L 266 311 L 261 315 L 257 308 L 259 292 L 278 247 L 287 213 L 287 181 L 285 166 L 283 166 L 271 177 L 260 193 L 251 217 L 246 239 L 248 292 L 253 309 L 262 319 L 254 358 L 252 417 L 245 406 L 244 360 L 240 322 L 230 288 L 220 267 L 214 280 L 206 313 L 206 336 L 215 371 L 225 392 L 238 412 L 247 420 L 254 423 L 261 455 L 270 482 L 296 539 L 295 541 L 273 521 L 263 501 L 254 474 L 237 443 L 208 407 L 194 394 L 196 429 L 206 462 L 216 480 L 230 498 L 261 526 L 302 554 L 329 583 L 376 628 L 367 629 L 354 626 L 318 589 L 297 573 L 264 551 L 227 537 L 233 553 L 246 573 L 269 597 L 291 613 L 315 624 L 341 631 L 386 635 L 390 639 L 419 655 L 501 689 L 536 697 L 535 699 L 521 704 L 480 712 L 471 718 L 471 721 L 475 726 L 484 726 L 559 703 L 593 711 L 631 723 L 645 725 L 649 723 L 650 718 L 649 715 L 644 712 L 612 706 L 586 697 L 639 682 L 657 675 L 742 634 L 748 636 L 766 636 L 792 631 L 819 622 L 835 614 L 851 602 L 871 581 L 890 554 L 896 543 L 897 537 L 882 541 L 833 567 L 813 582 L 780 616 L 770 623 L 753 630 L 748 630 L 746 628 L 784 593 L 810 561 L 822 551 L 859 528 L 878 512 L 895 493 L 904 480 L 918 449 L 924 421 L 924 395 L 921 395 L 910 406 L 885 440 L 868 472 L 850 519 L 842 530 L 832 540 L 826 543 L 824 540 L 849 485 L 864 429 L 866 390 L 861 354 L 851 313 L 816 240 L 816 216 L 813 194 L 798 153 L 787 133 L 774 119 L 755 104 Z M 855 575 L 855 577 L 846 585 L 822 602 L 797 616 L 785 621 L 782 620 L 805 602 L 832 587 L 849 575 Z M 265 569 L 271 571 L 339 620 L 326 616 L 302 603 L 273 580 Z M 219 447 L 260 504 L 259 505 L 245 493 L 234 479 L 220 455 Z M 899 446 L 901 448 L 891 473 L 879 492 L 867 504 L 865 500 L 870 490 Z M 221 319 L 224 321 L 233 366 L 239 383 L 238 387 L 233 382 L 225 362 L 219 330 L 219 322 Z M 270 210 L 270 224 L 264 246 L 262 263 L 258 270 L 257 251 L 259 238 L 265 218 Z M 767 134 L 789 166 L 800 188 L 802 202 L 770 148 L 766 138 Z M 662 113 L 665 112 L 674 117 L 714 146 L 738 169 L 735 170 L 712 152 L 697 143 L 667 120 Z M 561 85 L 552 87 L 547 95 L 548 102 L 555 109 L 561 107 L 568 98 L 567 90 Z"/>
+            <path fill="#d92f37" fill-rule="evenodd" d="M 558 469 L 558 497 L 561 498 L 561 468 Z M 564 464 L 564 467 L 575 467 L 576 466 L 575 463 L 565 463 Z M 543 464 L 543 467 L 556 467 L 556 463 L 544 463 Z M 558 449 L 558 461 L 561 462 L 561 449 Z"/>
+          </svg>
         </div>
-        <span class="brand-title" id="brandTitle">CECP 专注倒计时</span>
+        <span class="brand-name" id="brandName">CECP</span>
       </div>
 
-      <div class="topbar-right">
-        <div class="theme-dots" title="切换主题">
-          <button class="theme-dot" data-theme-pick="light" style="background: #e2e8f0;" title="极简纸白"></button>
-          <button class="theme-dot active" data-theme-pick="ocean" style="background: #0ea5e9;" title="深海静谧"></button>
-          <button class="theme-dot" data-theme-pick="sunset" style="background: #fb923c;" title="日落余晖"></button>
-          <button class="theme-dot" data-theme-pick="forest" style="background: #10b981;" title="森林呼吸"></button>
-          <button class="theme-dot" data-theme-pick="midnight" style="background: #8b5cf6;" title="暗夜极客"></button>
-        </div>
-        <button class="pill-btn" id="langBtn" title="Switch Language">EN</button>
-        <button class="pill-btn" id="fullscreenBtn" title="全屏">⛶</button>
+      <nav class="seg-control" role="tablist">
+        <button class="seg-btn active" data-view="focus" id="navFocus">专注</button>
+        <button class="seg-btn" data-view="progress" id="navProgress">年度</button>
+      </nav>
+
+      <div class="top-actions">
+        <button class="icon-pill" id="langBtn" title="Switch Language">EN</button>
+        <button class="icon-pill" id="themeBtn" title="切换深浅色">☀️</button>
       </div>
     </header>
 
-    <!-- 主卡片 -->
-    <main class="glass-card">
-      <div class="focus-header">
-        <span class="status-badge" id="timerStatus">准备就绪</span>
-        <span class="today-stat"><span id="todayLabel">今日完成</span> <strong id="completedCount">0</strong></span>
-      </div>
-
-      <!-- 陪伴小猫咪 -->
-      <div class="cat-stage" id="catStage">
-        <svg class="cat-svg" viewBox="0 0 120 80" aria-hidden="true">
-          <!-- 尾巴 -->
-          <path class="cat-tail" d="M 86 58 Q 108 54 106 36 Q 105 28 99 30" fill="none" stroke="var(--accent)" stroke-width="6" stroke-linecap="round" />
-          <!-- 身体 -->
-          <ellipse cx="60" cy="56" rx="28" ry="18" fill="var(--surface-2)" stroke="var(--accent)" stroke-width="2.5" />
-          <!-- 头 -->
-          <circle cx="56" cy="36" r="18" fill="var(--surface-2)" stroke="var(--accent)" stroke-width="2.5" />
-          <!-- 左耳 & 右耳 -->
-          <polygon points="41,25 38,10 50,20" fill="var(--accent)" />
-          <polygon points="71,25 74,10 62,20" fill="var(--accent)" />
-          <!-- 眼睛 -->
-          <ellipse class="cat-eye" cx="49" cy="35" rx="2.4" ry="3" fill="var(--text)" />
-          <ellipse class="cat-eye" cx="63" cy="35" rx="2.4" ry="3" fill="var(--text)" />
-          <!-- 腮红 -->
-          <ellipse cx="43" cy="40" rx="3.2" ry="1.8" fill="#fb7185" opacity="0.55" />
-          <ellipse cx="69" cy="40" rx="3.2" ry="1.8" fill="#fb7185" opacity="0.55" />
-          <!-- 鼻子与嘴巴 -->
-          <polygon points="54.5,39 57.5,39 56,41" fill="#fb7185" />
-          <path d="M 52 42 Q 54 45 56 42 Q 58 45 60 42" fill="none" stroke="var(--text)" stroke-width="1.4" stroke-linecap="round" />
-          <!-- 小爪子 -->
-          <ellipse cx="46" cy="68" rx="6" ry="4" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="2" />
-          <ellipse cx="70" cy="68" rx="6" ry="4" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="2" />
-          <!-- 暂停 Zzz & 完成爱心 -->
-          <text class="cat-sleep-z" x="78" y="22">Zzz</text>
-          <path class="cat-heart" d="M 85 20 C 85 17 81 17 81 20 C 81 23 85 26 85 26 C 85 26 89 23 89 20 C 89 17 85 17 85 20 Z" />
-        </svg>
-        <div class="cat-bubble" id="catBubble">小猫准备好陪你专注啦</div>
-      </div>
-
-      <!-- 单行任务 -->
-      <div class="task-bar">
-        <input type="checkbox" class="task-check" id="taskCheck" />
-        <input type="text" class="task-input" id="taskInput" placeholder="写下这次要专注的事..." />
-      </div>
-
-      <!-- 模式选择 -->
-      <div class="timer-modes">
-        <button class="mode-chip active" data-minutes="25" data-key="pomodoro">专注 25m</button>
-        <button class="mode-chip" data-minutes="5" data-key="short">短休 5m</button>
-        <button class="mode-chip" data-minutes="15" data-key="long">长休 15m</button>
-        <button class="mode-chip" id="customModeBtn">自定义</button>
-      </div>
-
-      <div class="custom-row" id="customRow">
-        <input type="number" class="custom-input" id="customInput" min="1" max="180" value="45" />
-        <span id="minUnit" style="font-size: 0.84rem; color: var(--text-muted);">分钟</span>
-        <button class="btn btn-ghost" id="applyCustomBtn" style="padding: 6px 12px; font-size: 0.82rem;">应用</button>
-      </div>
-
-      <!-- 倒计时圆环 -->
-      <div class="ring-wrap">
-        <svg viewBox="0 0 214 214" width="214" height="214">
-          <circle class="ring-bg" cx="107" cy="107" r="96"></circle>
-          <circle class="ring-fg" id="timerRing" cx="107" cy="107" r="96"></circle>
-        </svg>
-        <div>
-          <div class="time-text" id="timerDisplay">25:00</div>
-          <div class="time-sub" id="timerModeLabel">番茄专注</div>
+    <main class="card">
+      <!-- 1. 专注倒计时 -->
+      <section class="view active" id="view-focus">
+        <div class="focus-top">
+          <div class="status-text">
+            <span class="status-dot" id="statusDot"></span>
+            <span id="timerStatus">准备就绪</span>
+          </div>
+          <div class="count-text"><span id="todayLabel">今日完成</span> <strong id="completedCount">0</strong></div>
         </div>
-      </div>
 
-      <div class="controls">
-        <button class="btn btn-primary" id="timerStartBtn">开始</button>
-        <button class="btn btn-ghost" id="timerResetBtn">重置</button>
-      </div>
+        <div class="mode-bar">
+          <button class="mode-btn active" data-minutes="25" data-key="pomodoro">25m</button>
+          <button class="mode-btn" data-minutes="5" data-key="short">5m</button>
+          <button class="mode-btn" data-minutes="15" data-key="long">15m</button>
+          <button class="mode-btn" id="customModeBtn">自定义</button>
+        </div>
+
+        <div class="custom-row" id="customRow">
+          <input type="number" class="custom-input" id="customInput" min="1" max="180" value="45" />
+          <span id="minUnit" style="font-size: 0.8rem; color: var(--text-muted);">分钟</span>
+          <button class="btn btn-secondary" id="applyCustomBtn" style="padding: 5px 12px; font-size: 0.8rem;">应用</button>
+        </div>
+
+        <div class="ring-box">
+          <svg viewBox="0 0 210 210" width="210" height="210">
+            <circle class="ring-track" cx="105" cy="105" r="96"></circle>
+            <circle class="ring-prog" id="timerRing" cx="105" cy="105" r="96"></circle>
+          </svg>
+          <div>
+            <div class="time-main" id="timerDisplay">25:00</div>
+            <div class="time-sub" id="timerModeLabel">专注</div>
+          </div>
+        </div>
+
+        <input type="text" class="task-input" id="taskInput" placeholder="输入当前专注事项（可选）..." />
+
+        <div class="btn-row">
+          <button class="btn btn-primary" id="timerStartBtn">开始</button>
+          <button class="btn btn-secondary" id="timerResetBtn">重置</button>
+        </div>
+      </section>
+
+      <!-- 2. 点阵年度进度 -->
+      <section class="view" id="view-progress">
+        <div class="matrix-head">
+          <div class="matrix-title" id="matrixTitle">Week #47  2026</div>
+          <div class="matrix-meta" id="matrixMeta">326/365 天 (89%)</div>
+        </div>
+
+        <div class="dot-grid" id="dotGrid"></div>
+
+        <div class="mini-stats" id="miniStats"></div>
+      </section>
     </main>
-
-    <!-- 底部白噪音 -->
-    <div class="sound-bar">
-      <div class="sound-buttons">
-        <span class="sound-label" id="soundTitle">白噪音</span>
-        <button class="sound-chip" data-sound="rain">🌧️ <span data-i18n="rain">细雨</span></button>
-        <button class="sound-chip" data-sound="wave">🌊 <span data-i18n="wave">海浪</span></button>
-        <button class="sound-chip" data-sound="fire">🔥 <span data-i18n="fire">暖噪</span></button>
-      </div>
-      <div class="volume-wrap">
-        <span>🔈</span>
-        <input type="range" id="volumeSlider" min="0" max="100" value="45" />
-      </div>
-    </div>
   </div>
 
   <script>
-    // ---------- 多语言配置 ----------
+    // ---------- 多语言 ----------
     const i18n = {
       zh: {
-        brandTitle: 'CECP 专注倒计时',
+        navFocus: '专注',
+        navProgress: '年度',
         ready: '准备就绪',
-        running: '专注中...',
+        running: '专注中',
         paused: '已暂停',
-        done: '已完成！',
+        done: '已完成',
         todayLabel: '今日完成',
-        taskPlaceholder: '写下这次要专注的事...',
-        pomodoro: '专注 25m',
-        short: '短休 5m',
-        long: '长休 15m',
         custom: '自定义',
         minUnit: '分钟',
         apply: '应用',
+        taskPlaceholder: '输入当前专注事项（可选）...',
         start: '开始',
         pause: '暂停',
         resume: '继续',
         reset: '重置',
-        modePomodoro: '番茄专注',
-        modeShort: '短休息',
-        modeLong: '长休息',
-        modeCustom: '自定义专注',
-        catReady: '小猫准备好陪你专注啦',
-        catRunning: '嘘…小猫正在陪你认真工作',
-        catPaused: '小猫先打个盹，等你回来',
-        catDone: '太棒了！小猫为你鼓掌 🎉',
-        soundTitle: '白噪音',
-        rain: '细雨',
-        wave: '海浪',
-        fire: '暖噪',
-        notifyTitle: '⏰ 倒计时结束',
-        notifyBody: '辛苦啦，休息一下吧！'
+        modePomodoro: '专注',
+        modeShort: '短休',
+        modeLong: '长休',
+        modeCustom: '自定义',
+        dayUnit: '天',
+        monthKey: '本月已过',
+        weekKey: '本周已过',
+        dayKey: '今日已过',
+        notifyTitle: '倒计时结束',
+        notifyBody: '休息一下吧'
       },
       en: {
-        brandTitle: 'CECP Focus Timer',
+        navFocus: 'Focus',
+        navProgress: 'Year',
         ready: 'Ready',
-        running: 'Focusing...',
+        running: 'Focusing',
         paused: 'Paused',
-        done: 'Completed!',
+        done: 'Completed',
         todayLabel: 'Today',
-        taskPlaceholder: 'What are you focusing on?',
-        pomodoro: 'Focus 25m',
-        short: 'Short 5m',
-        long: 'Long 15m',
         custom: 'Custom',
         minUnit: 'min',
         apply: 'Apply',
+        taskPlaceholder: 'Current focus task (optional)...',
         start: 'Start',
         pause: 'Pause',
         resume: 'Resume',
         reset: 'Reset',
-        modePomodoro: 'Focus Session',
+        modePomodoro: 'Focus',
         modeShort: 'Short Break',
         modeLong: 'Long Break',
-        modeCustom: 'Custom Timer',
-        catReady: 'Kitty is ready to focus with you',
-        catRunning: 'Shh... Kitty is quietly cheering for you',
-        catPaused: 'Kitty is taking a quick nap...',
-        catDone: 'Awesome job! Time is up 🎉',
-        soundTitle: 'Ambient',
-        rain: 'Rain',
-        wave: 'Waves',
-        fire: 'Warm',
-        notifyTitle: '⏰ Time is up!',
-        notifyBody: 'Great work! Take a short break.'
+        modeCustom: 'Custom',
+        dayUnit: 'd',
+        monthKey: 'Month',
+        weekKey: 'Week',
+        dayKey: 'Today',
+        notifyTitle: 'Time is up',
+        notifyBody: 'Take a short break'
       }
     };
 
     let lang = localStorage.getItem('cecp_timer_lang') || 'zh';
     const langBtn = document.getElementById('langBtn');
-
-    function t(key) {
-      return i18n[lang][key] || key;
-    }
+    const t = k => i18n[lang][k] || k;
 
     function applyLang() {
       langBtn.textContent = lang === 'zh' ? 'EN' : '中';
-      document.getElementById('brandTitle').textContent = t('brandTitle');
+      document.getElementById('navFocus').textContent = t('navFocus');
+      document.getElementById('navProgress').textContent = t('navProgress');
       document.getElementById('todayLabel').textContent = t('todayLabel');
-      document.getElementById('taskInput').placeholder = t('taskPlaceholder');
-      document.querySelector('[data-key="pomodoro"]').textContent = t('pomodoro');
-      document.querySelector('[data-key="short"]').textContent = t('short');
-      document.querySelector('[data-key="long"]').textContent = t('long');
       document.getElementById('customModeBtn').textContent = t('custom');
       document.getElementById('minUnit').textContent = t('minUnit');
       document.getElementById('applyCustomBtn').textContent = t('apply');
+      document.getElementById('taskInput').placeholder = t('taskPlaceholder');
       document.getElementById('timerResetBtn').textContent = t('reset');
-      document.getElementById('soundTitle').textContent = t('soundTitle');
-      document.querySelector('[data-i18n="rain"]').textContent = t('rain');
-      document.querySelector('[data-i18n="wave"]').textContent = t('wave');
-      document.querySelector('[data-i18n="fire"]').textContent = t('fire');
       syncStateLabels();
+      renderDotProgress();
     }
 
     langBtn.addEventListener('click', () => {
@@ -765,34 +609,38 @@
       applyLang();
     });
 
-    // ---------- 主题切换 ----------
+    // ---------- 深浅色切换 ----------
     const html = document.documentElement;
-    const themeDots = document.querySelectorAll('.theme-dot');
+    const themeBtn = document.getElementById('themeBtn');
 
     function setTheme(theme) {
       html.setAttribute('data-theme', theme);
-      localStorage.setItem('cecp_focus_theme', theme);
-      themeDots.forEach(d => d.classList.toggle('active', d.dataset.themePick === theme));
+      localStorage.setItem('cecp_minimal_theme', theme);
+      themeBtn.textContent = theme === 'dark' ? '☀️' : '🌙';
     }
 
-    setTheme(localStorage.getItem('cecp_focus_theme') || 'ocean');
-    themeDots.forEach(dot => dot.addEventListener('click', () => setTheme(dot.dataset.themePick)));
+    setTheme(localStorage.getItem('cecp_minimal_theme') || 'dark');
+    themeBtn.addEventListener('click', () => {
+      setTheme(html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+    });
 
-    // 全屏
-    document.getElementById('fullscreenBtn').addEventListener('click', () => {
-      if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen?.();
-      } else {
-        document.exitFullscreen?.();
-      }
+    // ---------- 视图切换 ----------
+    const segBtns = document.querySelectorAll('.seg-btn');
+    const views = document.querySelectorAll('.view');
+    segBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        segBtns.forEach(b => b.classList.remove('active'));
+        views.forEach(v => v.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('view-' + btn.dataset.view).classList.add('active');
+        if (btn.dataset.view === 'progress') renderDotProgress();
+      });
     });
 
     // ---------- 任务记忆 ----------
     const taskInput = document.getElementById('taskInput');
-    const taskCheck = document.getElementById('taskCheck');
     taskInput.value = localStorage.getItem('cecp_focus_task') || '';
     taskInput.addEventListener('input', () => localStorage.setItem('cecp_focus_task', taskInput.value));
-    taskCheck.addEventListener('change', () => taskInput.classList.toggle('done', taskCheck.checked));
 
     // ---------- 精准时间戳倒计时 ----------
     const COUNT_KEY = 'cecp_focus_completed_v1';
@@ -800,12 +648,11 @@
     const timerDisplay = document.getElementById('timerDisplay');
     const timerModeLabel = document.getElementById('timerModeLabel');
     const timerStatus = document.getElementById('timerStatus');
+    const statusDot = document.getElementById('statusDot');
     const timerRing = document.getElementById('timerRing');
     const timerStartBtn = document.getElementById('timerStartBtn');
     const timerResetBtn = document.getElementById('timerResetBtn');
-    const catStage = document.getElementById('catStage');
-    const catBubble = document.getElementById('catBubble');
-    const modeChips = document.querySelectorAll('.mode-chip[data-minutes]');
+    const modeBtns = document.querySelectorAll('.mode-btn[data-minutes]');
     const customModeBtn = document.getElementById('customModeBtn');
     const customRow = document.getElementById('customRow');
 
@@ -816,7 +663,7 @@
     let remainingSeconds = totalSeconds;
     let endTimeMs = null;
     let timerInterval = null;
-    let timerState = 'ready'; // ready | running | paused | done
+    let timerState = 'ready';
     let currentModeKey = 'pomodoro';
 
     function getTodayKey() {
@@ -854,33 +701,26 @@
       };
       timerModeLabel.textContent = modeMap[currentModeKey] || t('modePomodoro');
 
-      catStage.classList.remove('cat-running', 'cat-paused', 'cat-done');
+      statusDot.classList.toggle('running', timerState === 'running');
       if (timerState === 'running') {
         timerStatus.textContent = t('running');
         timerStartBtn.textContent = t('pause');
-        catStage.classList.add('cat-running');
-        catBubble.textContent = t('catRunning');
       } else if (timerState === 'paused') {
         timerStatus.textContent = t('paused');
         timerStartBtn.textContent = t('resume');
-        catStage.classList.add('cat-paused');
-        catBubble.textContent = t('catPaused');
       } else if (timerState === 'done') {
         timerStatus.textContent = t('done');
         timerStartBtn.textContent = t('start');
-        catStage.classList.add('cat-done');
-        catBubble.textContent = t('catDone');
       } else {
         timerStatus.textContent = t('ready');
         timerStartBtn.textContent = t('start');
-        catBubble.textContent = t('catReady');
       }
     }
 
     function updateTimerUI() {
       const str = formatTime(remainingSeconds);
       timerDisplay.textContent = str;
-      document.title = timerState === 'running' ? `${str} · ${t('brandTitle')}` : t('brandTitle');
+      document.title = timerState === 'running' ? `${str} · CECP` : 'CECP 专注空间';
       const ratio = totalSeconds > 0 ? remainingSeconds / totalSeconds : 0;
       timerRing.style.strokeDashoffset = CIRCUMFERENCE * (1 - ratio);
     }
@@ -888,18 +728,18 @@
     function playChime() {
       try {
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        [523.25, 659.25, 783.99, 1046.5].forEach((freq, i) => {
+        [523.25, 659.25, 783.99].forEach((freq, i) => {
           const osc = ctx.createOscillator();
           const gain = ctx.createGain();
           osc.type = 'sine';
           osc.frequency.value = freq;
           gain.gain.setValueAtTime(0.001, ctx.currentTime + i * 0.14);
-          gain.gain.exponentialRampToValueAtTime(0.16, ctx.currentTime + i * 0.14 + 0.04);
-          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.14 + 0.6);
+          gain.gain.exponentialRampToValueAtTime(0.15, ctx.currentTime + i * 0.14 + 0.04);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.14 + 0.55);
           osc.connect(gain);
           gain.connect(ctx.destination);
           osc.start(ctx.currentTime + i * 0.14);
-          osc.stop(ctx.currentTime + i * 0.14 + 0.65);
+          osc.stop(ctx.currentTime + i * 0.14 + 0.6);
         });
       } catch {}
     }
@@ -907,7 +747,7 @@
     function sendNotification() {
       if ('Notification' in window && Notification.permission === 'granted') {
         try {
-          new Notification(t('notifyTitle'), { body: t('notifyBody'), icon: './cecp-logo.svg' });
+          new Notification(t('notifyTitle'), { body: t('notifyBody') });
         } catch {}
       }
     }
@@ -946,17 +786,17 @@
       updateTimerUI();
     }
 
-    modeChips.forEach(chip => {
-      chip.addEventListener('click', () => {
-        document.querySelectorAll('.mode-chip').forEach(c => c.classList.remove('active'));
-        chip.classList.add('active');
+    modeBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
         customRow.classList.remove('show');
-        setMinutes(Number(chip.dataset.minutes), chip.dataset.key);
+        setMinutes(Number(btn.dataset.minutes), btn.dataset.key);
       });
     });
 
     customModeBtn.addEventListener('click', () => {
-      document.querySelectorAll('.mode-chip').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
       customModeBtn.classList.add('active');
       customRow.classList.add('show');
     });
@@ -998,124 +838,69 @@
       updateTimerUI();
     });
 
-    // 切回页面时立刻同步真实时间
     document.addEventListener('visibilitychange', () => {
       if (!document.hidden && timerState === 'running') tick();
     });
 
+    // ---------- 点阵年度进度 ----------
+    function getISOWeek(date) {
+      const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+      const dayNum = d.getUTCDay() || 7;
+      d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+      const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+      return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+    }
+
+    function renderDotProgress() {
+      const now = new Date();
+      const year = now.getFullYear();
+      const startOfYear = new Date(year, 0, 1);
+      const endOfYear = new Date(year + 1, 0, 1);
+      const totalDays = Math.round((endOfYear - startOfYear) / 86400000);
+      const todayIdx = Math.floor((new Date(year, now.getMonth(), now.getDate()) - startOfYear) / 86400000) + 1;
+      const yearPct = Math.round((todayIdx / totalDays) * 100);
+      const weekNum = getISOWeek(now);
+
+      document.getElementById('matrixTitle').textContent = `Week #${weekNum}  ${year}`;
+      document.getElementById('matrixMeta').textContent = `${todayIdx}/${totalDays} ${t('dayUnit')} (${yearPct}%)`;
+
+      const dotGrid = document.getElementById('dotGrid');
+      const dots = [];
+      for (let i = 1; i <= totalDays; i++) {
+        const d = new Date(year, 0, i);
+        const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        let cls = 'day-dot';
+        if (i < todayIdx) cls += ' past';
+        else if (i === todayIdx) cls += ' today';
+        dots.push(`<div class="${cls}" title="${dateStr}"></div>`);
+      }
+      dotGrid.innerHTML = dots.join('');
+
+      const startOfMonth = new Date(year, now.getMonth(), 1);
+      const endOfMonth = new Date(year, now.getMonth() + 1, 1);
+      const monthPct = ((now - startOfMonth) / (endOfMonth - startOfMonth)) * 100;
+
+      const dayOfWeek = (now.getDay() + 6) % 7;
+      const startOfWeek = new Date(year, now.getMonth(), now.getDate() - dayOfWeek);
+      const weekPct = ((now - startOfWeek) / (7 * 86400000)) * 100;
+
+      const startOfDay = new Date(year, now.getMonth(), now.getDate());
+      const dayPct = ((now - startOfDay) / 86400000) * 100;
+
+      document.getElementById('miniStats').innerHTML = [
+        { k: t('monthKey'), v: monthPct.toFixed(1) + '%' },
+        { k: t('weekKey'), v: weekPct.toFixed(1) + '%' },
+        { k: t('dayKey'), v: dayPct.toFixed(1) + '%' }
+      ].map(s => `
+        <div class="mini-stat">
+          <div class="mini-stat-val">${s.v}</div>
+          <div class="mini-stat-key">${s.k}</div>
+        </div>
+      `).join('');
+    }
+
     applyLang();
     updateTimerUI();
-
-    // ---------- 纯代码合成白噪音 ----------
-    let audioCtx = null;
-    let masterGain = null;
-    let currentSource = null;
-    let currentLfo = null;
-    let activeSound = null;
-
-    const soundChips = document.querySelectorAll('.sound-chip');
-    const volumeSlider = document.getElementById('volumeSlider');
-
-    function stopAmbientSound() {
-      if (currentSource) {
-        try { currentSource.stop(); } catch {}
-        currentSource.disconnect();
-        currentSource = null;
-      }
-      if (currentLfo) {
-        try { currentLfo.stop(); } catch {}
-        currentLfo.disconnect();
-        currentLfo = null;
-      }
-      activeSound = null;
-      soundChips.forEach(c => c.classList.remove('active'));
-    }
-
-    function startAmbientSound(type) {
-      if (!audioCtx) {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        masterGain = audioCtx.createGain();
-        masterGain.gain.value = (volumeSlider.value / 100) * 0.35;
-        masterGain.connect(audioCtx.destination);
-      }
-      if (audioCtx.state === 'suspended') audioCtx.resume();
-
-      stopAmbientSound();
-
-      const bufferSize = audioCtx.sampleRate * 3;
-      const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-      const data = buffer.getChannelData(0);
-
-      let lastOut = 0;
-      for (let i = 0; i < bufferSize; i++) {
-        const white = Math.random() * 2 - 1;
-        if (type === 'rain') {
-          data[i] = (lastOut + 0.08 * white) / 1.08;
-          lastOut = data[i];
-        } else {
-          data[i] = (lastOut + 0.02 * white) / 1.02;
-          lastOut = data[i];
-          data[i] *= 2.4;
-        }
-      }
-
-      const noise = audioCtx.createBufferSource();
-      noise.buffer = buffer;
-      noise.loop = true;
-
-      const filter = audioCtx.createBiquadFilter();
-      if (type === 'rain') {
-        filter.type = 'bandpass';
-        filter.frequency.value = 1100;
-        filter.Q.value = 0.6;
-        noise.connect(filter);
-        filter.connect(masterGain);
-      } else if (type === 'wave') {
-        filter.type = 'lowpass';
-        filter.frequency.value = 420;
-        const waveGain = audioCtx.createGain();
-        waveGain.gain.value = 0.65;
-
-        const lfo = audioCtx.createOscillator();
-        const lfoGain = audioCtx.createGain();
-        lfo.frequency.value = 0.12;
-        lfoGain.gain.value = 0.35;
-        lfo.connect(lfoGain);
-        lfoGain.connect(waveGain.gain);
-        lfo.start();
-        currentLfo = lfo;
-
-        noise.connect(filter);
-        filter.connect(waveGain);
-        waveGain.connect(masterGain);
-      } else {
-        filter.type = 'lowpass';
-        filter.frequency.value = 260;
-        noise.connect(filter);
-        filter.connect(masterGain);
-      }
-
-      noise.start();
-      currentSource = noise;
-      activeSound = type;
-      soundChips.forEach(c => c.classList.toggle('active', c.dataset.sound === type));
-    }
-
-    soundChips.forEach(chip => {
-      chip.addEventListener('click', () => {
-        if (activeSound === chip.dataset.sound) {
-          stopAmbientSound();
-        } else {
-          startAmbientSound(chip.dataset.sound);
-        }
-      });
-    });
-
-    volumeSlider.addEventListener('input', () => {
-      if (masterGain && audioCtx) {
-        masterGain.gain.setTargetAtTime((volumeSlider.value / 100) * 0.35, audioCtx.currentTime, 0.05);
-      }
-    });
   </script>
 </body>
 </html>
