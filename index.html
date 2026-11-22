@@ -1,45 +1,78 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-theme="ocean">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>实用工具箱</title>
+  <title>静谧专注空间</title>
   <style>
     :root {
-      --bg: #f6f7f9;
-      --surface: #ffffff;
-      --surface-2: #f0f2f5;
-      --text: #18181b;
+      --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #e4e9f2 100%);
+      --card-bg: rgba(255, 255, 255, 0.78);
+      --card-border: rgba(255, 255, 255, 0.9);
+      --surface-2: rgba(15, 23, 42, 0.05);
+      --text: #1e293b;
       --text-muted: #64748b;
-      --border: #e2e8f0;
       --accent: #2563eb;
-      --accent-soft: rgba(37, 99, 235, 0.1);
-      --accent-hover: #1d4ed8;
-      --danger: #dc2626;
-      --danger-soft: rgba(220, 38, 38, 0.1);
-      --success: #16a34a;
-      --success-soft: rgba(22, 163, 74, 0.12);
-      --warning: #d97706;
-      --radius: 14px;
-      --shadow: 0 1px 3px rgba(15, 23, 42, 0.06), 0 4px 16px rgba(15, 23, 42, 0.04);
+      --accent-soft: rgba(37, 99, 235, 0.12);
+      --accent-glow: rgba(37, 99, 235, 0.28);
+      --ring-bg: rgba(15, 23, 42, 0.08);
+      --shadow: 0 12px 40px rgba(15, 23, 42, 0.08);
     }
 
-    [data-theme="dark"] {
-      --bg: #0f1117;
-      --surface: #181b24;
-      --surface-2: #222633;
+    [data-theme="ocean"] {
+      --bg-gradient: radial-gradient(circle at 20% 20%, #1e3a5f 0%, #0f172a 55%, #090d16 100%);
+      --card-bg: rgba(15, 23, 42, 0.58);
+      --card-border: rgba(148, 163, 184, 0.18);
+      --surface-2: rgba(255, 255, 255, 0.08);
       --text: #f1f5f9;
       --text-muted: #94a3b8;
-      --border: #2c3140;
-      --accent: #3b82f6;
-      --accent-soft: rgba(59, 130, 246, 0.15);
-      --accent-hover: #60a5fa;
-      --danger: #f87171;
-      --danger-soft: rgba(248, 113, 113, 0.15);
-      --success: #4ade80;
-      --success-soft: rgba(74, 222, 128, 0.15);
-      --warning: #fbbf24;
-      --shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+      --accent: #38bdf8;
+      --accent-soft: rgba(56, 189, 248, 0.16);
+      --accent-glow: rgba(56, 189, 248, 0.35);
+      --ring-bg: rgba(255, 255, 255, 0.1);
+      --shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+    }
+
+    [data-theme="sunset"] {
+      --bg-gradient: radial-gradient(circle at 80% 15%, #7c2d12 0%, #4c1d95 55%, #1e1b4b 100%);
+      --card-bg: rgba(24, 16, 42, 0.55);
+      --card-border: rgba(251, 146, 60, 0.22);
+      --surface-2: rgba(255, 255, 255, 0.09);
+      --text: #fff7ed;
+      --text-muted: #cbd5e1;
+      --accent: #fb923c;
+      --accent-soft: rgba(251, 146, 60, 0.18);
+      --accent-glow: rgba(251, 146, 60, 0.35);
+      --ring-bg: rgba(255, 255, 255, 0.12);
+      --shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+    }
+
+    [data-theme="forest"] {
+      --bg-gradient: radial-gradient(circle at 25% 80%, #14532d 0%, #064e3b 45%, #052e16 100%);
+      --card-bg: rgba(6, 36, 26, 0.58);
+      --card-border: rgba(74, 222, 128, 0.18);
+      --surface-2: rgba(255, 255, 255, 0.08);
+      --text: #ecfdf5;
+      --text-muted: #a7f3d0;
+      --accent: #34d399;
+      --accent-soft: rgba(52, 211, 153, 0.16);
+      --accent-glow: rgba(52, 211, 153, 0.32);
+      --ring-bg: rgba(255, 255, 255, 0.1);
+      --shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+    }
+
+    [data-theme="midnight"] {
+      --bg-gradient: radial-gradient(circle at 50% 0%, #18181b 0%, #09090b 100%);
+      --card-bg: rgba(24, 24, 27, 0.72);
+      --card-border: rgba(255, 255, 255, 0.1);
+      --surface-2: rgba(255, 255, 255, 0.07);
+      --text: #fafafa;
+      --text-muted: #a1a1aa;
+      --accent: #a78bfa;
+      --accent-soft: rgba(167, 139, 250, 0.16);
+      --accent-glow: rgba(167, 139, 250, 0.32);
+      --ring-bg: rgba(255, 255, 255, 0.09);
+      --shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
     }
 
     * {
@@ -50,944 +83,663 @@
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-      background: var(--bg);
+      background: var(--bg-gradient);
       color: var(--text);
-      line-height: 1.55;
-      padding: 20px 16px 40px;
-      transition: background 0.2s, color 0.2s;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px 16px;
+      transition: background 0.4s ease, color 0.25s ease;
     }
 
-    .container {
-      max-width: 920px;
-      margin: 0 auto;
+    .app {
+      width: 100%;
+      max-width: 560px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
     }
 
-    /* Header */
-    .header {
+    /* 顶部栏 */
+    .topbar {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 18px;
+      gap: 10px;
       flex-wrap: wrap;
     }
 
-    .brand {
+    .nav-pills {
       display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .brand-icon {
-      width: 36px;
-      height: 36px;
-      border-radius: 10px;
-      background: var(--accent);
-      color: #fff;
-      display: grid;
-      place-items: center;
-      font-weight: 700;
-      font-size: 18px;
-      flex-shrink: 0;
-    }
-
-    .brand h1 {
-      font-size: 1.2rem;
-      font-weight: 700;
-      letter-spacing: -0.01em;
-    }
-
-    .brand p {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-    }
-
-    .theme-btn {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 7px 12px;
+      gap: 4px;
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--card-border);
+      padding: 4px;
       border-radius: 999px;
-      font-size: 0.82rem;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: border-color 0.15s, background 0.15s;
     }
 
-    .theme-btn:hover {
-      border-color: var(--accent);
-    }
-
-    /* Tabs */
-    .tabs {
-      display: flex;
-      gap: 8px;
-      background: var(--surface);
-      padding: 6px;
-      border-radius: var(--radius);
-      border: 1px solid var(--border);
-      box-shadow: var(--shadow);
-      margin-bottom: 20px;
-      overflow-x: auto;
-    }
-
-    .tab-btn {
-      flex: 1;
-      min-width: 110px;
+    .nav-pill {
       border: none;
       background: transparent;
       color: var(--text-muted);
-      padding: 9px 14px;
-      border-radius: 10px;
-      font-size: 0.9rem;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 0.84rem;
       font-weight: 600;
       cursor: pointer;
-      white-space: nowrap;
-      transition: all 0.15s;
+      transition: all 0.18s;
     }
 
-    .tab-btn:hover {
+    .nav-pill:hover {
       color: var(--text);
-      background: var(--surface-2);
     }
 
-    .tab-btn.active {
+    .nav-pill.active {
       background: var(--accent);
+      color: #0b1120;
+    }
+
+    [data-theme="light"] .nav-pill.active {
       color: #fff;
     }
 
-    .panel {
-      display: none;
-    }
-
-    .panel.active {
-      display: block;
-      animation: fadeIn 0.18s ease-out;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(4px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* Cards & Grid */
-    .grid-2 {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-    }
-
-    @media (max-width: 720px) {
-      .grid-2 {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 18px;
-      box-shadow: var(--shadow);
-    }
-
-    .card + .card {
-      margin-top: 16px;
-    }
-
-    .grid-2 .card + .card {
-      margin-top: 0;
-    }
-
-    .card-title {
-      font-size: 1rem;
-      font-weight: 700;
-      margin-bottom: 14px;
+    .topbar-right {
       display: flex;
       align-items: center;
-      justify-content: space-between;
       gap: 8px;
     }
 
-    .badge {
-      font-size: 0.74rem;
+    .theme-dots {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--card-border);
+      padding: 6px 10px;
+      border-radius: 999px;
+    }
+
+    .theme-dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: transform 0.15s, border-color 0.15s;
+    }
+
+    .theme-dot:hover {
+      transform: scale(1.15);
+    }
+
+    .theme-dot.active {
+      border-color: var(--text);
+      transform: scale(1.15);
+    }
+
+    .icon-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 1px solid var(--card-border);
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      color: var(--text);
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: border-color 0.15s, transform 0.15s;
+    }
+
+    .icon-btn:hover {
+      border-color: var(--accent);
+      transform: scale(1.05);
+    }
+
+    /* 主毛玻璃卡片 */
+    .glass-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(22px);
+      -webkit-backdrop-filter: blur(22px);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 26px 22px;
+      box-shadow: var(--shadow);
+    }
+
+    .view {
+      display: none;
+    }
+
+    .view.active {
+      display: block;
+      animation: fadeUp 0.22s ease-out;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* 专注倒计时 */
+    .focus-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .status-badge {
+      font-size: 0.76rem;
       font-weight: 600;
-      padding: 3px 9px;
+      padding: 4px 10px;
       border-radius: 999px;
       background: var(--accent-soft);
       color: var(--accent);
     }
 
-    /* Form Controls */
-    .form-row {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-bottom: 12px;
-    }
-
-    .field {
-      flex: 1;
-      min-width: 140px;
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-    }
-
-    label {
-      font-size: 0.8rem;
-      font-weight: 600;
+    .today-stat {
+      font-size: 0.82rem;
       color: var(--text-muted);
     }
 
-    input[type="text"],
-    input[type="date"],
-    input[type="number"],
-    select,
-    textarea {
-      width: 100%;
-      padding: 9px 12px;
-      border-radius: 10px;
-      border: 1px solid var(--border);
+    .task-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
       background: var(--surface-2);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 8px 12px;
+      margin-bottom: 20px;
+    }
+
+    .task-check {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--accent);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .task-input {
+      flex: 1;
+      border: none;
+      background: transparent;
       color: var(--text);
       font-size: 0.92rem;
       font-family: inherit;
       outline: none;
-      transition: border-color 0.15s;
     }
 
-    input:focus,
-    select:focus,
-    textarea:focus {
-      border-color: var(--accent);
-    }
-
-    .btn {
-      padding: 9px 16px;
-      border-radius: 10px;
-      border: none;
-      font-size: 0.88rem;
-      font-weight: 600;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      transition: all 0.15s;
-    }
-
-    .btn-primary {
-      background: var(--accent);
-      color: #fff;
-    }
-
-    .btn-primary:hover {
-      background: var(--accent-hover);
-    }
-
-    .btn-ghost {
-      background: var(--surface-2);
-      color: var(--text);
-      border: 1px solid var(--border);
-    }
-
-    .btn-ghost:hover {
-      border-color: var(--accent);
-      color: var(--accent);
-    }
-
-    .btn-danger-sm {
-      background: transparent;
-      color: var(--text-muted);
-      padding: 4px 8px;
-      border-radius: 6px;
-      border: none;
-      cursor: pointer;
-      font-size: 0.82rem;
-    }
-
-    .btn-danger-sm:hover {
-      background: var(--danger-soft);
-      color: var(--danger);
-    }
-
-    /* Countdown List */
-    .countdown-list {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .countdown-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 12px 14px;
-      border-radius: 12px;
-      background: var(--surface-2);
-      border: 1px solid var(--border);
-    }
-
-    .countdown-meta h3 {
-      font-size: 0.96rem;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .countdown-meta p {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      margin-top: 2px;
-    }
-
-    .countdown-days {
-      text-align: right;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-shrink: 0;
-    }
-
-    .days-num {
-      font-size: 1.5rem;
-      font-weight: 800;
-      font-variant-numeric: tabular-nums;
-      color: var(--accent);
-    }
-
-    .days-num.today {
-      color: var(--success);
-    }
-
-    .days-num.past {
+    .task-input::placeholder {
       color: var(--text-muted);
     }
 
-    .days-label {
-      font-size: 0.78rem;
-      color: var(--text-muted);
-    }
-
-    .result-box {
-      margin-top: 12px;
-      padding: 12px 14px;
-      border-radius: 10px;
-      background: var(--accent-soft);
-      color: var(--text);
-      font-size: 0.92rem;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 16px;
-      align-items: center;
-    }
-
-    .result-highlight {
-      font-weight: 800;
-      color: var(--accent);
-      font-size: 1.15rem;
-    }
-
-    /* Pomodoro */
-    .timer-wrap {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 16px 0 8px;
+    .task-input.done {
+      text-decoration: line-through;
+      opacity: 0.6;
     }
 
     .timer-modes {
       display: flex;
-      gap: 8px;
-      margin-bottom: 22px;
-      flex-wrap: wrap;
+      gap: 6px;
       justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
     }
 
-    .mode-pill {
-      padding: 6px 14px;
+    .mode-chip {
+      padding: 5px 12px;
       border-radius: 999px;
-      border: 1px solid var(--border);
+      border: 1px solid transparent;
       background: var(--surface-2);
       color: var(--text-muted);
-      font-size: 0.84rem;
+      font-size: 0.8rem;
       font-weight: 600;
       cursor: pointer;
+      transition: all 0.15s;
     }
 
-    .mode-pill.active {
+    .mode-chip:hover {
+      color: var(--text);
+    }
+
+    .mode-chip.active {
       background: var(--accent-soft);
       border-color: var(--accent);
       color: var(--accent);
     }
 
-    .timer-ring {
-      position: relative;
-      width: 210px;
-      height: 210px;
-      display: grid;
-      place-items: center;
-      margin-bottom: 20px;
+    .custom-row {
+      display: none;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 18px;
     }
 
-    .timer-ring svg {
+    .custom-row.show {
+      display: flex;
+    }
+
+    .custom-input {
+      width: 86px;
+      padding: 6px 10px;
+      border-radius: 10px;
+      border: 1px solid var(--card-border);
+      background: var(--surface-2);
+      color: var(--text);
+      font-size: 0.88rem;
+      text-align: center;
+      outline: none;
+    }
+
+    .ring-wrap {
+      position: relative;
+      width: 230px;
+      height: 230px;
+      margin: 0 auto 22px;
+      display: grid;
+      place-items: center;
+    }
+
+    .ring-wrap svg {
       position: absolute;
       inset: 0;
       transform: rotate(-90deg);
     }
 
-    .timer-ring circle {
+    .ring-wrap circle {
       fill: none;
-      stroke-width: 8;
+      stroke-width: 7;
     }
 
     .ring-bg {
-      stroke: var(--surface-2);
+      stroke: var(--ring-bg);
     }
 
     .ring-fg {
       stroke: var(--accent);
       stroke-linecap: round;
+      filter: drop-shadow(0 0 8px var(--accent-glow));
       transition: stroke-dashoffset 0.35s linear;
     }
 
-    .timer-display {
-      font-size: 2.75rem;
+    .time-text {
+      font-size: 3.1rem;
       font-weight: 800;
       font-variant-numeric: tabular-nums;
-      letter-spacing: 0.02em;
+      letter-spacing: 0.03em;
+      text-align: center;
+      line-height: 1.1;
     }
 
-    .timer-sub {
+    .time-sub {
       font-size: 0.8rem;
       color: var(--text-muted);
       text-align: center;
+      margin-top: 4px;
     }
 
-    .timer-controls {
+    .controls {
       display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
       justify-content: center;
-    }
-
-    /* Text Tool */
-    textarea.text-area {
-      min-height: 200px;
-      resize: vertical;
-      line-height: 1.65;
-    }
-
-    .stats-bar {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
       gap: 10px;
-      margin: 14px 0;
     }
 
-    .stat-card {
+    .btn {
+      padding: 10px 20px;
+      border-radius: 12px;
+      border: none;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.12s, opacity 0.15s;
+    }
+
+    .btn:active {
+      transform: scale(0.97);
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #0b1120;
+      min-width: 108px;
+      box-shadow: 0 4px 16px var(--accent-glow);
+    }
+
+    [data-theme="light"] .btn-primary {
+      color: #fff;
+    }
+
+    .btn-ghost {
       background: var(--surface-2);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 10px 12px;
+      color: var(--text);
+      border: 1px solid var(--card-border);
+    }
+
+    /* 呼吸引导模式 */
+    .breath-box {
       text-align: center;
+      padding: 14px 0 8px;
     }
 
-    .stat-val {
-      font-size: 1.25rem;
-      font-weight: 800;
-      font-variant-numeric: tabular-nums;
-      color: var(--accent);
-    }
-
-    .stat-key {
-      font-size: 0.75rem;
+    .breath-desc {
+      font-size: 0.85rem;
       color: var(--text-muted);
+      margin-bottom: 26px;
     }
 
-    .action-bar {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    /* Math Reciprocal & Ratio */
-    .math-grid {
+    .breath-stage {
+      height: 220px;
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-      gap: 10px;
-      margin-top: 12px;
+      place-items: center;
+      margin-bottom: 22px;
+      position: relative;
     }
 
-    .math-box {
-      padding: 12px;
-      border-radius: 10px;
+    .breath-orb {
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      background: radial-gradient(circle, var(--accent) 0%, var(--accent-soft) 70%);
+      box-shadow: 0 0 40px var(--accent-glow);
+      display: grid;
+      place-items: center;
+      transition: transform 1s ease-in-out;
+    }
+
+    .breath-label {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .breath-sec {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-variant-numeric: tabular-nums;
+      margin-bottom: 18px;
+    }
+
+    /* 时间进度条模式 */
+    .progress-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .prog-item {
       background: var(--surface-2);
-      border: 1px solid var(--border);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 14px 16px;
     }
 
-    .math-box .k {
+    .prog-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 8px;
+    }
+
+    .prog-title {
+      font-size: 0.92rem;
+      font-weight: 700;
+    }
+
+    .prog-pct {
+      font-size: 0.92rem;
+      font-weight: 800;
+      color: var(--accent);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .prog-track {
+      height: 8px;
+      border-radius: 999px;
+      background: var(--ring-bg);
+      overflow: hidden;
+    }
+
+    .prog-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: var(--accent);
+      box-shadow: 0 0 10px var(--accent-glow);
+      transition: width 0.5s ease;
+    }
+
+    .prog-sub {
       font-size: 0.76rem;
       color: var(--text-muted);
+      margin-top: 6px;
     }
 
-    .math-box .v {
-      font-size: 1.15rem;
-      font-weight: 700;
-      font-variant-numeric: tabular-nums;
-      margin-top: 2px;
-      word-break: break-all;
+    /* 底部白噪音控制栏 */
+    .sound-bar {
+      background: var(--card-bg);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
     }
 
-    .empty-tip {
-      text-align: center;
+    .sound-buttons {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .sound-label {
+      font-size: 0.78rem;
       color: var(--text-muted);
-      padding: 24px 12px;
-      font-size: 0.9rem;
+      margin-right: 4px;
+    }
+
+    .sound-chip {
+      padding: 5px 11px;
+      border-radius: 999px;
+      border: 1px solid var(--card-border);
+      background: var(--surface-2);
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .sound-chip.active {
+      background: var(--accent-soft);
+      border-color: var(--accent);
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .volume-wrap {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    input[type="range"] {
+      width: 82px;
+      accent-color: var(--accent);
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <header class="header">
-      <div class="brand">
-        <div class="brand-icon">T</div>
-        <div>
-          <h1>日常实用工具箱</h1>
-          <p>纯前端 · 本地存储 · 可直接嵌入 Halo</p>
-        </div>
-      </div>
-      <button class="theme-btn" id="themeToggle" type="button">
-        <span id="themeIcon">🌙</span>
-        <span id="themeText">深色模式</span>
-      </button>
-    </header>
-
-    <nav class="tabs" role="tablist">
-      <button class="tab-btn active" data-tab="countdown">📅 倒数日 & 日期</button>
-      <button class="tab-btn" data-tab="timer">🍅 专注计时器</button>
-      <button class="tab-btn" data-tab="text">📝 字数与排版</button>
-      <button class="tab-btn" data-tab="math">🔢 倒数与比例</button>
-    </nav>
-
-    <!-- 1. 倒数日 & 日期计算 -->
-    <section class="panel active" id="panel-countdown">
-      <div class="card">
-        <div class="card-title">
-          <span>我的倒数日</span>
-          <span class="badge">数据保存在本地浏览器</span>
-        </div>
-        <form id="addCountdownForm" class="form-row">
-          <div class="field" style="flex: 2;">
-            <label for="cdTitle">事件名称</label>
-            <input type="text" id="cdTitle" placeholder="例如：圣诞节 / 年终总结 / 发薪日" required />
-          </div>
-          <div class="field">
-            <label for="cdDate">目标日期</label>
-            <input type="date" id="cdDate" required />
-          </div>
-          <div class="field">
-            <label for="cdTag">分类</label>
-            <select id="cdTag">
-              <option value="日常">日常</option>
-              <option value="工作">工作</option>
-              <option value="节日">节日</option>
-              <option value="重要">重要</option>
-            </select>
-          </div>
-          <div class="field" style="flex: 0; justify-content: flex-end;">
-            <label>&nbsp;</label>
-            <button type="submit" class="btn btn-primary">添加倒数</button>
-          </div>
-        </form>
-
-        <div id="countdownList" class="countdown-list"></div>
+  <div class="app">
+    <!-- 顶部导航 & 主题切换 -->
+    <div class="topbar">
+      <div class="nav-pills" role="tablist">
+        <button class="nav-pill active" data-view="focus">🍅 专注</button>
+        <button class="nav-pill" data-view="breath">🌬️ 呼吸</button>
+        <button class="nav-pill" data-view="progress">⏳ 进度</button>
       </div>
 
-      <div class="grid-2" style="margin-top: 16px;">
-        <div class="card">
-          <div class="card-title">两个日期相差几天</div>
-          <div class="form-row">
-            <div class="field">
-              <label for="diffStart">开始日期</label>
-              <input type="date" id="diffStart" />
-            </div>
-            <div class="field">
-              <label for="diffEnd">结束日期</label>
-              <input type="date" id="diffEnd" />
-            </div>
-          </div>
-          <div class="result-box" id="diffResult">请选择两个日期</div>
+      <div class="topbar-right">
+        <div class="theme-dots" title="切换氛围主题">
+          <button class="theme-dot" data-theme-pick="light" style="background: #e2e8f0;" title="极简纸白"></button>
+          <button class="theme-dot active" data-theme-pick="ocean" style="background: #0ea5e9;" title="深海静谧"></button>
+          <button class="theme-dot" data-theme-pick="sunset" style="background: #fb923c;" title="日落余晖"></button>
+          <button class="theme-dot" data-theme-pick="forest" style="background: #10b981;" title="森林呼吸"></button>
+          <button class="theme-dot" data-theme-pick="midnight" style="background: #8b5cf6;" title="暗夜极客"></button>
         </div>
-
-        <div class="card">
-          <div class="card-title">日期推算（N 天后 / 前）</div>
-          <div class="form-row">
-            <div class="field">
-              <label for="offsetBase">基准日期</label>
-              <input type="date" id="offsetBase" />
-            </div>
-            <div class="field">
-              <label for="offsetDays">天数（负数往前）</label>
-              <input type="number" id="offsetDays" value="30" />
-            </div>
-          </div>
-          <div class="result-box" id="offsetResult">-</div>
-        </div>
+        <button class="icon-btn" id="fullscreenBtn" title="全屏沉浸模式">⛶</button>
       </div>
-    </section>
+    </div>
 
-    <!-- 2. 专注计时器 -->
-    <section class="panel" id="panel-timer">
-      <div class="card">
-        <div class="card-title">
-          <span>专注倒计时 / 番茄钟</span>
-          <span class="badge" id="timerStatus">准备就绪</span>
+    <!-- 主卡片 -->
+    <main class="glass-card">
+      <!-- 1. 专注倒计时 -->
+      <section class="view active" id="view-focus">
+        <div class="focus-header">
+          <span class="status-badge" id="timerStatus">准备就绪</span>
+          <span class="today-stat">今日完成 <strong id="completedCount">0</strong> 次</span>
         </div>
-        <div class="timer-wrap">
-          <div class="timer-modes">
-            <button class="mode-pill active" data-minutes="25" data-label="专注 25 分钟">番茄专注 (25m)</button>
-            <button class="mode-pill" data-minutes="5" data-label="短休息 5 分钟">短休息 (5m)</button>
-            <button class="mode-pill" data-minutes="15" data-label="长休息 15 分钟">长休息 (15m)</button>
-            <button class="mode-pill" id="customModeBtn">自定义</button>
-          </div>
 
-          <div class="form-row" id="customMinutesRow" style="display: none; max-width: 260px; margin-bottom: 16px;">
-            <div class="field">
-              <label for="customMinutesInput">自定义分钟数</label>
-              <input type="number" id="customMinutesInput" min="1" max="180" value="45" />
-            </div>
-            <div class="field" style="flex: 0; justify-content: flex-end;">
-              <label>&nbsp;</label>
-              <button type="button" class="btn btn-ghost" id="applyCustomMinutes">应用</button>
-            </div>
-          </div>
+        <div class="task-bar">
+          <input type="checkbox" class="task-check" id="taskCheck" title="标记完成" />
+          <input type="text" class="task-input" id="taskInput" placeholder="写下这次要专注的事..." />
+        </div>
 
-          <div class="timer-ring">
-            <svg viewBox="0 0 210 210" width="210" height="210">
-              <circle class="ring-bg" cx="105" cy="105" r="95"></circle>
-              <circle class="ring-fg" id="timerRing" cx="105" cy="105" r="95"></circle>
-            </svg>
-            <div>
-              <div class="timer-display" id="timerDisplay">25:00</div>
-              <div class="timer-sub" id="timerModeLabel">专注 25 分钟</div>
-            </div>
-          </div>
+        <div class="timer-modes">
+          <button class="mode-chip active" data-minutes="25" data-label="番茄专注">专注 25m</button>
+          <button class="mode-chip" data-minutes="5" data-label="短休息">短休 5m</button>
+          <button class="mode-chip" data-minutes="15" data-label="长休息">长休 15m</button>
+          <button class="mode-chip" id="customModeBtn">自定义</button>
+        </div>
 
-          <div class="timer-controls">
-            <button class="btn btn-primary" id="timerStartBtn">开始</button>
-            <button class="btn btn-ghost" id="timerResetBtn">重置</button>
-            <button class="btn btn-ghost" id="timerSoundTest">测试提示音</button>
+        <div class="custom-row" id="customRow">
+          <input type="number" class="custom-input" id="customInput" min="1" max="180" value="45" />
+          <span style="font-size: 0.84rem; color: var(--text-muted);">分钟</span>
+          <button class="btn btn-ghost" id="applyCustomBtn" style="padding: 6px 12px; font-size: 0.82rem;">应用</button>
+        </div>
+
+        <div class="ring-wrap">
+          <svg viewBox="0 0 230 230" width="230" height="230">
+            <circle class="ring-bg" cx="115" cy="115" r="104"></circle>
+            <circle class="ring-fg" id="timerRing" cx="115" cy="115" r="104"></circle>
+          </svg>
+          <div>
+            <div class="time-text" id="timerDisplay">25:00</div>
+            <div class="time-sub" id="timerModeLabel">番茄专注</div>
           </div>
         </div>
+
+        <div class="controls">
+          <button class="btn btn-primary" id="timerStartBtn">开始</button>
+          <button class="btn btn-ghost" id="timerResetBtn">重置</button>
+        </div>
+      </section>
+
+      <!-- 2. 4-7-8 呼吸引导 -->
+      <section class="view" id="view-breath">
+        <div class="breath-box">
+          <div class="breath-desc">4-7-8 呼吸放松法：跟着光球节奏缓慢呼吸，缓解疲劳与焦虑</div>
+          <div class="breath-stage">
+            <div class="breath-orb" id="breathOrb"></div>
+          </div>
+          <div class="breath-label" id="breathPhase">准备开始</div>
+          <div class="breath-sec" id="breathSec">点击下方按钮开始 1 分钟放松</div>
+          <button class="btn btn-primary" id="breathToggleBtn">开始呼吸</button>
+        </div>
+      </section>
+
+      <!-- 3. 时间可视化进度 -->
+      <section class="view" id="view-progress">
+        <div class="progress-list" id="progressList"></div>
+      </section>
+    </main>
+
+    <!-- 底部白噪音控制台 -->
+    <div class="sound-bar">
+      <div class="sound-buttons">
+        <span class="sound-label">白噪音</span>
+        <button class="sound-chip" data-sound="rain">🌧️ 细雨</button>
+        <button class="sound-chip" data-sound="wave">🌊 海浪</button>
+        <button class="sound-chip" data-sound="fire">🔥 暖噪</button>
       </div>
-    </section>
-
-    <!-- 3. 字数与排版工具 -->
-    <section class="panel" id="panel-text">
-      <div class="card">
-        <div class="card-title">
-          <span>字数统计 & 排版清理</span>
-          <span class="badge">写文章常用</span>
-        </div>
-        <textarea id="textInput" class="text-area" placeholder="把文章、Markdown 或需要清理格式的文本粘贴到这里..."></textarea>
-
-        <div class="stats-bar">
-          <div class="stat-card">
-            <div class="stat-val" id="statChars">0</div>
-            <div class="stat-key">总字符</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-val" id="statNoSpace">0</div>
-            <div class="stat-key">不含空格</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-val" id="statCn">0</div>
-            <div class="stat-key">中文字符</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-val" id="statWords">0</div>
-            <div class="stat-key">英文词数</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-val" id="statLines">0</div>
-            <div class="stat-key">行数</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-val" id="statRead">0m</div>
-            <div class="stat-key">预计阅读</div>
-          </div>
-        </div>
-
-        <div class="action-bar">
-          <button class="btn btn-primary" id="btnPangu">中英文加空格</button>
-          <button class="btn btn-ghost" id="btnTrimLines">去除多余空行</button>
-          <button class="btn btn-ghost" id="btnHalfWidth">全角数字/字母转半角</button>
-          <button class="btn btn-ghost" id="btnCopyText">复制文本</button>
-          <button class="btn btn-ghost" id="btnClearText">清空</button>
-        </div>
+      <div class="volume-wrap">
+        <span>🔈</span>
+        <input type="range" id="volumeSlider" min="0" max="100" value="45" title="音量" />
       </div>
-    </section>
-
-    <!-- 4. 数学倒数与比例 -->
-    <section class="panel" id="panel-math">
-      <div class="grid-2">
-        <div class="card">
-          <div class="card-title">数学倒数 (1/x) & 常用换算</div>
-          <div class="field">
-            <label for="mathInputX">输入数值 x</label>
-            <input type="number" id="mathInputX" step="any" value="4" placeholder="输入任意非零数字" />
-          </div>
-          <div class="math-grid" id="mathResults"></div>
-        </div>
-
-        <div class="card">
-          <div class="card-title">百分比 / 比例缩放</div>
-          <div class="form-row">
-            <div class="field">
-              <label for="ratioBase">原数值 A</label>
-              <input type="number" id="ratioBase" step="any" value="100" />
-            </div>
-            <div class="field">
-              <label for="ratioTarget">新数值 B</label>
-              <input type="number" id="ratioTarget" step="any" value="125" />
-            </div>
-          </div>
-          <div class="result-box" id="ratioResult">-</div>
-        </div>
-      </div>
-    </section>
+    </div>
   </div>
 
   <script>
-    // ---------- 主题切换 ----------
-    const root = document.documentElement;
-    const themeToggle = document.getElementById('themeToggle');
-    const themeIcon = document.getElementById('themeIcon');
-    const themeText = document.getElementById('themeText');
+    // ---------- 1. 主题切换 ----------
+    const html = document.documentElement;
+    const themeDots = document.querySelectorAll('.theme-dot');
 
-    function applyTheme(theme) {
-      root.setAttribute('data-theme', theme);
-      localStorage.setItem('halo_tool_theme', theme);
-      if (theme === 'dark') {
-        themeIcon.textContent = '☀️';
-        themeText.textContent = '浅色模式';
-      } else {
-        themeIcon.textContent = '🌙';
-        themeText.textContent = '深色模式';
-      }
+    function setTheme(theme) {
+      html.setAttribute('data-theme', theme);
+      localStorage.setItem('cecp_focus_theme', theme);
+      themeDots.forEach(d => d.classList.toggle('active', d.dataset.themePick === theme));
     }
 
-    const savedTheme = localStorage.getItem('halo_tool_theme');
-    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    applyTheme(savedTheme || (prefersDark ? 'dark' : 'light'));
+    setTheme(localStorage.getItem('cecp_focus_theme') || 'ocean');
+    themeDots.forEach(dot => dot.addEventListener('click', () => setTheme(dot.dataset.themePick)));
 
-    themeToggle.addEventListener('click', () => {
-      const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-      applyTheme(next);
-    });
-
-    // ---------- Tab 切换 ----------
-    const tabBtns = document.querySelectorAll('.tab-btn');
-    const panels = document.querySelectorAll('.panel');
-    tabBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        tabBtns.forEach(b => b.classList.remove('active'));
-        panels.forEach(p => p.classList.remove('active'));
-        btn.classList.add('active');
-        document.getElementById('panel-' + btn.dataset.tab).classList.add('active');
+    // ---------- 2. 顶部视图切换 ----------
+    const navPills = document.querySelectorAll('.nav-pill');
+    const views = document.querySelectorAll('.view');
+    navPills.forEach(pill => {
+      pill.addEventListener('click', () => {
+        navPills.forEach(p => p.classList.remove('active'));
+        views.forEach(v => v.classList.remove('active'));
+        pill.classList.add('active');
+        document.getElementById('view-' + pill.dataset.view).classList.add('active');
+        if (pill.dataset.view === 'progress') renderTimeProgress();
       });
     });
 
-    // ---------- 工具 1：倒数日 & 日期计算 ----------
-    const STORAGE_KEY = 'halo_tool_countdowns_v1';
-    const todayStr = () => {
-      const d = new Date();
-      const y = d.getFullYear();
-      const m = String(d.getMonth() + 1).padStart(2, '0');
-      const day = String(d.getDate()).padStart(2, '0');
-      return `${y}-${m}-${day}`;
-    };
-
-    function parseLocalDate(str) {
-      const [y, m, d] = str.split('-').map(Number);
-      return new Date(y, m - 1, d);
-    }
-
-    function getDefaultCountdowns() {
-      const now = new Date();
-      const nextYear = now.getFullYear() + 1;
-      const fridayOffset = (5 - now.getDay() + 7) % 7 || 7;
-      const nextFri = new Date(now.getFullYear(), now.getMonth(), now.getDate() + fridayOffset);
-      const friStr = `${nextFri.getFullYear()}-${String(nextFri.getMonth() + 1).padStart(2, '0')}-${String(nextFri.getDate()).padStart(2, '0')}`;
-      return [
-        { id: '1', title: '本周五', date: friStr, tag: '日常' },
-        { id: '2', title: `${nextYear} 年元旦`, date: `${nextYear}-01-01`, tag: '节日' }
-      ];
-    }
-
-    let countdowns = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null') || getDefaultCountdowns();
-
-    function saveCountdowns() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(countdowns));
-    }
-
-    function renderCountdowns() {
-      const list = document.getElementById('countdownList');
-      if (!countdowns.length) {
-        list.innerHTML = '<div class="empty-tip">还没有倒数日，在上方添加一个吧</div>';
-        return;
+    // 全屏切换
+    document.getElementById('fullscreenBtn').addEventListener('click', () => {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen?.();
+      } else {
+        document.exitFullscreen?.();
       }
-
-      const today = parseLocalDate(todayStr());
-      const weekdays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
-
-      const sorted = [...countdowns].sort((a, b) => a.date.localeCompare(b.date));
-      list.innerHTML = sorted.map(item => {
-        const target = parseLocalDate(item.date);
-        const diffDays = Math.round((target - today) / 86400000);
-        let numClass = '';
-        let statusText = '';
-        let displayNum = Math.abs(diffDays);
-
-        if (diffDays > 0) {
-          statusText = '天后';
-        } else if (diffDays === 0) {
-          numClass = 'today';
-          displayNum = '今天';
-          statusText = '就是今天';
-        } else {
-          numClass = 'past';
-          statusText = '天前（已过）';
-        }
-
-        return `
-          <div class="countdown-item">
-            <div class="countdown-meta">
-              <h3>
-                <span>${escapeHtml(item.title)}</span>
-                <span class="badge">${escapeHtml(item.tag)}</span>
-              </h3>
-              <p>${item.date} · ${weekdays[target.getDay()]}</p>
-            </div>
-            <div class="countdown-days">
-              <div>
-                <div class="days-num ${numClass}">${displayNum}</div>
-                <div class="days-label">${statusText}</div>
-              </div>
-              <button class="btn-danger-sm" onclick="deleteCountdown('${item.id}')" title="删除">✕</button>
-            </div>
-          </div>
-        `;
-      }).join('');
-    }
-
-    window.deleteCountdown = function(id) {
-      countdowns = countdowns.filter(c => c.id !== id);
-      saveCountdowns();
-      renderCountdowns();
-    };
-
-    document.getElementById('addCountdownForm').addEventListener('submit', e => {
-      e.preventDefault();
-      const title = document.getElementById('cdTitle').value.trim();
-      const date = document.getElementById('cdDate').value;
-      const tag = document.getElementById('cdTag').value;
-      if (!title || !date) return;
-      countdowns.push({ id: String(Date.now()), title, date, tag });
-      saveCountdowns();
-      renderCountdowns();
-      document.getElementById('cdTitle').value = '';
     });
 
-    function escapeHtml(str) {
-      return str.replace(/[&<>"']/g, s => ({
-        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-      }[s]));
-    }
+    // ---------- 3. 专注任务记忆 ----------
+    const taskInput = document.getElementById('taskInput');
+    const taskCheck = document.getElementById('taskCheck');
+    taskInput.value = localStorage.getItem('cecp_focus_task') || '';
+    taskInput.addEventListener('input', () => localStorage.setItem('cecp_focus_task', taskInput.value));
+    taskCheck.addEventListener('change', () => taskInput.classList.toggle('done', taskCheck.checked));
 
-    // 日期差计算
-    const diffStart = document.getElementById('diffStart');
-    const diffEnd = document.getElementById('diffEnd');
-    const diffResult = document.getElementById('diffResult');
-    diffStart.value = todayStr();
-    const weekLater = new Date();
-    weekLater.setDate(weekLater.getDate() + 14);
-    diffEnd.value = `${weekLater.getFullYear()}-${String(weekLater.getMonth() + 1).padStart(2, '0')}-${String(weekLater.getDate()).padStart(2, '0')}`;
-
-    function calcDateDiff() {
-      if (!diffStart.value || !diffEnd.value) return;
-      const d1 = parseLocalDate(diffStart.value);
-      const d2 = parseLocalDate(diffEnd.value);
-      const totalDays = Math.round((d2 - d1) / 86400000);
-      const absDays = Math.abs(totalDays);
-
-      // 计算工作日
-      const start = d1 <= d2 ? new Date(d1) : new Date(d2);
-      const end = d1 <= d2 ? new Date(d2) : new Date(d1);
-      let workdays = 0;
-      const cur = new Date(start);
-      while (cur < end) {
-        const day = cur.getDay();
-        if (day !== 0 && day !== 6) workdays++;
-        cur.setDate(cur.getDate() + 1);
-      }
-
-      const weeks = Math.floor(absDays / 7);
-      const rem = absDays % 7;
-      diffResult.innerHTML = `
-        <span>相差 <span class="result-highlight">${absDays}</span> 天</span>
-        <span>约 ${weeks} 周 ${rem} 天</span>
-        <span>工作日 <strong>${workdays}</strong> 天</span>
-      `;
-    }
-
-    diffStart.addEventListener('change', calcDateDiff);
-    diffEnd.addEventListener('change', calcDateDiff);
-
-    // 日期推算
-    const offsetBase = document.getElementById('offsetBase');
-    const offsetDays = document.getElementById('offsetDays');
-    const offsetResult = document.getElementById('offsetResult');
-    offsetBase.value = todayStr();
-
-    function calcDateOffset() {
-      if (!offsetBase.value) return;
-      const days = parseInt(offsetDays.value, 10) || 0;
-      const d = parseLocalDate(offsetBase.value);
-      d.setDate(d.getDate() + days);
-      const weekdays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
-      const resStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-      offsetResult.innerHTML = `
-        <span>目标日期：<span class="result-highlight">${resStr}</span></span>
-        <span>${weekdays[d.getDay()]}</span>
-      `;
-    }
-
-    offsetBase.addEventListener('change', calcDateOffset);
-    offsetDays.addEventListener('input', calcDateOffset);
-
-    renderCountdowns();
-    calcDateDiff();
-    calcDateOffset();
-
-    // ---------- 工具 2：专注计时器 ----------
+    // ---------- 4. 专注倒计时 ----------
+    const COUNT_KEY = 'cecp_focus_completed_v1';
+    const completedCountEl = document.getElementById('completedCount');
     const timerDisplay = document.getElementById('timerDisplay');
     const timerModeLabel = document.getElementById('timerModeLabel');
     const timerStatus = document.getElementById('timerStatus');
     const timerRing = document.getElementById('timerRing');
     const timerStartBtn = document.getElementById('timerStartBtn');
     const timerResetBtn = document.getElementById('timerResetBtn');
-    const modePills = document.querySelectorAll('.mode-pill[data-minutes]');
+    const modeChips = document.querySelectorAll('.mode-chip[data-minutes]');
     const customModeBtn = document.getElementById('customModeBtn');
-    const customMinutesRow = document.getElementById('customMinutesRow');
+    const customRow = document.getElementById('customRow');
 
-    const CIRCUMFERENCE = 2 * Math.PI * 95;
+    const CIRCUMFERENCE = 2 * Math.PI * 104;
     timerRing.style.strokeDasharray = CIRCUMFERENCE;
 
     let totalSeconds = 25 * 60;
@@ -995,31 +747,57 @@
     let timerInterval = null;
     let isRunning = false;
 
+    function getTodayKey() {
+      const d = new Date();
+      return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+    }
+
+    function loadCount() {
+      try {
+        const d = JSON.parse(localStorage.getItem(COUNT_KEY) || '{}');
+        return d.date === getTodayKey() ? (d.count || 0) : 0;
+      } catch { return 0; }
+    }
+
+    function addCount() {
+      const next = loadCount() + 1;
+      localStorage.setItem(COUNT_KEY, JSON.stringify({ date: getTodayKey(), count: next }));
+      completedCountEl.textContent = next;
+    }
+
+    completedCountEl.textContent = loadCount();
+
+    function formatTime(sec) {
+      const m = Math.floor(sec / 60);
+      const s = sec % 60;
+      return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    }
+
     function updateTimerUI() {
-      const m = Math.floor(remainingSeconds / 60);
-      const s = remainingSeconds % 60;
-      timerDisplay.textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-      const progress = totalSeconds > 0 ? remainingSeconds / totalSeconds : 0;
-      timerRing.style.strokeDashoffset = CIRCUMFERENCE * (1 - progress);
+      const str = formatTime(remainingSeconds);
+      timerDisplay.textContent = str;
+      document.title = isRunning ? `${str} · 专注中` : '静谧专注空间';
+      const ratio = totalSeconds > 0 ? remainingSeconds / totalSeconds : 0;
+      timerRing.style.strokeDashoffset = CIRCUMFERENCE * (1 - ratio);
     }
 
     function playChime() {
       try {
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        [523.25, 659.25, 783.99].forEach((freq, idx) => {
+        [523.25, 659.25, 783.99, 1046.5].forEach((freq, i) => {
           const osc = ctx.createOscillator();
           const gain = ctx.createGain();
           osc.type = 'sine';
           osc.frequency.value = freq;
-          gain.gain.setValueAtTime(0.001, ctx.currentTime + idx * 0.16);
-          gain.gain.exponentialRampToValueAtTime(0.18, ctx.currentTime + idx * 0.16 + 0.04);
-          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + idx * 0.16 + 0.55);
+          gain.gain.setValueAtTime(0.001, ctx.currentTime + i * 0.14);
+          gain.gain.exponentialRampToValueAtTime(0.15, ctx.currentTime + i * 0.14 + 0.04);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.14 + 0.6);
           osc.connect(gain);
           gain.connect(ctx.destination);
-          osc.start(ctx.currentTime + idx * 0.16);
-          osc.stop(ctx.currentTime + idx * 0.16 + 0.6);
+          osc.start(ctx.currentTime + i * 0.14);
+          osc.stop(ctx.currentTime + i * 0.14 + 0.65);
         });
-      } catch (e) {}
+      } catch {}
     }
 
     function stopTimer() {
@@ -1029,7 +807,7 @@
       timerStartBtn.textContent = '开始';
     }
 
-    function setTimerMinutes(mins, label) {
+    function setMinutes(mins, label) {
       stopTimer();
       totalSeconds = mins * 60;
       remainingSeconds = totalSeconds;
@@ -1038,24 +816,24 @@
       updateTimerUI();
     }
 
-    modePills.forEach(pill => {
-      pill.addEventListener('click', () => {
-        document.querySelectorAll('.mode-pill').forEach(p => p.classList.remove('active'));
-        pill.classList.add('active');
-        customMinutesRow.style.display = 'none';
-        setTimerMinutes(Number(pill.dataset.minutes), pill.dataset.label);
+    modeChips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        document.querySelectorAll('.mode-chip').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        customRow.classList.remove('show');
+        setMinutes(Number(chip.dataset.minutes), chip.dataset.label);
       });
     });
 
     customModeBtn.addEventListener('click', () => {
-      document.querySelectorAll('.mode-pill').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.mode-chip').forEach(c => c.classList.remove('active'));
       customModeBtn.classList.add('active');
-      customMinutesRow.style.display = 'flex';
+      customRow.classList.add('show');
     });
 
-    document.getElementById('applyCustomMinutes').addEventListener('click', () => {
-      const m = Math.max(1, Math.min(180, Number(document.getElementById('customMinutesInput').value) || 25));
-      setTimerMinutes(m, `自定义 ${m} 分钟`);
+    document.getElementById('applyCustomBtn').addEventListener('click', () => {
+      const m = Math.max(1, Math.min(180, Number(document.getElementById('customInput').value) || 25));
+      setMinutes(m, `自定义 ${m} 分钟`);
     });
 
     timerStartBtn.addEventListener('click', () => {
@@ -1063,19 +841,23 @@
         stopTimer();
         timerStatus.textContent = '已暂停';
         timerStartBtn.textContent = '继续';
+        updateTimerUI();
         return;
       }
       if (remainingSeconds <= 0) remainingSeconds = totalSeconds;
       isRunning = true;
       timerStartBtn.textContent = '暂停';
-      timerStatus.textContent = '计时中...';
+      timerStatus.textContent = '专注中...';
+      updateTimerUI();
       timerInterval = setInterval(() => {
         remainingSeconds--;
         updateTimerUI();
         if (remainingSeconds <= 0) {
           stopTimer();
           timerStatus.textContent = '已完成！';
+          addCount();
           playChime();
+          updateTimerUI();
         }
       }, 1000);
     });
@@ -1087,123 +869,215 @@
       updateTimerUI();
     });
 
-    document.getElementById('timerSoundTest').addEventListener('click', playChime);
     updateTimerUI();
 
-    // ---------- 工具 3：字数统计 & 排版清理 ----------
-    const textInput = document.getElementById('textInput');
+    // ---------- 5. 4-7-8 呼吸引导 ----------
+    const breathOrb = document.getElementById('breathOrb');
+    const breathPhase = document.getElementById('breathPhase');
+    const breathSec = document.getElementById('breathSec');
+    const breathToggleBtn = document.getElementById('breathToggleBtn');
 
-    function updateTextStats() {
-      const val = textInput.value;
-      const chars = val.length;
-      const noSpace = val.replace(/\s/g, '').length;
-      const cn = (val.match(/[\u4e00-\u9fa5]/g) || []).length;
-      const enWords = (val.replace(/[\u4e00-\u9fa5]/g, ' ').match(/[A-Za-z0-9_'-]+/g) || []).length;
-      const lines = val ? val.split(/\r\n|\r|\n/).length : 0;
-      const readMin = Math.max(val.trim() ? 1 : 0, Math.ceil((cn + enWords) / 350));
+    let breathTimer = null;
+    let breathing = false;
+    const steps = [
+      { label: '深吸气...', secs: 4, scale: 1.65, transition: '4s ease-out' },
+      { label: '屏住呼吸', secs: 7, scale: 1.65, transition: '0.3s linear' },
+      { label: '缓缓呼气...', secs: 8, scale: 1.0, transition: '8s ease-in-out' }
+    ];
 
-      document.getElementById('statChars').textContent = chars;
-      document.getElementById('statNoSpace').textContent = noSpace;
-      document.getElementById('statCn').textContent = cn;
-      document.getElementById('statWords').textContent = enWords;
-      document.getElementById('statLines').textContent = lines;
-      document.getElementById('statRead').textContent = `${readMin}m`;
-    }
-
-    textInput.addEventListener('input', updateTextStats);
-
-    document.getElementById('btnPangu').addEventListener('click', () => {
-      let t = textInput.value;
-      t = t.replace(/([\u4e00-\u9fa5])([A-Za-z0-9])/g, '$1 $2');
-      t = t.replace(/([A-Za-z0-9])([\u4e00-\u9fa5])/g, '$1 $2');
-      textInput.value = t;
-      updateTextStats();
-    });
-
-    document.getElementById('btnTrimLines').addEventListener('click', () => {
-      textInput.value = textInput.value
-        .split(/\r?\n/)
-        .map(line => line.trimEnd())
-        .join('\n')
-        .replace(/\n{3,}/g, '\n\n')
-        .trim();
-      updateTextStats();
-    });
-
-    document.getElementById('btnHalfWidth').addEventListener('click', () => {
-      textInput.value = textInput.value.replace(/[\uff01-\uff5e]/g, ch =>
-        String.fromCharCode(ch.charCodeAt(0) - 0xfee0)
-      ).replace(/\u3000/g, ' ');
-      updateTextStats();
-    });
-
-    document.getElementById('btnCopyText').addEventListener('click', async () => {
-      if (!textInput.value) return;
-      try {
-        await navigator.clipboard.writeText(textInput.value);
-        const btn = document.getElementById('btnCopyText');
-        const old = btn.textContent;
-        btn.textContent = '已复制 ✓';
-        setTimeout(() => (btn.textContent = old), 1200);
-      } catch (e) {}
-    });
-
-    document.getElementById('btnClearText').addEventListener('click', () => {
-      textInput.value = '';
-      updateTextStats();
-    });
-
-    // ---------- 工具 4：数学倒数与比例 ----------
-    const mathInputX = document.getElementById('mathInputX');
-    const mathResults = document.getElementById('mathResults');
-
-    function calcMath() {
-      const x = parseFloat(mathInputX.value);
-      if (isNaN(x)) {
-        mathResults.innerHTML = '<div class="math-box"><div class="k">提示</div><div class="v">请输入有效数字</div></div>';
-        return;
+    function runBreathStep(stepIdx, leftSec) {
+      if (!breathing) return;
+      const step = steps[stepIdx];
+      if (leftSec === step.secs) {
+        breathPhase.textContent = step.label;
+        breathOrb.style.transition = `transform ${step.transition}`;
+        breathOrb.style.transform = `scale(${step.scale})`;
       }
-      const reciprocal = x === 0 ? '无定义 (不能除以 0)' : (1 / x).toPrecision(8).replace(/\.?0+$/, '');
-      const percent = (x * 100).toFixed(2).replace(/\.?0+$/, '') + '%';
-      const square = (x * x).toPrecision(8).replace(/\.?0+$/, '');
-      const sqrt = x < 0 ? '虚数' : Math.sqrt(x).toPrecision(8).replace(/\.?0+$/, '');
-
-      mathResults.innerHTML = `
-        <div class="math-box"><div class="k">倒数 (1 / x)</div><div class="v">${reciprocal}</div></div>
-        <div class="math-box"><div class="k">百分比 (x × 100%)</div><div class="v">${percent}</div></div>
-        <div class="math-box"><div class="k">平方 (x²)</div><div class="v">${square}</div></div>
-        <div class="math-box"><div class="k">平方根 (√x)</div><div class="v">${sqrt}</div></div>
-      `;
+      breathSec.textContent = `${leftSec} 秒`;
+      breathTimer = setTimeout(() => {
+        if (leftSec > 1) {
+          runBreathStep(stepIdx, leftSec - 1);
+        } else {
+          const next = (stepIdx + 1) % steps.length;
+          runBreathStep(next, steps[next].secs);
+        }
+      }, 1000);
     }
 
-    mathInputX.addEventListener('input', calcMath);
-    calcMath();
-
-    const ratioBase = document.getElementById('ratioBase');
-    const ratioTarget = document.getElementById('ratioTarget');
-    const ratioResult = document.getElementById('ratioResult');
-
-    function calcRatio() {
-      const a = parseFloat(ratioBase.value);
-      const b = parseFloat(ratioTarget.value);
-      if (isNaN(a) || isNaN(b) || a === 0) {
-        ratioResult.textContent = '请输入有效数值（原数值 A 不能为 0）';
-        return;
+    breathToggleBtn.addEventListener('click', () => {
+      if (breathing) {
+        breathing = false;
+        clearTimeout(breathTimer);
+        breathToggleBtn.textContent = '开始呼吸';
+        breathPhase.textContent = '已暂停';
+        breathSec.textContent = '点击按钮重新开始';
+        breathOrb.style.transition = 'transform 0.6s ease';
+        breathOrb.style.transform = 'scale(1)';
+      } else {
+        breathing = true;
+        breathToggleBtn.textContent = '停止';
+        runBreathStep(0, steps[0].secs);
       }
-      const diff = b - a;
-      const pct = ((diff / a) * 100).toFixed(2);
-      const mult = (b / a).toFixed(4).replace(/\.?0+$/, '');
-      const sign = diff > 0 ? '+' : '';
-      ratioResult.innerHTML = `
-        <span>变化率：<span class="result-highlight">${sign}${pct}%</span></span>
-        <span>差值：<strong>${sign}${diff}</strong></span>
-        <span>倍数：<strong>${mult}×</strong></span>
-      `;
+    });
+
+    // ---------- 6. 时间可视化进度 ----------
+    function renderTimeProgress() {
+      const now = new Date();
+      const year = now.getFullYear();
+
+      const startOfYear = new Date(year, 0, 1);
+      const endOfYear = new Date(year + 1, 0, 1);
+      const yearPct = ((now - startOfYear) / (endOfYear - startOfYear)) * 100;
+      const daysLeftYear = Math.ceil((endOfYear - now) / 86400000);
+
+      const startOfMonth = new Date(year, now.getMonth(), 1);
+      const endOfMonth = new Date(year, now.getMonth() + 1, 1);
+      const monthPct = ((now - startOfMonth) / (endOfMonth - startOfMonth)) * 100;
+      const daysLeftMonth = Math.ceil((endOfMonth - now) / 86400000);
+
+      const dayOfWeek = (now.getDay() + 6) % 7; // 周一=0
+      const startOfWeek = new Date(year, now.getMonth(), now.getDate() - dayOfWeek);
+      const weekPct = ((now - startOfWeek) / (7 * 86400000)) * 100;
+
+      const startOfDay = new Date(year, now.getMonth(), now.getDate());
+      const dayPct = ((now - startOfDay) / 86400000) * 100;
+
+      const items = [
+        { title: `${year} 年已过`, pct: yearPct, sub: `距离年底还剩 ${daysLeftYear} 天` },
+        { title: `本月 (${now.getMonth() + 1}月) 已过`, pct: monthPct, sub: `距离月末还剩 ${daysLeftMonth} 天` },
+        { title: '本周已过', pct: weekPct, sub: '周一至周日进度' },
+        { title: '今日已过', pct: dayPct, sub: `当前 ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}` }
+      ];
+
+      document.getElementById('progressList').innerHTML = items.map(it => `
+        <div class="prog-item">
+          <div class="prog-top">
+            <span class="prog-title">${it.title}</span>
+            <span class="prog-pct">${it.pct.toFixed(1)}%</span>
+          </div>
+          <div class="prog-track">
+            <div class="prog-fill" style="width: ${Math.min(100, it.pct).toFixed(2)}%;"></div>
+          </div>
+          <div class="prog-sub">${it.sub}</div>
+        </div>
+      `).join('');
     }
 
-    ratioBase.addEventListener('input', calcRatio);
-    ratioTarget.addEventListener('input', calcRatio);
-    calcRatio();
+    // ---------- 7. 纯代码合成白噪音 (Web Audio API) ----------
+    let audioCtx = null;
+    let masterGain = null;
+    let currentSource = null;
+    let currentLfo = null;
+    let activeSound = null;
+
+    const soundChips = document.querySelectorAll('.sound-chip');
+    const volumeSlider = document.getElementById('volumeSlider');
+
+    function stopAmbientSound() {
+      if (currentSource) {
+        try { currentSource.stop(); } catch {}
+        currentSource.disconnect();
+        currentSource = null;
+      }
+      if (currentLfo) {
+        try { currentLfo.stop(); } catch {}
+        currentLfo.disconnect();
+        currentLfo = null;
+      }
+      activeSound = null;
+      soundChips.forEach(c => c.classList.remove('active'));
+    }
+
+    function startAmbientSound(type) {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        masterGain = audioCtx.createGain();
+        masterGain.gain.value = (volumeSlider.value / 100) * 0.35;
+        masterGain.connect(audioCtx.destination);
+      }
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+
+      stopAmbientSound();
+
+      // 生成 3 秒无缝噪音缓冲
+      const bufferSize = audioCtx.sampleRate * 3;
+      const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+      const data = buffer.getChannelData(0);
+
+      let lastOut = 0;
+      for (let i = 0; i < bufferSize; i++) {
+        const white = Math.random() * 2 - 1;
+        if (type === 'rain') {
+          // 粉红/柔化白噪
+          data[i] = (lastOut + 0.08 * white) / 1.08;
+          lastOut = data[i];
+        } else {
+          // 布朗噪音（更低沉，适合海浪/暖噪）
+          data[i] = (lastOut + 0.02 * white) / 1.02;
+          lastOut = data[i];
+          data[i] *= 2.4;
+        }
+      }
+
+      const noise = audioCtx.createBufferSource();
+      noise.buffer = buffer;
+      noise.loop = true;
+
+      const filter = audioCtx.createBiquadFilter();
+      if (type === 'rain') {
+        filter.type = 'bandpass';
+        filter.frequency.value = 1100;
+        filter.Q.value = 0.6;
+        noise.connect(filter);
+        filter.connect(masterGain);
+      } else if (type === 'wave') {
+        filter.type = 'lowpass';
+        filter.frequency.value = 420;
+        const waveGain = audioCtx.createGain();
+        waveGain.gain.value = 0.65;
+
+        // 用低频振荡器模拟海浪起伏
+        const lfo = audioCtx.createOscillator();
+        const lfoGain = audioCtx.createGain();
+        lfo.frequency.value = 0.12; // ~8秒一个浪潮
+        lfoGain.gain.value = 0.35;
+        lfo.connect(lfoGain);
+        lfoGain.connect(waveGain.gain);
+        lfo.start();
+        currentLfo = lfo;
+
+        noise.connect(filter);
+        filter.connect(waveGain);
+        waveGain.connect(masterGain);
+      } else {
+        // 暖噪 / 炉火感
+        filter.type = 'lowpass';
+        filter.frequency.value = 260;
+        noise.connect(filter);
+        filter.connect(masterGain);
+      }
+
+      noise.start();
+      currentSource = noise;
+      activeSound = type;
+      soundChips.forEach(c => c.classList.toggle('active', c.dataset.sound === type));
+    }
+
+    soundChips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        if (activeSound === chip.dataset.sound) {
+          stopAmbientSound();
+        } else {
+          startAmbientSound(chip.dataset.sound);
+        }
+      });
+    });
+
+    volumeSlider.addEventListener('input', () => {
+      if (masterGain && audioCtx) {
+        masterGain.gain.setTargetAtTime((volumeSlider.value / 100) * 0.35, audioCtx.currentTime, 0.05);
+      }
+    });
   </script>
 </body>
 </html>
