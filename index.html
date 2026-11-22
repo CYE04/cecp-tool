@@ -605,7 +605,7 @@
           const yearPct = Math.round((todayIdx / totalDays) * 100);
           const weekNum = getISOWeek(now);
 
-          document.getElementById('cecpMatrixTitle').textContent = `Week #${weekNum}  ${year}`;
+          document.getElementById('cecpMatrixTitle').textContent = `${year} 年 · 第 ${weekNum} 周`;
           document.getElementById('cecpMatrixMeta').textContent = `${todayIdx}/${totalDays} 天 (${yearPct}%)`;
 
           const dots = [];

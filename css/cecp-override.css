@@ -47,7 +47,11 @@ html, body {
 /* 隐藏原 Easy Cat Timer 的 Logo 和外链导航栏，保留 100% 原版计时器居中 */
 #logo,
 #navigationBar,
-#topMenu {
+#topMenu,
+#settingUi .version,
+#settingUi .githubButton,
+#settingUi .staffButton,
+#settingUi .staffPanel {
   display: none !important;
 }
 
