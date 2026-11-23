@@ -104,24 +104,31 @@
   }
 
   const catBtns = document.querySelectorAll('.cecp-cat-btn');
+  const subBar = document.getElementById('cecpSubBar');
   const switchBtns = document.querySelectorAll('.cecp-switch-btn');
+  const hubBackBtn = document.getElementById('cecpHubBackBtn');
+  const hubCards = document.querySelectorAll('.cecp-hub-card[data-cecp-jump]');
   const mainEl = document.getElementById('main');
   const panels = {
+    hub: document.getElementById('cecpHubPanel'),
     flip: document.getElementById('cecpFlipPanel'),
     year: document.getElementById('cecpYearPanel'),
     stage: document.getElementById('cecpStagePanel'),
     sound: document.getElementById('cecpSoundPanel'),
+    test: document.getElementById('cecpTestPanel'),
     wheel: document.getElementById('cecpWheelPanel'),
     draw: document.getElementById('cecpDrawPanel'),
     score: document.getElementById('cecpScorePanel')
   };
 
   const TAB_TO_CAT = {
+    hub: 'hub',
     timer: 'time',
     flip: 'time',
     year: 'time',
     stage: 'event',
     sound: 'event',
+    test: 'event',
     wheel: 'game',
     draw: 'game',
     score: 'game'
@@ -131,6 +138,7 @@
   let onSwitchCallbacks = {};
   let onLeaveCallbacks = {};
   let currentActiveTab = 'timer';
+  let lastNonHubTab = 'timer';
   let pureEnteredFullscreen = false;
   const pureExitBtn = document.getElementById('cecpPureExitBtn');
 
@@ -164,10 +172,21 @@
     pureExitBtn.addEventListener('click', exitPureMode);
   }
 
+  function updateHubHighlight() {
+    hubCards.forEach(function (card) {
+      card.classList.toggle('is-current', card.dataset.cecpJump === lastNonHubTab);
+    });
+  }
+
   function showCategoryBar(cat) {
     catBtns.forEach(function (c) {
       c.classList.toggle('active', c.dataset.cecpCat === cat);
     });
+    if (subBar) {
+      subBar.dataset.activeCat = cat;
+      subBar.classList.toggle('hub-hidden', cat === 'hub');
+    }
+    document.body.classList.toggle('cecp-hub-open', cat === 'hub');
     switchBtns.forEach(function (b) {
       b.classList.toggle('group-hidden', b.dataset.cecpGroup !== cat);
     });
@@ -183,7 +202,12 @@
     currentActiveTab = tab;
 
     const cat = TAB_TO_CAT[tab] || 'time';
-    lastTabByCat[cat] = tab;
+    if (tab !== 'hub') {
+      lastNonHubTab = tab;
+      lastTabByCat[cat] = tab;
+    } else {
+      updateHubHighlight();
+    }
     showCategoryBar(cat);
 
     switchBtns.forEach(function (b) {
@@ -203,6 +227,14 @@
   catBtns.forEach(function (btn) {
     btn.addEventListener('click', function () {
       const cat = btn.dataset.cecpCat;
+      if (cat === 'hub') {
+        if (currentActiveTab === 'hub') {
+          switchTab(lastNonHubTab || 'timer');
+        } else {
+          switchTab('hub');
+        }
+        return;
+      }
       const targetTab = lastTabByCat[cat] || 'timer';
       switchTab(targetTab);
     });
@@ -211,6 +243,19 @@
   switchBtns.forEach(function (btn) {
     btn.addEventListener('click', function () {
       switchTab(btn.dataset.cecpTab);
+    });
+  });
+
+  if (hubBackBtn) {
+    hubBackBtn.addEventListener('click', function () {
+      switchTab(lastNonHubTab || 'timer');
+    });
+  }
+
+  hubCards.forEach(function (card) {
+    card.addEventListener('click', function () {
+      const target = card.dataset.cecpJump;
+      if (target) switchTab(target);
     });
   });
 
@@ -2207,6 +2252,609 @@
     } else if (e.key === '0') {
       e.preventDefault();
       stopAllSfx(false);
+    }
+  });
+
+  // ---------- 9. 音控快速试音台 (L/R 声道 / 粉噪 / 相位 / 频点检测) ----------
+  const testVolSlider = document.getElementById('cecpTestVol');
+  const testVolVal = document.getElementById('cecpTestVolVal');
+  const testStopBtn = document.getElementById('cecpTestStopBtn');
+  const testReadout = document.getElementById('cecpTestReadout');
+  const testStatusBadge = document.getElementById('cecpTestStatusBadge');
+  const vuTagL = document.getElementById('cecpVuTagL');
+  const vuTagR = document.getElementById('cecpVuTagR');
+  const vuBarL = document.getElementById('cecpVuL');
+  const vuBarR = document.getElementById('cecpVuR');
+  const testChBtns = document.querySelectorAll('#cecpTestChSeg .cecp-sub-btn[data-ch]');
+  const testPulseLBtn = document.getElementById('cecpTestPulseL');
+  const testPulseRBtn = document.getElementById('cecpTestPulseR');
+  const testPatrolBtn = document.getElementById('cecpTestPatrolBtn');
+  const testPhaseBtn = document.getElementById('cecpTestPhaseBtn');
+  const testRefBtns = document.querySelectorAll('#cecpTestRefGrid .cecp-test-pad[data-sig]');
+  const testFreqBtns = document.querySelectorAll('#cecpTestFreqGrid .cecp-test-freq-btn[data-freq]');
+  const testFreqSlider = document.getElementById('cecpTestFreqSlider');
+  const testSliderReadout = document.getElementById('cecpTestSliderReadout');
+  const testCustomPlayBtn = document.getElementById('cecpTestCustomPlayBtn');
+
+  let testVolPct = 35;
+  let testChannel = 'LR';
+  let testInverted = false;
+  let testActiveMode = null;
+
+  let testBusReady = false;
+  let testGainL = null;
+  let testGainR = null;
+  let testMerger = null;
+  let testMasterGain = null;
+  let testSplitter = null;
+  let testAnalyserL = null;
+  let testAnalyserR = null;
+  let testDataL = null;
+  let testDataR = null;
+
+  let activeTestVoice = null;
+  let testSweepRaf = null;
+  let testVuRaf = null;
+  let testPatrolTimer = null;
+  let testCleanupTimer = null;
+
+  function sliderToTestFreq(val) {
+    const ratio = Math.max(0, Math.min(1, (parseFloat(val) || 0) / 1000));
+    return Math.round(20 * Math.pow(800, ratio));
+  }
+
+  function freqToTestSlider(hz) {
+    const clamped = Math.max(20, Math.min(16000, hz));
+    return Math.round((Math.log(clamped / 20) / Math.log(800)) * 1000);
+  }
+
+  function pctToTestLinear(pct) {
+    if (pct <= 0) return 0;
+    return Math.pow(pct / 100, 1.8) * 0.65;
+  }
+
+  function formatTestVolLabel(pct) {
+    if (pct <= 0) return '0% 静音';
+    const db = Math.round(20 * Math.log10(pctToTestLinear(pct)));
+    return pct + '% (' + db + 'dB)';
+  }
+
+  function formatChannelText(ch) {
+    if (ch === 'L') return '仅 L 左声道';
+    if (ch === 'R') return '仅 R 右声道';
+    return 'L+R 双声道';
+  }
+
+  function updateTestStatusUi(titleText, isActive, overrideCh) {
+    const chLabel = formatChannelText(overrideCh || testChannel);
+    const phaseLabel = testInverted ? 'R 反相' : '正常相位';
+    if (testReadout) {
+      testReadout.textContent = titleText || '待机静音';
+      testReadout.classList.toggle('active', !!isActive);
+    }
+    if (testStatusBadge) {
+      testStatusBadge.classList.toggle('active', !!isActive);
+      testStatusBadge.textContent = (isActive ? '输出中' : '就绪') +
+        ' · 电平 ' + testVolPct + '% · ' + chLabel + ' · ' + phaseLabel;
+    }
+  }
+
+  function renderTestVu(lPct, rPct) {
+    if (vuBarL) vuBarL.style.width = Math.max(0, Math.min(100, lPct)).toFixed(1) + '%';
+    if (vuBarR) vuBarR.style.width = Math.max(0, Math.min(100, rPct)).toFixed(1) + '%';
+  }
+
+  function stopTestVuLoop() {
+    if (testVuRaf) {
+      cancelAnimationFrame(testVuRaf);
+      testVuRaf = null;
+    }
+    renderTestVu(0, 0);
+  }
+
+  function computeTestRms(analyser, buf) {
+    if (!analyser || !buf) return 0;
+    analyser.getByteTimeDomainData(buf);
+    let sumSq = 0;
+    for (let i = 0; i < buf.length; i++) {
+      const sample = (buf[i] - 128) / 128;
+      sumSq += sample * sample;
+    }
+    return Math.sqrt(sumSq / buf.length);
+  }
+
+  function startTestVuLoop() {
+    stopTestVuLoop();
+    function tick() {
+      if (!testActiveMode || !testBusReady) {
+        renderTestVu(0, 0);
+        testVuRaf = null;
+        return;
+      }
+      const rmsL = computeTestRms(testAnalyserL, testDataL);
+      const rmsR = computeTestRms(testAnalyserR, testDataR);
+      const scaleDb = function (rms) {
+        if (rms < 0.002) return 0;
+        const db = 20 * Math.log10(rms);
+        return Math.max(4, Math.min(100, ((db + 52) / 52) * 100));
+      };
+      renderTestVu(scaleDb(rmsL), scaleDb(rmsR));
+      testVuRaf = requestAnimationFrame(tick);
+    }
+    testVuRaf = requestAnimationFrame(tick);
+  }
+
+  function applyTestChannelGains(immediate, overrideCh) {
+    const ch = overrideCh || testChannel;
+    const lVal = (ch === 'L' || ch === 'LR') ? 1 : 0;
+    const rMag = (ch === 'R' || ch === 'LR') ? 1 : 0;
+    const rVal = testInverted ? -rMag : rMag;
+
+    if (vuTagL) vuTagL.classList.toggle('active', lVal !== 0);
+    if (vuTagR) vuTagR.classList.toggle('active', rMag !== 0);
+
+    if (testBusReady && sharedAudioCtx && testGainL && testGainR) {
+      const now = sharedAudioCtx.currentTime;
+      if (immediate) {
+        testGainL.gain.setValueAtTime(lVal, now);
+        testGainR.gain.setValueAtTime(rVal, now);
+      } else {
+        testGainL.gain.setTargetAtTime(lVal, now, 0.015);
+        testGainR.gain.setTargetAtTime(rVal, now, 0.015);
+      }
+    }
+  }
+
+  function ensureTestBus() {
+    const Ctx = window.AudioContext || window.webkitAudioContext;
+    if (!Ctx) return null;
+    if (!sharedAudioCtx) sharedAudioCtx = new Ctx();
+    if (sharedAudioCtx.state === 'suspended') sharedAudioCtx.resume();
+    ensureNoiseBuffers(sharedAudioCtx);
+
+    if (!testBusReady) {
+      testGainL = sharedAudioCtx.createGain();
+      testGainR = sharedAudioCtx.createGain();
+      testMerger = sharedAudioCtx.createChannelMerger(2);
+      testMasterGain = sharedAudioCtx.createGain();
+      testMasterGain.gain.value = pctToTestLinear(testVolPct);
+
+      testGainL.connect(testMerger, 0, 0);
+      testGainR.connect(testMerger, 0, 1);
+      testMerger.connect(testMasterGain);
+      testMasterGain.connect(sharedAudioCtx.destination);
+
+      testSplitter = sharedAudioCtx.createChannelSplitter(2);
+      testAnalyserL = sharedAudioCtx.createAnalyser();
+      testAnalyserR = sharedAudioCtx.createAnalyser();
+      testAnalyserL.fftSize = 256;
+      testAnalyserR.fftSize = 256;
+      testMasterGain.connect(testSplitter);
+      testSplitter.connect(testAnalyserL, 0);
+      testSplitter.connect(testAnalyserR, 1);
+      testDataL = new Uint8Array(testAnalyserL.fftSize);
+      testDataR = new Uint8Array(testAnalyserR.fftSize);
+
+      testBusReady = true;
+      applyTestChannelGains(true);
+    }
+    return sharedAudioCtx;
+  }
+
+  function retireActiveTestVoice() {
+    if (testSweepRaf) {
+      cancelAnimationFrame(testSweepRaf);
+      testSweepRaf = null;
+    }
+    if (testPatrolTimer) {
+      clearInterval(testPatrolTimer);
+      testPatrolTimer = null;
+    }
+    if (testCleanupTimer) {
+      clearTimeout(testCleanupTimer);
+      testCleanupTimer = null;
+    }
+    if (activeTestVoice && sharedAudioCtx) {
+      const voice = activeTestVoice;
+      activeTestVoice = null;
+      const now = sharedAudioCtx.currentTime;
+      try {
+        voice.gain.gain.cancelScheduledValues(now);
+        voice.gain.gain.setValueAtTime(voice.gain.gain.value, now);
+        voice.gain.gain.linearRampToValueAtTime(0.0001, now + 0.025);
+        voice.sources.forEach(function (src) {
+          try { src.stop(now + 0.035); } catch (e) {}
+        });
+        setTimeout(function () {
+          try { voice.gain.disconnect(); } catch (e) {}
+        }, 65);
+      } catch (e) {}
+    }
+  }
+
+  function clearTestButtonHighlights() {
+    testRefBtns.forEach(function (b) { b.classList.remove('active'); });
+    testFreqBtns.forEach(function (b) { b.classList.remove('active'); });
+    if (testPatrolBtn) {
+      testPatrolBtn.classList.remove('active');
+      testPatrolBtn.textContent = '⇄ 左右交替巡检';
+    }
+    if (testPulseLBtn) testPulseLBtn.classList.remove('active');
+    if (testPulseRBtn) testPulseRBtn.classList.remove('active');
+    if (testCustomPlayBtn) {
+      testCustomPlayBtn.classList.remove('active');
+      testCustomPlayBtn.textContent = '▶ 试听频点';
+    }
+  }
+
+  function stopTestSignal(quiet) {
+    retireActiveTestVoice();
+    testActiveMode = null;
+    clearTestButtonHighlights();
+    stopTestVuLoop();
+    applyTestChannelGains(false);
+    updateTestStatusUi('待机静音', false);
+    if (!quiet) showToast('已立即静音');
+  }
+
+  function createVoiceGain(ctx, peakAmp) {
+    const g = ctx.createGain();
+    const now = ctx.currentTime;
+    g.gain.setValueAtTime(0.0001, now);
+    g.gain.linearRampToValueAtTime(peakAmp, now + 0.025);
+    g.connect(testGainL);
+    g.connect(testGainR);
+    return g;
+  }
+
+  function startTestSine(hz, modeKey, titleText, activeBtn) {
+    if (testActiveMode === modeKey) {
+      stopTestSignal(true);
+      return;
+    }
+    const ctx = ensureTestBus();
+    if (!ctx) return;
+
+    retireActiveTestVoice();
+    clearTestButtonHighlights();
+    applyTestChannelGains(false);
+
+    const osc = ctx.createOscillator();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(hz, ctx.currentTime);
+    const vGain = createVoiceGain(ctx, 0.36);
+    osc.connect(vGain);
+    osc.start();
+
+    activeTestVoice = { gain: vGain, osc: osc, sources: [osc] };
+    testActiveMode = modeKey;
+    if (activeBtn) activeBtn.classList.add('active');
+    updateTestStatusUi(titleText, true);
+    startTestVuLoop();
+  }
+
+  function startTestNoise(type) {
+    const modeKey = 'sig:' + type;
+    if (testActiveMode === modeKey) {
+      stopTestSignal(true);
+      return;
+    }
+    const ctx = ensureTestBus();
+    if (!ctx) return;
+
+    retireActiveTestVoice();
+    clearTestButtonHighlights();
+    applyTestChannelGains(false);
+
+    const src = ctx.createBufferSource();
+    src.buffer = type === 'pink' ? pinkNoiseBuf : whiteNoiseBuf;
+    src.loop = true;
+    const peak = type === 'pink' ? 0.9 : 0.24;
+    const vGain = createVoiceGain(ctx, peak);
+    src.connect(vGain);
+    src.start();
+
+    activeTestVoice = { gain: vGain, osc: null, sources: [src] };
+    testActiveMode = modeKey;
+    testRefBtns.forEach(function (b) {
+      if (b.dataset.sig === type) b.classList.add('active');
+    });
+    updateTestStatusUi(type === 'pink' ? '粉红噪音 (Pink Noise)' : '白噪音 (White Noise)', true);
+    startTestVuLoop();
+  }
+
+  function startTestSweep() {
+    const modeKey = 'sig:sweep';
+    if (testActiveMode === modeKey) {
+      stopTestSignal(true);
+      return;
+    }
+    const ctx = ensureTestBus();
+    if (!ctx) return;
+
+    retireActiveTestVoice();
+    clearTestButtonHighlights();
+    applyTestChannelGains(false);
+
+    const dur = 10.0;
+    const now = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(20, now);
+    osc.frequency.exponentialRampToValueAtTime(16000, now + dur);
+
+    const vGain = ctx.createGain();
+    vGain.gain.setValueAtTime(0.0001, now);
+    vGain.gain.linearRampToValueAtTime(0.36, now + 0.04);
+    vGain.gain.setValueAtTime(0.36, now + dur - 0.15);
+    vGain.gain.linearRampToValueAtTime(0.0001, now + dur);
+    vGain.connect(testGainL);
+    vGain.connect(testGainR);
+
+    osc.connect(vGain);
+    osc.start(now);
+    osc.stop(now + dur + 0.02);
+
+    activeTestVoice = { gain: vGain, osc: osc, sources: [osc] };
+    testActiveMode = modeKey;
+    testRefBtns.forEach(function (b) {
+      if (b.dataset.sig === 'sweep') b.classList.add('active');
+    });
+    startTestVuLoop();
+
+    const startMs = performance.now();
+    function updateSweepUi() {
+      if (testActiveMode !== 'sig:sweep') return;
+      const elapsed = Math.min(dur, (performance.now() - startMs) / 1000);
+      const curHz = Math.round(20 * Math.pow(800, elapsed / dur));
+      updateTestStatusUi('全频扫频 · ' + curHz + ' Hz', true);
+      if (elapsed < dur) {
+        testSweepRaf = requestAnimationFrame(updateSweepUi);
+      }
+    }
+    testSweepRaf = requestAnimationFrame(updateSweepUi);
+
+    testCleanupTimer = setTimeout(function () {
+      if (testActiveMode === 'sig:sweep') {
+        stopTestSignal(true);
+      }
+    }, (dur + 0.08) * 1000);
+  }
+
+  function playChannelPulse(ch) {
+    const modeKey = 'pulse:' + ch;
+    const ctx = ensureTestBus();
+    if (!ctx) return;
+
+    retireActiveTestVoice();
+    clearTestButtonHighlights();
+    applyTestChannelGains(true, ch);
+
+    const now = ctx.currentTime;
+    const vGain = ctx.createGain();
+    vGain.gain.setValueAtTime(0.0001, now);
+    vGain.gain.linearRampToValueAtTime(0.4, now + 0.02);
+    vGain.gain.setValueAtTime(0.4, now + 0.36);
+    vGain.gain.linearRampToValueAtTime(0.02, now + 0.40);
+    vGain.gain.linearRampToValueAtTime(0.42, now + 0.43);
+    vGain.gain.setValueAtTime(0.42, now + 0.85);
+    vGain.gain.linearRampToValueAtTime(0.0001, now + 0.98);
+    vGain.connect(testGainL);
+    vGain.connect(testGainR);
+
+    const osc = ctx.createOscillator();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(523.25, now);
+    osc.frequency.setValueAtTime(783.99, now + 0.41);
+    osc.connect(vGain);
+    osc.start(now);
+    osc.stop(now + 1.0);
+
+    activeTestVoice = { gain: vGain, osc: null, sources: [osc] };
+    testActiveMode = modeKey;
+    if (ch === 'L' && testPulseLBtn) testPulseLBtn.classList.add('active');
+    if (ch === 'R' && testPulseRBtn) testPulseRBtn.classList.add('active');
+    updateTestStatusUi(ch === 'L' ? '◀ 左声道点测 (L)' : '▶ 右声道点测 (R)', true, ch);
+    startTestVuLoop();
+
+    testCleanupTimer = setTimeout(function () {
+      if (testActiveMode === modeKey) {
+        stopTestSignal(true);
+      }
+    }, 1050);
+  }
+
+  function toggleTestPatrol() {
+    if (testActiveMode === 'patrol') {
+      stopTestSignal(true);
+      return;
+    }
+    const ctx = ensureTestBus();
+    if (!ctx) return;
+
+    retireActiveTestVoice();
+    clearTestButtonHighlights();
+    testActiveMode = 'patrol';
+    if (testPatrolBtn) {
+      testPatrolBtn.classList.add('active');
+      testPatrolBtn.textContent = '⏹ 停止交替巡检';
+    }
+    startTestVuLoop();
+
+    const steps = [
+      { ch: 'L', freq: 392.0, label: '巡检 · ◀ 左声道 (L)' },
+      { ch: 'R', freq: 523.25, label: '巡检 · ▶ 右声道 (R)' },
+      { ch: 'LR', freq: 659.25, label: '巡检 · ⇄ 双声道 (L+R)' }
+    ];
+    let stepIdx = 0;
+
+    function runBeat() {
+      if (testActiveMode !== 'patrol') return;
+      const s = steps[stepIdx % steps.length];
+      stepIdx++;
+      applyTestChannelGains(true, s.ch);
+      updateTestStatusUi(s.label, true, s.ch);
+
+      if (activeTestVoice) {
+        const old = activeTestVoice;
+        activeTestVoice = null;
+        try { old.gain.disconnect(); } catch (e) {}
+      }
+
+      const now = ctx.currentTime;
+      const vGain = ctx.createGain();
+      vGain.gain.setValueAtTime(0.0001, now);
+      vGain.gain.linearRampToValueAtTime(0.38, now + 0.02);
+      vGain.gain.setValueAtTime(0.38, now + 0.56);
+      vGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.78);
+      vGain.connect(testGainL);
+      vGain.connect(testGainR);
+
+      const osc = ctx.createOscillator();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(s.freq, now);
+      osc.connect(vGain);
+      osc.start(now);
+      osc.stop(now + 0.8);
+
+      activeTestVoice = { gain: vGain, osc: null, sources: [osc] };
+    }
+
+    runBeat();
+    testPatrolTimer = setInterval(runBeat, 1100);
+  }
+
+  function updateCustomSliderUi() {
+    if (!testFreqSlider || !testSliderReadout) return 1000;
+    const hz = sliderToTestFreq(testFreqSlider.value);
+    testSliderReadout.textContent = hz + ' Hz';
+    return hz;
+  }
+
+  if (testVolSlider) {
+    testVolSlider.value = String(testVolPct);
+    if (testVolVal) testVolVal.textContent = formatTestVolLabel(testVolPct);
+    testVolSlider.addEventListener('input', function () {
+      testVolPct = Math.max(0, Math.min(100, parseInt(testVolSlider.value, 10) || 0));
+      if (testVolVal) testVolVal.textContent = formatTestVolLabel(testVolPct);
+      if (testBusReady && testMasterGain && sharedAudioCtx) {
+        testMasterGain.gain.setTargetAtTime(pctToTestLinear(testVolPct), sharedAudioCtx.currentTime, 0.02);
+      }
+      if (testActiveMode && testReadout) {
+        updateTestStatusUi(testReadout.textContent, true);
+      } else {
+        updateTestStatusUi('待机静音', false);
+      }
+    });
+  }
+
+  if (testStopBtn) {
+    testStopBtn.addEventListener('click', function () {
+      stopTestSignal(false);
+    });
+  }
+
+  testChBtns.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      const ch = btn.dataset.ch;
+      if (!ch) return;
+      testChannel = ch;
+      testChBtns.forEach(function (b) {
+        b.classList.toggle('active', b.dataset.ch === ch);
+      });
+      if (testActiveMode === 'patrol' || testActiveMode === 'pulse:L' || testActiveMode === 'pulse:R') {
+        stopTestSignal(true);
+      }
+      applyTestChannelGains(false);
+      updateTestStatusUi(testActiveMode && testReadout ? testReadout.textContent : '待机静音', !!testActiveMode);
+    });
+  });
+
+  if (testPulseLBtn) {
+    testPulseLBtn.addEventListener('click', function () { playChannelPulse('L'); });
+  }
+  if (testPulseRBtn) {
+    testPulseRBtn.addEventListener('click', function () { playChannelPulse('R'); });
+  }
+  if (testPatrolBtn) {
+    testPatrolBtn.addEventListener('click', toggleTestPatrol);
+  }
+
+  if (testPhaseBtn) {
+    testPhaseBtn.addEventListener('click', function () {
+      testInverted = !testInverted;
+      testPhaseBtn.setAttribute('aria-pressed', testInverted ? 'true' : 'false');
+      testPhaseBtn.classList.toggle('cecp-btn-danger', testInverted);
+      testPhaseBtn.textContent = testInverted ? '⚡ 相位：R 已反相' : '⚡ 相位：正常';
+      applyTestChannelGains(false);
+      updateTestStatusUi(testActiveMode && testReadout ? testReadout.textContent : '待机静音', !!testActiveMode);
+      showToast(testInverted ? '已切换右声道反相（测相位抵消）' : '已恢复正常相位');
+    });
+  }
+
+  testRefBtns.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      const sig = btn.dataset.sig;
+      if (sig === 'pink' || sig === 'white') startTestNoise(sig);
+      else if (sig === 'cal1k') startTestSine(1000, 'sig:cal1k', '1,000 Hz 标准参考波', btn);
+      else if (sig === 'sweep') startTestSweep();
+    });
+  });
+
+  testFreqBtns.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      const hz = parseInt(btn.dataset.freq, 10);
+      if (!hz) return;
+      if (testFreqSlider) {
+        testFreqSlider.value = String(freqToTestSlider(hz));
+        updateCustomSliderUi();
+      }
+      startTestSine(hz, 'freq:' + hz, hz + ' Hz 单频检测', btn);
+    });
+  });
+
+  if (testFreqSlider) {
+    updateCustomSliderUi();
+    testFreqSlider.addEventListener('input', function () {
+      const hz = updateCustomSliderUi();
+      if (activeTestVoice && activeTestVoice.osc && sharedAudioCtx && testActiveMode !== 'sig:sweep') {
+        activeTestVoice.osc.frequency.setTargetAtTime(hz, sharedAudioCtx.currentTime, 0.015);
+        testFreqBtns.forEach(function (b) { b.classList.remove('active'); });
+        testActiveMode = 'custom';
+        if (testCustomPlayBtn) {
+          testCustomPlayBtn.classList.add('active');
+          testCustomPlayBtn.textContent = '⏹ 停止试听';
+        }
+        updateTestStatusUi(hz + ' Hz 自定义微调', true);
+      }
+    });
+  }
+
+  if (testCustomPlayBtn) {
+    testCustomPlayBtn.addEventListener('click', function () {
+      if (testActiveMode === 'custom') {
+        stopTestSignal(true);
+        return;
+      }
+      const hz = updateCustomSliderUi();
+      startTestSine(hz, 'custom', hz + ' Hz 自定义微调', testCustomPlayBtn);
+      if (testActiveMode === 'custom') {
+        testCustomPlayBtn.textContent = '⏹ 停止试听';
+      }
+    });
+  }
+
+  onLeaveCallbacks.test = function () {
+    stopTestSignal(true);
+  };
+
+  document.addEventListener('keydown', function (e) {
+    if (!panels.test || !panels.test.classList.contains('show')) return;
+    const tag = document.activeElement && document.activeElement.tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+    if (e.key === '0' || e.key === 'Escape') {
+      e.preventDefault();
+      stopTestSignal(false);
     }
   });
 })();

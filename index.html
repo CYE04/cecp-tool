@@ -549,23 +549,130 @@
         <!-- 顶部两层分类导航 -->
         <div class="cecp-nav-wrap">
             <div class="cecp-cat-bar" role="tablist" aria-label="功能分类">
-                <button type="button" class="cecp-cat-btn active" data-cecp-cat="time">⏱️ 时间</button>
-                <button type="button" class="cecp-cat-btn" data-cecp-cat="event">⛪ 聚会</button>
-                <button type="button" class="cecp-cat-btn" data-cecp-cat="game">🎮 游戏</button>
+                <button type="button" class="cecp-cat-btn" data-cecp-cat="hub">⊞ 全部<span class="cecp-cat-ext">工具</span></button>
+                <button type="button" class="cecp-cat-btn active" data-cecp-cat="time">⏱️ 时间<span class="cecp-cat-ext">展示</span></button>
+                <button type="button" class="cecp-cat-btn" data-cecp-cat="event">🎛️ <span class="cecp-cat-ext">聚会</span>音控</button>
+                <button type="button" class="cecp-cat-btn" data-cecp-cat="game">🎮 <span class="cecp-cat-ext">团契</span>游戏</button>
             </div>
-            <div class="cecp-sub-bar" role="tablist" aria-label="子工具">
+            <div class="cecp-sub-bar" id="cecpSubBar" data-active-cat="time" role="tablist" aria-label="子工具">
                 <button type="button" class="cecp-switch-btn active" data-cecp-group="time" data-cecp-tab="timer">🐱 小猫倒计时</button>
-                <button type="button" class="cecp-switch-btn" data-cecp-group="time" data-cecp-tab="flip">🕰️ 翻页时钟</button>
-                <button type="button" class="cecp-switch-btn" data-cecp-group="time" data-cecp-tab="year">⏳ 年度进度</button>
+                <button type="button" class="cecp-switch-btn" data-cecp-group="time" data-cecp-tab="flip">🕰️ 机械翻页钟</button>
+                <button type="button" class="cecp-switch-btn" data-cecp-group="time" data-cecp-tab="year">⏳ 年度点阵</button>
 
                 <button type="button" class="cecp-switch-btn group-hidden" data-cecp-group="event" data-cecp-tab="stage">📺 聚会大屏</button>
                 <button type="button" class="cecp-switch-btn group-hidden" data-cecp-group="event" data-cecp-tab="sound">🥁 氛围音效</button>
+                <button type="button" class="cecp-switch-btn group-hidden" data-cecp-group="event" data-cecp-tab="test">🎚️ 音控试音</button>
 
-                <button type="button" class="cecp-switch-btn group-hidden" data-cecp-group="game" data-cecp-tab="wheel">🎡 大转盘</button>
+                <button type="button" class="cecp-switch-btn group-hidden" data-cecp-group="game" data-cecp-tab="wheel">🎡 互动大转盘</button>
                 <button type="button" class="cecp-switch-btn group-hidden" data-cecp-group="game" data-cecp-tab="draw">🎲 抽签分组</button>
-                <button type="button" class="cecp-switch-btn group-hidden" data-cecp-group="game" data-cecp-tab="score">🏆 计分板</button>
+                <button type="button" class="cecp-switch-btn group-hidden" data-cecp-group="game" data-cecp-tab="score">🏆 游戏计分板</button>
             </div>
         </div>
+
+        <!-- 全部工具总览面板 -->
+        <section id="cecpHubPanel" class="cecp-panel" aria-label="全部工具总览">
+            <div class="cecp-panel-head">
+                <div>
+                    <div class="cecp-panel-title">⊞ CECP 教会聚会实用工具箱</div>
+                    <div class="cecp-muted" style="margin-top:4px;">按使用场景分成 3 大类共 9 个工具，点击卡片直接进入</div>
+                </div>
+                <button type="button" class="cecp-btn cecp-btn-sm" id="cecpHubBackBtn">↩ 返回当前工具</button>
+            </div>
+            <div class="cecp-hub-grid">
+                <div class="cecp-hub-group" data-hub-cat="time">
+                    <div class="cecp-hub-group-head">
+                        <span class="cecp-hub-dot"></span>
+                        <span>⏱️ 时间展示</span>
+                        <span class="cecp-hub-count">桌面 / 屏保</span>
+                    </div>
+                    <div class="cecp-hub-list">
+                        <button type="button" class="cecp-hub-card" data-cecp-jump="timer">
+                            <span class="cecp-hub-icon">🐱</span>
+                            <span class="cecp-hub-meta">
+                                <span class="cecp-hub-name">小猫倒计时<span class="cecp-hub-curr">当前</span></span>
+                                <span class="cecp-hub-desc">经典互动小猫桌面番茄 / 倒计时</span>
+                            </span>
+                        </button>
+                        <button type="button" class="cecp-hub-card" data-cecp-jump="flip">
+                            <span class="cecp-hub-icon">🕰️</span>
+                            <span class="cecp-hub-meta">
+                                <span class="cecp-hub-name">机械翻页钟<span class="cecp-hub-curr">当前</span></span>
+                                <span class="cecp-hub-desc">3D 翻页实时时钟，支持 12/24 小时与投屏</span>
+                            </span>
+                        </button>
+                        <button type="button" class="cecp-hub-card" data-cecp-jump="year">
+                            <span class="cecp-hub-icon">⏳</span>
+                            <span class="cecp-hub-meta">
+                                <span class="cecp-hub-name">年度点阵<span class="cecp-hub-curr">当前</span></span>
+                                <span class="cecp-hub-desc">全年 365 天光点进度与周数总览</span>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="cecp-hub-group" data-hub-cat="event">
+                    <div class="cecp-hub-group-head">
+                        <span class="cecp-hub-dot"></span>
+                        <span>🎛️ 聚会音控</span>
+                        <span class="cecp-hub-count">投影 / 试音</span>
+                    </div>
+                    <div class="cecp-hub-list">
+                        <button type="button" class="cecp-hub-card" data-cecp-jump="stage">
+                            <span class="cecp-hub-icon">📺</span>
+                            <span class="cecp-hub-meta">
+                                <span class="cecp-hub-name">聚会大屏<span class="cecp-hub-curr">当前</span></span>
+                                <span class="cecp-hub-desc">会前倒计时与提示牌，一键纯净投屏</span>
+                            </span>
+                        </button>
+                        <button type="button" class="cecp-hub-card" data-cecp-jump="sound">
+                            <span class="cecp-hub-icon">🥁</span>
+                            <span class="cecp-hub-meta">
+                                <span class="cecp-hub-name">氛围音效<span class="cecp-hub-curr">当前</span></span>
+                                <span class="cecp-hub-desc">真实掌声、鼓点、号角等 8 键现场音效</span>
+                            </span>
+                        </button>
+                        <button type="button" class="cecp-hub-card" data-cecp-jump="test">
+                            <span class="cecp-hub-icon">🎚️</span>
+                            <span class="cecp-hub-meta">
+                                <span class="cecp-hub-name">音控试音<span class="cecp-hub-curr">当前</span></span>
+                                <span class="cecp-hub-desc">左右声道、粉红噪音、反相与啸叫频点速查</span>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="cecp-hub-group" data-hub-cat="game">
+                    <div class="cecp-hub-group-head">
+                        <span class="cecp-hub-dot"></span>
+                        <span>🎮 团契游戏</span>
+                        <span class="cecp-hub-count">破冰 / 竞赛</span>
+                    </div>
+                    <div class="cecp-hub-list">
+                        <button type="button" class="cecp-hub-card" data-cecp-jump="wheel">
+                            <span class="cecp-hub-icon">🎡</span>
+                            <span class="cecp-hub-meta">
+                                <span class="cecp-hub-name">互动大转盘<span class="cecp-hub-curr">当前</span></span>
+                                <span class="cecp-hub-desc">自定义选项破冰转盘，支持礼花与移除</span>
+                            </span>
+                        </button>
+                        <button type="button" class="cecp-hub-card" data-cecp-jump="draw">
+                            <span class="cecp-hub-icon">🎲</span>
+                            <span class="cecp-hub-meta">
+                                <span class="cecp-hub-name">抽签分组<span class="cecp-hub-curr">当前</span></span>
+                                <span class="cecp-hub-desc">活动不重复抽签与名单一键随机分队</span>
+                            </span>
+                        </button>
+                        <button type="button" class="cecp-hub-card" data-cecp-jump="score">
+                            <span class="cecp-hub-icon">🏆</span>
+                            <span class="cecp-hub-meta">
+                                <span class="cecp-hub-name">游戏计分板<span class="cecp-hub-curr">当前</span></span>
+                                <span class="cecp-hub-desc">多队伍实时加减分与冠军高亮投屏</span>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
 
         <!-- 年度点阵进度面板 -->
         <section id="cecpYearPanel" class="cecp-panel" aria-label="年度进度">
@@ -909,6 +1016,155 @@
                     <span class="cecp-pad-sub">音效 + 礼花</span>
                 </button>
             </div>
+        </section>
+
+        <!-- 音控快速试音台面板 -->
+        <section id="cecpTestPanel" class="cecp-panel" aria-label="音控快速试音台">
+            <div class="cecp-panel-head">
+                <div class="cecp-panel-title">🎚️ 音控快速试音台</div>
+                <div class="cecp-score-actions">
+                    <div class="cecp-sound-vol-wrap">
+                        <span>🔊 输出</span>
+                        <input type="range" id="cecpTestVol" class="cecp-vol-range" min="0" max="100" value="35" aria-label="试音输出音量" />
+                        <span id="cecpTestVolVal" style="min-width:68px;text-align:right;font-variant-numeric:tabular-nums;">35%</span>
+                    </div>
+                    <button type="button" class="cecp-btn cecp-btn-sm cecp-btn-danger" id="cecpTestStopBtn">⏹ 立即静音</button>
+                </div>
+            </div>
+
+            <!-- 状态监视与立体声 L/R 电平表 -->
+            <div class="cecp-test-monitor">
+                <div class="cecp-test-monitor-left">
+                    <div class="cecp-test-readout" id="cecpTestReadout">待机静音</div>
+                    <div class="cecp-test-status-badge" id="cecpTestStatusBadge">就绪 · 输出 35% · L+R 正常相位</div>
+                </div>
+                <div class="cecp-vu-stack" aria-label="立体声实时电平">
+                    <div class="cecp-vu-row">
+                        <span class="cecp-vu-tag active" id="cecpVuTagL">L</span>
+                        <div class="cecp-vu-track">
+                            <div class="cecp-vu-fill" id="cecpVuL"></div>
+                        </div>
+                    </div>
+                    <div class="cecp-vu-row">
+                        <span class="cecp-vu-tag active" id="cecpVuTagR">R</span>
+                        <div class="cecp-vu-track">
+                            <div class="cecp-vu-fill" id="cecpVuR"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 声道分配与相位检测 -->
+            <div class="cecp-test-section">
+                <div class="cecp-test-section-head">
+                    <span class="cecp-test-label">1. 左右声道与相位检查</span>
+                    <span class="cecp-muted">排查音箱左右接反、断线、反相抵消</span>
+                </div>
+                <div class="cecp-test-row">
+                    <div class="cecp-sub-seg" id="cecpTestChSeg" role="group" aria-label="声道路由">
+                        <button type="button" class="cecp-sub-btn" data-ch="L">L 仅左声道</button>
+                        <button type="button" class="cecp-sub-btn active" data-ch="LR">L+R 双声道</button>
+                        <button type="button" class="cecp-sub-btn" data-ch="R">R 仅右声道</button>
+                    </div>
+                    <button type="button" class="cecp-btn cecp-btn-sm" id="cecpTestPulseL">◀ 左声道点测</button>
+                    <button type="button" class="cecp-btn cecp-btn-sm" id="cecpTestPulseR">▶ 右声道点测</button>
+                    <button type="button" class="cecp-btn cecp-btn-sm cecp-btn-gold" id="cecpTestPatrolBtn">⇄ 左右交替巡检</button>
+                    <button type="button" class="cecp-btn cecp-btn-sm" id="cecpTestPhaseBtn" aria-pressed="false">⚡ 相位：正常</button>
+                </div>
+            </div>
+
+            <!-- 标准试音参考信号 -->
+            <div class="cecp-test-section">
+                <div class="cecp-test-section-head">
+                    <span class="cecp-test-label">2. 标准试音参考信号</span>
+                    <span class="cecp-muted">再点一次可立即停止</span>
+                </div>
+                <div class="cecp-test-ref-grid" id="cecpTestRefGrid">
+                    <button type="button" class="cecp-test-pad" data-sig="pink">
+                        <span class="cecp-test-pad-title">🌊 粉红噪音</span>
+                        <span class="cecp-test-pad-sub">全场均衡音色</span>
+                    </button>
+                    <button type="button" class="cecp-test-pad" data-sig="white">
+                        <span class="cecp-test-pad-title">❄️ 白噪音</span>
+                        <span class="cecp-test-pad-sub">高音单元检查</span>
+                    </button>
+                    <button type="button" class="cecp-test-pad" data-sig="cal1k">
+                        <span class="cecp-test-pad-title">〰️ 1 kHz 校准</span>
+                        <span class="cecp-test-pad-sub">标准参考电平</span>
+                    </button>
+                    <button type="button" class="cecp-test-pad" data-sig="sweep">
+                        <span class="cecp-test-pad-title">📈 全频扫频</span>
+                        <span class="cecp-test-pad-sub">20Hz→16kHz / 10s</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 常用啸叫频点速查 -->
+            <div class="cecp-test-section">
+                <div class="cecp-test-section-head">
+                    <span class="cecp-test-label">3. 啸叫频点听音速查 (EQ 常用频段)</span>
+                    <span class="cecp-muted">听音对照调音台啸叫频点，方便衰减</span>
+                </div>
+                <div class="cecp-test-freq-grid" id="cecpTestFreqGrid">
+                    <button type="button" class="cecp-test-pad cecp-test-freq-btn" data-freq="63">
+                        <span class="cecp-test-freq-val">63 Hz</span>
+                        <span class="cecp-test-pad-sub">超低隆隆</span>
+                    </button>
+                    <button type="button" class="cecp-test-pad cecp-test-freq-btn" data-freq="125">
+                        <span class="cecp-test-freq-val">125 Hz</span>
+                        <span class="cecp-test-pad-sub">低频浑浊</span>
+                    </button>
+                    <button type="button" class="cecp-test-pad cecp-test-freq-btn" data-freq="250">
+                        <span class="cecp-test-freq-val">250 Hz</span>
+                        <span class="cecp-test-pad-sub">胸腔嗡声</span>
+                    </button>
+                    <button type="button" class="cecp-test-pad cecp-test-freq-btn" data-freq="500">
+                        <span class="cecp-test-freq-val">500 Hz</span>
+                        <span class="cecp-test-pad-sub">箱体鼻音</span>
+                    </button>
+                    <button type="button" class="cecp-test-pad cecp-test-freq-btn" data-freq="800">
+                        <span class="cecp-test-freq-val">800 Hz</span>
+                        <span class="cecp-test-pad-sub">中频发硬</span>
+                    </button>
+                    <button type="button" class="cecp-test-pad cecp-test-freq-btn" data-freq="1000">
+                        <span class="cecp-test-freq-val">1 kHz</span>
+                        <span class="cecp-test-pad-sub">标准基准</span>
+                    </button>
+                    <button type="button" class="cecp-test-pad cecp-test-freq-btn" data-freq="1600">
+                        <span class="cecp-test-freq-val">1.6 kHz</span>
+                        <span class="cecp-test-pad-sub">人声尖锐</span>
+                    </button>
+                    <button type="button" class="cecp-test-pad cecp-test-freq-btn" data-freq="2500">
+                        <span class="cecp-test-freq-val">2.5 kHz</span>
+                        <span class="cecp-test-pad-sub">常见啸叫</span>
+                    </button>
+                    <button type="button" class="cecp-test-pad cecp-test-freq-btn" data-freq="3150">
+                        <span class="cecp-test-freq-val">3.15 kHz</span>
+                        <span class="cecp-test-pad-sub">高频刺耳</span>
+                    </button>
+                    <button type="button" class="cecp-test-pad cecp-test-freq-btn" data-freq="4000">
+                        <span class="cecp-test-freq-val">4 kHz</span>
+                        <span class="cecp-test-pad-sub">齿音啸叫</span>
+                    </button>
+                    <button type="button" class="cecp-test-pad cecp-test-freq-btn" data-freq="6300">
+                        <span class="cecp-test-freq-val">6.3 kHz</span>
+                        <span class="cecp-test-pad-sub">高音嘶声</span>
+                    </button>
+                    <button type="button" class="cecp-test-pad cecp-test-freq-btn" data-freq="8000">
+                        <span class="cecp-test-freq-val">8 kHz</span>
+                        <span class="cecp-test-pad-sub">空气超高</span>
+                    </button>
+                </div>
+
+                <div class="cecp-test-slider-wrap">
+                    <span class="cecp-muted">自由微调：</span>
+                    <input type="range" id="cecpTestFreqSlider" class="cecp-vol-range cecp-test-freq-range" min="0" max="1000" value="585" aria-label="自定义频点微调" />
+                    <span class="cecp-test-slider-readout" id="cecpTestSliderReadout">1000 Hz</span>
+                    <button type="button" class="cecp-btn cecp-btn-sm cecp-btn-primary" id="cecpTestCustomPlayBtn">▶ 试听频点</button>
+                </div>
+            </div>
+
+            <div class="cecp-test-note">⚠️ 试音安全提示：默认输出上限已做保护并带防爆音淡入淡出，播放前建议先调低音箱推子；切离本页或按键盘 0 / Esc 会自动静音。</div>
         </section>
 
         <button type="button" id="cecpPureExitBtn" class="cecp-pure-exit">✕ 退出投屏</button>
